@@ -46,9 +46,39 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Debug environment
+        run: |
+          echo "Java:"
+          java -version 2>&1
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          if [ -n "$ANDROID_HOME" ]; then
+            echo "Cmdline tools:"
+            ls "$ANDROID_HOME/cmdline-tools/" 2>/dev/null || echo "  none"
+            echo "Platforms:"
+            ls "$ANDROID_HOME/platforms/" 2>/dev/null || echo "  none"
+            echo "Build tools:"
+            ls "$ANDROID_HOME/build-tools/" 2>/dev/null || echo "  none"
+          fi
+
       - name: Build debug APK
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: ./gradlew clean assembleDebug
+        run: |
+          set +e
+          ./gradlew clean assembleDebug 2>&1 | tee build-output.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "GRADLE_EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
+          exit $EXIT_CODE
+
+      - name: Upload build output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            build-output.txt
+            app/build/reports/**/*
+          if-no-files-found: warn
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
