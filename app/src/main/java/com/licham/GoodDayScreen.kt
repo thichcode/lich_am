@@ -1,11 +1,13 @@
 package com.licham
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material3.*
@@ -25,9 +27,46 @@ data class DayInfo(
 
 @Composable
 fun GoodDayScreen() {
-    val today = remember { LocalDate.now() }
-    val currentMonth = remember { YearMonth.from(today) }
+    val currentMonth = remember { YearMonth.now() }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
+    if (selectedDate != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { selectedDate = null }) {
+                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Trở lại")
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Ngày ${selectedDate!!.dayOfMonth}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+            DayDetailBody(date = selectedDate!!)
+        }
+    } else {
+        GoodDayGrid(currentMonth) { selectedDate = it }
+    }
+}
+
+@Composable
+private fun GoodDayGrid(
+    currentMonth: YearMonth,
+    onDayClick: (LocalDate) -> Unit
+) {
     val daysInMonth = remember(currentMonth) {
         val daysInMonth = currentMonth.lengthOfMonth()
         (1..daysInMonth).map { day ->
@@ -97,14 +136,20 @@ fun GoodDayScreen() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(daysInMonth) { dayInfo ->
-                GoodBadDayCard(dayInfo)
+                GoodBadDayCard(
+                    dayInfo = dayInfo,
+                    onClick = { onDayClick(dayInfo.date) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun GoodBadDayCard(dayInfo: DayInfo) {
+private fun GoodBadDayCard(
+    dayInfo: DayInfo,
+    onClick: () -> Unit
+) {
     val score = dayInfo.assessment?.score ?: 0
     val isToday = dayInfo.date == LocalDate.now()
 
@@ -127,7 +172,9 @@ private fun GoodBadDayCard(dayInfo: DayInfo) {
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(

@@ -34,6 +34,12 @@ fun DayDetailBody(date: LocalDate) {
     val yearCanChi = remember(lunar) {
         CanChiCalculator.getYearCanChi(lunar?.year ?: date.year)
     }
+    val yearCanIndex = remember(lunar) {
+        CanChiCalculator.getYearCanIndex(lunar?.year ?: date.year)
+    }
+    val monthCanChi = remember(lunar, yearCanIndex) {
+        if (lunar != null) CanChiCalculator.getMonthCanChi(lunar.month, yearCanIndex) else null
+    }
 
     val weekdayNames = remember {
         arrayOf("Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy")
@@ -79,6 +85,7 @@ fun DayDetailBody(date: LocalDate) {
             lunarDay = lunar?.day,
             lunarMonth = lunar?.month,
             yearCanChi = yearCanChi,
+            monthCanChi = monthCanChi,
             assessment = assessment,
             canChi = dayCanChi,
             truc = assessment?.truc,
@@ -119,6 +126,7 @@ private fun HeroDateSection(
     lunarDay: Int?,
     lunarMonth: Int?,
     yearCanChi: Pair<String, String>,
+    monthCanChi: Pair<String, String>?,
     assessment: DayAssessment?,
     canChi: Pair<String, String>,
     truc: String?,
@@ -146,38 +154,31 @@ private fun HeroDateSection(
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (lunarDay != null && lunarMonth != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ) {
-                    Text(
-                        text = "Tháng $lunarMonth năm ${CanChiCalculator.formatCanChi(yearCanChi)}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
+        if (lunarDay != null) {
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "Ngày $lunarDay",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = "$lunarDay",
+                style = MaterialTheme.typography.displayMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.tertiary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                letterSpacing = (-1).sp
             )
+
+            if (lunarMonth != null && monthCanChi != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Tháng ${CanChiCalculator.formatCanChi(monthCanChi)} năm ${CanChiCalculator.formatCanChi(yearCanChi)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = "Ngày ${CanChiCalculator.formatCanChi(canChi)}",
             style = MaterialTheme.typography.titleSmall,
