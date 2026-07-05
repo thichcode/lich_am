@@ -62,7 +62,7 @@ jobs:
       - name: Show build output in annotations
         if: failure()
         run: |
-          grep -E "(ERROR|error|Error|FAILED|failed|FAILURE|failure|Unresolved|Could not|Cannot|could not)" build-output.txt 2>/dev/null | tail -30 | while IFS= read -r line; do
+          grep -E "^(e: |\s*>\s|Execution failed|BUILD FAILED|FAILURE|error:|warning:|Unresolved)" build-output.txt 2>/dev/null | tail -40 | while IFS= read -r line; do
             echo "::error::$line"
           done
 
