@@ -39,7 +39,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Setup Gradle cache
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: 8.5
           cache-read-only: false
@@ -67,13 +67,21 @@ jobs:
           fi
 
       - name: Configure signing for release
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' && secrets.ANDROID_KEYSTORE_PASSWORD != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          if [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "No keystore password set - skipping signing config"
+            exit 0
+          fi
           cat > keystore.properties << EOF
           storeFile=keystore.jks
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
           EOF
 
       - name: Build release APK
