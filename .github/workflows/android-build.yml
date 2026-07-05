@@ -48,7 +48,23 @@ jobs:
 
       - name: Build debug APK
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: ./gradlew clean assembleDebug
+        run: |
+          ./gradlew clean assembleDebug 2>&1 | tee build-output.txt; exit ${PIPESTATUS[0]}
+
+      - name: Upload build output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build-output.txt
+          if-no-files-found: warn
+
+      - name: Show build output in annotations
+        if: failure()
+        run: |
+          grep -E "(ERROR|error|Error|FAILED|failed|FAILURE|failure|Unresolved|Could not|Cannot|could not)" build-output.txt 2>/dev/null | tail -30 | while IFS= read -r line; do
+            echo "::error::$line"
+          done
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
