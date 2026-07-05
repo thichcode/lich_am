@@ -44,7 +44,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.findByName("release")
+            val propsFile = rootProject.file("keystore.properties")
+            if (propsFile.exists()) {
+                signingConfig = signingConfigs["release"]
+            }
         }
     }
 
