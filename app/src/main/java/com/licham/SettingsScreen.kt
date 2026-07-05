@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
@@ -203,7 +204,7 @@ private fun checkUpdate(
 ) {
     Thread {
         try {
-            val url = URL("https://api.github.com/repos/thichcode/lich_am/releases/latest")
+            val url = URL("https://api.github.com/repos/thichcode/lich_am/releases")
             val conn = url.openConnection() as HttpURLConnection
             conn.connectTimeout = 10000
             conn.readTimeout = 10000
@@ -215,7 +216,12 @@ private fun checkUpdate(
             }
 
             val body = conn.inputStream.bufferedReader().readText()
-            val json = JSONObject(body)
+            val releases = JSONArray(body)
+            if (releases.length() == 0) {
+                onError("Chưa có bản phát hành nào")
+                return@Thread
+            }
+            val json = releases.getJSONObject(0)
             val tag = json.getString("tag_name")
 
             val currentVer = try {
