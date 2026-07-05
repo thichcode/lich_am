@@ -3,9 +3,13 @@ package com.licham
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -70,10 +74,27 @@ val SeniorShapes = Shapes(
 
 @Composable
 fun LichAmTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = SeniorColorScheme,
-        typography = SeniorTypography,
-        shapes = SeniorShapes,
-        content = content
+    val config = LocalConfiguration.current
+    val baseDensity = LocalDensity.current
+
+    val screenScale = when {
+        config.screenWidthDp < 360 -> 0.78f
+        config.screenWidthDp < 400 -> 0.88f
+        config.screenWidthDp < 480 -> 0.95f
+        else -> 1.02f
+    }
+
+    val scaledDensity = Density(
+        density = baseDensity.density,
+        fontScale = baseDensity.fontScale * screenScale
     )
+
+    CompositionLocalProvider(LocalDensity provides scaledDensity) {
+        MaterialTheme(
+            colorScheme = SeniorColorScheme,
+            typography = SeniorTypography,
+            shapes = SeniorShapes,
+            content = content
+        )
+    }
 }

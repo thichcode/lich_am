@@ -272,18 +272,19 @@ private fun HoursCard(
                             .background(color, RoundedCornerShape(4.dp))
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Giờ ${hour.chiName}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = hour.timeRange,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Column {
+                        Text(
+                            text = "Giờ ${hour.chiName}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = hour.timeRange,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
