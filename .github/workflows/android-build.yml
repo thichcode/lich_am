@@ -61,14 +61,20 @@ jobs:
             app/build/reports/**/*
           if-no-files-found: warn
 
-      - name: Show Kotlin errors
+      - name: Show build errors
         if: failure()
         run: |
-          echo "::group::Kotlin compile errors"
-          grep -n '^e:' build-output.txt 2>/dev/null | head -40 || echo "No e: lines found"
+          echo "::group::FAILED task lines"
+          grep -n 'FAILED' build-output.txt 2>/dev/null | head -10
           echo "::endgroup::"
-          echo "::group::Last 80 lines of build output"
-          tail -80 build-output.txt 2>/dev/null
+          echo "::group::All lines before FAILED"
+          sed -n '/FAILED/q;p' build-output.txt 2>/dev/null | tail -80 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "::endgroup::"
+          echo "::group::Lines after FAILED"
+          sed -n '/FAILED/,$p' build-output.txt 2>/dev/null | tail -40 | while IFS= read -r line; do echo "::error::$line"; done
+          echo "::endgroup::"
+          echo "::group::Number of lines"
+          wc -l build-output.txt 2>/dev/null
           echo "::endgroup::"
 
       - name: Decode keystore (release only)
