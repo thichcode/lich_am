@@ -5,7 +5,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ChevronLeft
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -31,31 +35,37 @@ data class CalendarDay(
 
 @Composable
 fun CalendarMonthScreen(
-    onDayClick: (CalendarDay) -> Unit
+    yearMonth: YearMonth,
+    onYearMonthChange: (YearMonth) -> Unit
 ) {
-    var currentYearMonth by remember { mutableStateOf(YearMonth.now()) }
-    val today = LocalDate.now()
+    val today = remember { LocalDate.now() }
+    val monthNames = remember {
+        arrayOf(
+            "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+            "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+        )
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(OffWhite)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        MonthHeader(
-            yearMonth = currentYearMonth,
-            onPrevMonth = { currentYearMonth = currentYearMonth.minusMonths(1) },
-            onNextMonth = { currentYearMonth = currentYearMonth.plusMonths(1) }
+        CalendarTopBar(
+            title = "${monthNames[yearMonth.monthValue - 1]} ${yearMonth.year}",
+            onPrev = { onYearMonthChange(yearMonth.minusMonths(1)) },
+            onNext = { onYearMonthChange(yearMonth.plusMonths(1)) }
         )
 
         DayOfWeekHeader()
 
-        val days = remember(currentYearMonth) {
-            generateCalendarDays(currentYearMonth, today)
+        val days = remember(yearMonth) {
+            generateCalendarDays(yearMonth, today)
         }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
         ) {
             val chunked = days.chunked(7)
             items(chunked.size) { weekIndex ->
@@ -65,56 +75,53 @@ fun CalendarMonthScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     week.forEach { day ->
-                        DayCell(
-                            day = day,
-                            onClick = { onDayClick(day) }
-                        )
+                        CalendarDayCell(day = day)
                     }
                 }
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(6.dp))
             }
         }
     }
 }
 
 @Composable
-private fun MonthHeader(
-    yearMonth: YearMonth,
-    onPrevMonth: () -> Unit,
-    onNextMonth: () -> Unit
+private fun CalendarTopBar(
+    title: String,
+    onPrev: () -> Unit,
+    onNext: () -> Unit
 ) {
-    val monthNames = arrayOf(
-        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-        "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-    )
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Red700)
-            .padding(12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 1.dp
     ) {
-        TextButton(onClick = onPrevMonth) {
-            Text("<", color = Color.White, fontSize = 20.sp)
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onPrev) {
+                Icon(
+                    imageVector = Icons.Outlined.ChevronLeft,
+                    contentDescription = "Tháng trước",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             Text(
-                text = "${monthNames[yearMonth.monthValue - 1]} ${yearMonth.year}",
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
             )
-            val lunarYear = if (yearMonth.monthValue < 3) yearMonth.year else yearMonth.year
-            val yearCanChi = CanChiCalculator.getYearCanChi(lunarYear)
-            Text(
-                text = yearCanChi.first + " " + yearCanChi.second,
-                color = Gold,
-                fontSize = 14.sp
-            )
-        }
-        TextButton(onClick = onNextMonth) {
-            Text(">", color = Color.White, fontSize = 20.sp)
+            IconButton(onClick = onNext) {
+                Icon(
+                    imageVector = Icons.Outlined.ChevronRight,
+                    contentDescription = "Tháng sau",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
@@ -131,48 +138,53 @@ private fun DayOfWeekHeader() {
         days.forEach { day ->
             Text(
                 text = day,
-                modifier = Modifier.width(40.dp),
+                modifier = Modifier.width(48.dp),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-                color = Red700
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
 }
 
 @Composable
-private fun DayCell(
-    day: CalendarDay,
-    onClick: () -> Unit
-) {
+private fun CalendarDayCell(day: CalendarDay) {
     val bgColor = when {
         !day.isCurrentMonth -> Color.Transparent
-        day.isToday -> LightRedBg
-        day.lunarDate?.day == 15 && day.isCurrentMonth -> LightGold
-        day.lunarDate?.day == 1 && day.isCurrentMonth -> LightGreen.copy(alpha = 0.4f)
+        day.isToday -> MaterialTheme.colorScheme.primary
+        day.lunarDate?.day == 15 && day.isCurrentMonth -> MaterialTheme.colorScheme.tertiaryContainer
+        day.lunarDate?.day == 1 && day.isCurrentMonth -> MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
         else -> Color.Transparent
     }
 
-    val borderColor = if (day.isToday) Red500 else Color.Transparent
+    val textColor = when {
+        day.isToday -> MaterialTheme.colorScheme.onPrimary
+        !day.isCurrentMonth -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+        else -> MaterialTheme.colorScheme.onSurface
+    }
 
     Column(
         modifier = Modifier
-            .width(48.dp)
-            .height(56.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .width(52.dp)
+            .height(64.dp)
+            .clip(RoundedCornerShape(12.dp))
             .background(bgColor)
-            .border(1.5.dp, borderColor, RoundedCornerShape(6.dp))
-            .clickable(enabled = day.isCurrentMonth) { onClick() },
+            .border(
+                width = if (day.isToday) 2.dp else 0.dp,
+                color = if (day.isToday) MaterialTheme.colorScheme.primary else Color.Transparent,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable(enabled = day.isCurrentMonth) { },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         if (day.isCurrentMonth) {
             Text(
                 text = day.solarDay.toString(),
-                fontSize = 15.sp,
-                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Normal,
-                color = if (day.isToday) Red700 else Color.Black
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = if (day.isToday) FontWeight.Bold else FontWeight.Medium,
+                color = textColor
             )
             val lunarText = when (day.lunarDate?.day) {
                 1 -> "1"
@@ -182,9 +194,13 @@ private fun DayCell(
             if (lunarText.isNotEmpty()) {
                 Text(
                     text = lunarText,
-                    fontSize = 10.sp,
-                    color = if (day.lunarDate?.day == 15) Red700 else LunarGray,
-                    fontWeight = if (day.lunarDate?.day == 15) FontWeight.Bold else FontWeight.Normal
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (day.isToday)
+                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
+                    else if (day.lunarDate?.day == 15)
+                        MaterialTheme.colorScheme.tertiary
+                    else
+                        MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

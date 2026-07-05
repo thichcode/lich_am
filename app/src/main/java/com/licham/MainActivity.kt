@@ -3,7 +3,19 @@ package com.licham
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import java.time.YearMonth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,38 +29,67 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LichAmTheme {
-                AppNavigation()
+                AppMain()
             }
         }
     }
 }
 
-enum class AppScreen { Calendar, Detail }
+enum class AppTab(val label: String, val icon: ImageVector) {
+    Home("Hôm nay", Icons.Outlined.Home),
+    Calendar("Lịch", Icons.Outlined.CalendarMonth),
+    GoodDays("Ngày đẹp", Icons.Outlined.AutoAwesome),
+    Quotes("Thơ", Icons.AutoMirrored.Outlined.MenuBook),
+    Settings("Khác", Icons.Outlined.MoreHoriz)
+}
 
 @Composable
-fun AppNavigation() {
-    var currentScreen by remember { mutableStateOf(AppScreen.Calendar) }
-    var selectedDay by remember { mutableStateOf<CalendarDay?>(null) }
+fun AppMain() {
+    var selectedTab by remember { mutableStateOf(AppTab.Home) }
+    var calendarYearMonth by remember { mutableStateOf(YearMonth.now()) }
 
-    when (currentScreen) {
-        AppScreen.Calendar -> {
-            CalendarMonthScreen(
-                onDayClick = { day ->
-                    if (day.lunarDate != null) {
-                        selectedDay = day
-                        currentScreen = AppScreen.Detail
-                    }
+    Scaffold(
+        bottomBar = {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 2.dp,
+                modifier = Modifier.height(72.dp)
+            ) {
+                AppTab.entries.forEach { tab ->
+                    NavigationBarItem(
+                        selected = selectedTab == tab,
+                        onClick = { selectedTab = tab },
+                        icon = {
+                            Icon(
+                                imageVector = tab.icon,
+                                contentDescription = tab.label
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = tab.label,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    )
                 }
-            )
+            }
         }
-        AppScreen.Detail -> {
-            selectedDay?.let { day ->
-                DayDetailScreen(
-                    day = day,
-                    onBack = {
-                        currentScreen = AppScreen.Calendar
-                    }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            when (selectedTab) {
+                AppTab.Home -> HomeScreen()
+                AppTab.Calendar -> CalendarMonthScreen(
+                    yearMonth = calendarYearMonth,
+                    onYearMonthChange = { calendarYearMonth = it }
                 )
+                AppTab.GoodDays -> GoodDayScreen()
+                AppTab.Quotes -> QuotesScreen()
+                AppTab.Settings -> SettingsScreen()
             }
         }
     }
