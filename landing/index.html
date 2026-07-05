@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch Âm - Xem lịch âm Việt Nam offline</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #FFF8E1;
+  color: #333;
+  line-height: 1.6;
+}
+.hero {
+  background: linear-gradient(135deg, #B71C1C 0%, #7F0000 100%);
+  color: white;
+  text-align: center;
+  padding: 60px 20px 50px;
+}
+.hero h1 { font-size: 2.8em; margin-bottom: 8px; }
+.hero p { font-size: 1.2em; opacity: 0.9; margin-bottom: 24px; }
+.badge {
+  display: inline-block;
+  background: #F9A825;
+  color: #333;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.download-btn {
+  display: inline-block;
+  background: #F9A825;
+  color: #333;
+  padding: 14px 36px;
+  border-radius: 30px;
+  font-size: 1.1em;
+  font-weight: 700;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.download-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+.container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+section { padding: 50px 0; }
+section:nth-child(even) { background: #FFF; }
+h2 {
+  text-align: center;
+  font-size: 1.8em;
+  color: #B71C1C;
+  margin-bottom: 40px;
+}
+.features { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.feature {
+  background: #FFF8E1;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid #FFE0B2;
+}
+.feature .icon { font-size: 2.5em; margin-bottom: 12px; }
+.feature h3 { color: #B71C1C; margin-bottom: 8px; font-size: 1.1em; }
+.feature p { font-size: 0.92em; color: #666; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #FFF8E1;
+  border-radius: 8px;
+}
+.info-item .icon { font-size: 1.5em; }
+.screenshots {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.screenshot-placeholder {
+  width: 220px;
+  height: 400px;
+  background: linear-gradient(180deg, #B71C1C 0%, #7F0000 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2em;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.ci-status {
+  text-align: center;
+  margin-top: 16px;
+}
+.ci-status img { height: 24px; }
+.footer {
+  text-align: center;
+  padding: 30px;
+  color: #999;
+  font-size: 0.85em;
+  border-top: 1px solid #eee;
+}
+@media (max-width: 600px) {
+  .hero h1 { font-size: 2em; }
+  .features, .info-grid { grid-template-columns: 1fr; }
+  .screenshot-placeholder { width: 160px; height: 300px; font-size: 1.5em; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">📱 Android 6.0+</div>
+  <h1>Lịch Âm</h1>
+  <p>Xem lịch âm Việt Nam offline, miễn phí, không quảng cáo</p>
+  <a class="download-btn" href="#download" id="apkLink">⬇ Tải APK</a>
+  <p style="margin-top:12px;font-size:0.85em;opacity:0.7">Bản dựng mới nhất từ GitHub Actions</p>
+</div>
+
+<div class="container">
+<section>
+  <h2>Tính năng chính</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">📅</div>
+      <h3>Lịch tháng</h3>
+      <p>Xem lịch dương và âm theo tháng, đánh dấu hôm nay, ngày rằm và mùng một</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🌙</div>
+      <h3>Can Chi</h3>
+      <p>Tra cứu Thiên Can, Địa Chi cho ngày, tháng, năm và giờ</p>
+    </div>
+    <div class="feature">
+      <div class="icon">✅</div>
+      <h3>Ngày tốt / xấu</h3>
+      <p>Đánh giá ngày tốt xấu, giờ Hoàng Đạo và Hắc Đạo</p>
+    </div>
+    <div class="feature">
+      <div class="icon">📖</div>
+      <h3>Danh ngôn</h3>
+      <p>Hiển thị câu ca dao, tục ngữ Việt Nam mỗi ngày</p>
+    </div>
+    <div class="feature">
+      <div class="icon">📡</div>
+      <h3>Offline 100%</h3>
+      <p>Không cần internet, không backend, không theo dõi người dùng</p>
+    </div>
+    <div class="feature">
+      <div class="icon">⚡</div>
+      <h3>Nhẹ & Nhanh</h3>
+      <p>Dung lượng nhỏ, khởi động nhanh, không quảng cáo</p>
+    </div>
+  </div>
+</section>
+</div>
+
+<section>
+  <div class="container">
+  <h2>Ảnh chụp màn hình</h2>
+  <div class="screenshots">
+    <div class="screenshot-placeholder">📅 Lịch</div>
+    <div class="screenshot-placeholder">📋 Chi tiết</div>
+    <div class="screenshot-placeholder">🌙 Rằm</div>
+  </div>
+  </div>
+</section>
+
+<div class="container">
+<section>
+  <h2>Thông tin ứng dụng</h2>
+  <div class="info-grid">
+    <div class="info-item"><span class="icon">📱</span> <span>Android 6.0 trở lên</span></div>
+    <div class="info-item"><span class="icon">📦</span> <span>Dung lượng &lt; 5MB</span></div>
+    <div class="info-item"><span class="icon">🔒</span> <span>Không cần quyền đặc biệt</span></div>
+    <div class="info-item"><span class="icon">🌐</span> <span>Hoàn toàn ngoại tuyến</span></div>
+    <div class="info-item"><span class="icon">💰</span> <span>Miễn phí</span></div>
+    <div class="info-item"><span class="icon">📄</span> <span>Mã nguồn mở (MIT)</span></div>
+  </div>
+</section>
+</div>
+
+<section id="download">
+  <div class="container">
+  <h2>Tải xuống</h2>
+  <p style="text-align:center;max-width:500px;margin:0 auto 24px">
+    APK bản debug được build tự động từ GitHub Actions mỗi khi có thay đổi.
+    Bạn có thể tải file APK từ GitHub Actions artifacts.
+  </p>
+  <div style="text-align:center">
+    <a class="download-btn" href="https://github.com/thichcode/lich_am/releases" target="_blank" style="background:#B71C1C;color:#fff">⬇ Tải APK từ GitHub Releases</a>
+  </div>
+  <p style="text-align:center;margin-top:12px;font-size:0.85em;color:#999">
+    Hoặc vào <a href="https://github.com/thichcode/lich_am/actions" target="_blank">GitHub Actions</a>, chọn workflow, tải artifact
+  </p>
+  <div class="ci-status">
+    <a href="https://github.com/thichcode/lich_am/actions">
+      <img src="https://github.com/thichcode/lich_am/actions/workflows/android-build.yml/badge.svg" alt="Build status">
+    </a>
+  </div>
+  </div>
+</section>
+
+<div class="container">
+<section>
+  <h2>Mã nguồn mở</h2>
+  <p style="text-align:center;max-width:500px;margin:0 auto">
+    Ứng dụng được phát triển bằng Kotlin và Jetpack Compose.
+    Mã nguồn được công khai trên GitHub.
+  </p>
+  <div style="text-align:center;margin-top:16px">
+    <a href="https://github.com/thichcode/lich_am" target="_blank" style="color:#B71C1C;font-weight:600;font-size:1.1em">📂 GitHub: thichcode/lich_am</a>
+  </div>
+</section>
+</div>
+
+<div class="footer">
+  Lịch Âm &copy; 2026 — Ứng dụng lịch âm Việt Nam mã nguồn mở
+</div>
+
+<script>
+fetch('https://api.github.com/repos/thichcode/lich_am/releases/latest')
+  .then(r => r.json())
+  .then(data => {
+    if (data.assets && data.assets.length > 0) {
+      const apk = data.assets.find(a => a.name.endsWith('.apk'));
+      if (apk) {
+        document.getElementById('apkLink').href = apk.browser_download_url;
+      }
+    }
+  })
+  .catch(() => {});
+</script>
+
+</body>
+</html>
