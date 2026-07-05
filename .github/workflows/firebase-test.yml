@@ -1,0 +1,75 @@
+name: Firebase Test Lab Screenshots
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every Friday at 1 AM Vietnam time (Friday 1AM = Thursday 18UTC)
+    - cron: '0 18 * * 4'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug assembleDebugAndroidTest --console=plain
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Run Firebase Test Lab
+        run: |
+          gcloud firebase test android run \
+          --type instrumentation \
+          --app app/build/outputs/apk/debug/app-debug.apk \
+          --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          --device model=Pixel6Pro,version=34,locale=vi_VN,orientation=portrait \
+          --results-dir=lich-am-${{ github.run_id }} \
+          --results-bucket=${{ secrets.FIREBASE_CLOUD_STORAGE_BUCKET }} \
+          --timeout 10m \
+          --environment-variables coverage=true,coverageFile=/sdcard/coverage.ec \
+          --directories-to-pull=/sdcard/Download \
+          --use-orchestrator
+
+      - name: Get test results
+        if: always()
+        run: |
+          mkdir -p test-results
+          echo "Downloading test results from:"
+          echo "gs://${{ secrets.FIREBASE_CLOUD_STORAGE_BUCKET }}/lich-am-${{ github.run_id }}"
+          gsutil -m cp -r \
+            "gs://${{ secrets.FIREBASE_CLOUD_STORAGE_BUCKET }}/lich-am-${{ github.run_id }}/*" \
+            test-results/ || true
+          echo "Available test result files:"
+          ls -R test-results/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firebase-test-results
+          path: test-results
+          retention-days: 30
