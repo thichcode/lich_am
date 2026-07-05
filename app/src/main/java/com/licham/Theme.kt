@@ -4,6 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -26,7 +27,7 @@ val LightGoldBg = Color(0xFFFFF8E1)
 val LightGrayDivider = Color(0xFFEEEEEE)
 val BrownText = Color(0xFF5D4037)
 
-private val SeniorColorScheme = lightColorScheme(
+val SeniorLightColorScheme = lightColorScheme(
     primary = DeepRed,
     onPrimary = CardWhite,
     primaryContainer = LightRedBg,
@@ -39,15 +40,39 @@ private val SeniorColorScheme = lightColorScheme(
     onTertiary = DarkText,
     tertiaryContainer = LightGoldBg,
     onTertiaryContainer = BrownText,
-    background = SoftBg,
-    onBackground = DarkText,
-    surface = CardWhite,
-    onSurface = DarkText,
-    surfaceVariant = SoftBg,
-    onSurfaceVariant = GrayText,
+    background = Color(0xFF1A1A1A),
+    onBackground = CardWhite,
+    surface = Color(0xFF212121),
+    onSurface = CardWhite,
+    surfaceVariant = Color(0xFF323232),
+    onSurfaceVariant = Color(0xFFB3B3B3),
     error = DeepRed,
     onError = CardWhite,
     outline = LightGrayDivider
+)
+
+val SeniorDarkColorScheme = darkColorScheme(
+    primary = Gold,
+    onPrimary = DarkText,
+    primaryContainer = LightGoldBg,
+    onPrimaryContainer = DarkText,
+    secondary = JadeGreen,
+    onSecondary = CardWhite,
+    secondaryContainer = LightGreenBg,
+    onSecondaryContainer = DarkText,
+    tertiary = DeepRed,
+    onTertiary = CardWhite,
+    tertiaryContainer = LightRedBg,
+    onTertiaryContainer = CardWhite,
+    background = Color(0xFF121212),
+    onBackground = CardWhite,
+    surface = Color(0xFF1E1E1E),
+    onSurface = CardWhite,
+    surfaceVariant = Color(0xFF2D2D2D),
+    onSurfaceVariant = Color(0xFF9E9E9E),
+    outline = LightGrayDivider,
+    error = DeepRed,
+    onError = CardWhite
 )
 
 val SeniorTypography = Typography(
@@ -72,10 +97,24 @@ val SeniorShapes = Shapes(
     large = RoundedCornerShape(20.dp)
 )
 
+// Spacing constants (dp)
+val Spacing1 = 1.dp
+val Spacing2 = 2.dp
+val Spacing4 = 4.dp
+val Spacing6 = 6.dp
+val Spacing8 = 8.dp
+val Spacing10 = 10.dp
+val Spacing12 = 12.dp
+val Spacing14 = 14.dp
+val Spacing16 = 16.dp
+val Spacing20 = 20.dp
+val Spacing24 = 24.dp
+
 @Composable
 fun LichAmTheme(content: @Composable () -> Unit) {
     val config = LocalConfiguration.current
     val baseDensity = LocalDensity.current
+    val isDarkMode = isSystemInDarkTheme()
 
     val screenScale = when {
         config.screenWidthDp < 360 -> 0.78f
@@ -91,7 +130,7 @@ fun LichAmTheme(content: @Composable () -> Unit) {
 
     CompositionLocalProvider(LocalDensity provides scaledDensity) {
         MaterialTheme(
-            colorScheme = SeniorColorScheme,
+            colorScheme = if (isDarkMode) SeniorDarkColorScheme else SeniorLightColorScheme,
             typography = SeniorTypography,
             shapes = SeniorShapes,
             content = content

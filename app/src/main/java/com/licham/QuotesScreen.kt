@@ -29,12 +29,12 @@ fun QuotesScreen() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = 1.dp
+            shadowElevation = Spacing1
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = Spacing16, vertical = Spacing12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -43,7 +43,7 @@ fun QuotesScreen() {
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(Spacing12))
                 Text(
                     text = "Thơ & Danh ngôn",
                     style = MaterialTheme.typography.titleMedium,
@@ -56,7 +56,7 @@ fun QuotesScreen() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Spacing16),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Card(
@@ -67,7 +67,7 @@ fun QuotesScreen() {
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(Spacing24),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -77,7 +77,7 @@ fun QuotesScreen() {
                         color = MaterialTheme.colorScheme.onTertiaryContainer,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(Spacing12))
                     Text(
                         text = "\u2014 ${currentQuote.author}",
                         style = MaterialTheme.typography.bodyMedium,
@@ -85,17 +85,17 @@ fun QuotesScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.End
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing16))
                     OutlinedButton(
                         onClick = { currentQuote = QuoteProvider.getRandomQuote() },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(Spacing12)
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Refresh,
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(Spacing20)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(Spacing8))
                         Text(
                             text = "Câu khác",
                             style = MaterialTheme.typography.labelLarge

@@ -54,7 +54,7 @@ fun AppMain() {
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 2.dp,
+                tonalElevation = Spacing2,
                 modifier = Modifier.height(72.dp)
             ) {
                 AppTab.entries.forEach { tab ->

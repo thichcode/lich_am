@@ -39,7 +39,7 @@ fun GoodDayScreen() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 4.dp),
+                    .padding(horizontal = Spacing4, vertical = Spacing4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { selectedDate = null }) {
@@ -55,7 +55,7 @@ fun GoodDayScreen() {
                 Spacer(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(48.dp))
             }
-            DayDetailBody(date = selectedDate!!)
+            DayDetailContent(date = selectedDate!!)
         }
     } else {
         GoodDayGrid(currentMonth) { selectedDate = it }
@@ -106,12 +106,12 @@ private fun GoodDayGrid(
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = 1.dp
+            shadowElevation = Spacing1
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = Spacing16, vertical = Spacing12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -120,7 +120,7 @@ private fun GoodDayGrid(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(Spacing12))
                 Text(
                     text = "${monthNames[currentMonth.monthValue - 1]} ${currentMonth.year}",
                     style = MaterialTheme.typography.titleMedium,
@@ -132,8 +132,8 @@ private fun GoodDayGrid(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(Spacing16),
+            verticalArrangement = Arrangement.spacedBy(Spacing8)
         ) {
             items(daysInMonth) { dayInfo ->
                 GoodBadDayCard(
@@ -178,22 +178,27 @@ private fun GoodBadDayCard(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isToday) 2.dp else 0.dp
+            defaultElevation = if (isToday) Spacing2 else 0.dp
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(Spacing16),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val contentDesc = when {
+                score > 0 -> "Ngày tốt"
+                score < 0 -> "Ngày xấu"
+                else -> "Ngày trung bình"
+            }
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = contentDesc,
                 tint = onCardColor,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(Spacing24)
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(Spacing12))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -203,16 +208,16 @@ private fun GoodBadDayCard(
                         color = onCardColor
                     )
                     if (isToday) {
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(Spacing8))
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(Spacing8),
                             color = MaterialTheme.colorScheme.primary
                         ) {
                             Text(
                                 text = "Hôm nay",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                modifier = Modifier.padding(horizontal = Spacing8, vertical = Spacing2)
                             )
                         }
                     }

@@ -43,21 +43,21 @@ fun SettingsScreen() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = 1.dp
+            shadowElevation = Spacing1
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = Spacing16, vertical = Spacing12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
-                    contentDescription = null,
+                    contentDescription = "Thông tin ứng dụng",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(Spacing12))
                 Text(
                     text = "Thông tin",
                     style = MaterialTheme.typography.titleMedium,
@@ -70,7 +70,7 @@ fun SettingsScreen() {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(Spacing16),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -82,7 +82,7 @@ fun SettingsScreen() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(Spacing24),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
@@ -91,7 +91,7 @@ fun SettingsScreen() {
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(Spacing4))
                     val currentVersion = remember {
                         try {
                             context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.1"
@@ -102,16 +102,16 @@ fun SettingsScreen() {
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing16))
                     Text(
                         text = "Lịch âm dương Việt Nam\nỨng dụng ngoại tuyến hoàn toàn",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing16))
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing16))
 
                     Button(
                         onClick = {
@@ -131,15 +131,15 @@ fun SettingsScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(Spacing16)
                     ) {
                         if (checking) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(Spacing24),
                                 color = MaterialTheme.colorScheme.onPrimary,
-                                strokeWidth = 2.dp
+                                strokeWidth = Spacing2
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(Spacing12))
                             Text(
                                 text = "Đang kiểm tra...",
                                 style = MaterialTheme.typography.labelLarge
@@ -147,10 +147,10 @@ fun SettingsScreen() {
                         } else {
                             Icon(
                                 imageVector = Icons.Outlined.SystemUpdateAlt,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                contentDescription = "Kiểm tra cập nhật",
+                                modifier = Modifier.size(Spacing24)
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
+                            Spacer(modifier = Modifier.width(Spacing12))
                             Text(
                                 text = "Kiểm tra cập nhật",
                                 style = MaterialTheme.typography.labelLarge
@@ -159,7 +159,7 @@ fun SettingsScreen() {
                     }
 
                     if (errorMsg != null) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(Spacing12))
                         Text(
                             text = errorMsg!!,
                             style = MaterialTheme.typography.bodyMedium,
@@ -169,13 +169,13 @@ fun SettingsScreen() {
                     }
 
                     if (updateInfo != null) {
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing16))
                         UpdateInfoCard(updateInfo!!, context)
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(Spacing16))
                     HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(Spacing8))
                     Text(
                         text = "Thuật toán lịch âm: Hồ Ngọc Đức",
                         style = MaterialTheme.typography.bodySmall,
@@ -262,7 +262,7 @@ private fun UpdateInfoCard(info: UpdateInfo, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Surface(
-            shape = RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(Spacing12),
             color = MaterialTheme.colorScheme.secondaryContainer
         ) {
             Text(
@@ -270,25 +270,25 @@ private fun UpdateInfoCard(info: UpdateInfo, context: Context) {
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = Spacing16, vertical = Spacing8)
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(Spacing12))
 
         OutlinedButton(
             onClick = { downloadAndInstall(context, info.downloadUrl) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(Spacing16)
         ) {
             Icon(
                 imageVector = Icons.Outlined.SystemUpdateAlt,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
+                contentDescription = "Tải xuống & Cài đặt",
+                modifier = Modifier.size(Spacing24)
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(Spacing12))
             Text(
                 text = "Tải xuống & Cài đặt",
                 style = MaterialTheme.typography.labelLarge
@@ -307,7 +307,7 @@ private fun downloadAndInstall(context: Context, apkUrl: String) {
             setTitle("Lịch Âm")
             setDescription("Đang tải phiên bản mới...")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
+            setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
             setAllowedOverMetered(true)
             setAllowedOverRoaming(true)
         }

@@ -31,7 +31,8 @@ data class CalendarDay(
     val isCurrentMonth: Boolean,
     val isToday: Boolean,
     val lunarDate: String?,
-    val canChi: Pair<String, String>?
+    val canChi: Pair<String, String>?,
+    val assessment: DayAssessment? = null
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,22 +95,36 @@ private fun CalendarGrid(
             )
         }
         for (d in 1..totalDays) {
-            val date = yearMonth.atDay(d)
-            val lunar = LunarCalculator.solar2lunar(d, yearMonth.monthValue, yearMonth.year)
-            val jd = lunar?.let { LunarCalculator.jdFromDate(d, yearMonth.monthValue, yearMonth.year) }
-            val canChi = jd?.let { CanChiCalculator.getDayCanChi(it) }
-            days.add(
-                CalendarDay(
-                    day = d,
-                    isCurrentMonth = true,
-                    isToday = date == today,
-                    lunarDate = if (lunar != null && (d == 1 || d == 15 || d == totalDays)) {
-                        "${lunar.day}"
-                    } else null,
-                    canChi = canChi
+                val date = yearMonth.atDay(d)
+                val lunar = LunarCalculator.solar2lunar(d, yearMonth.monthValue, yearMonth.year)
+                val jd = lunar?.let { LunarCalculator.jdFromDate(d, yearMonth.monthValue, yearMonth.year) }
+                val canChi = jd?.let { CanChiCalculator.getDayCanChi(it) }
+                val assessment = if (lunar != null && canChi != null && jd != null) {
+                    val canIndex = when (canChi.first) {
+                        "Giáp" -> 0; "Ất" -> 1; "Bính" -> 2; "Đinh" -> 3; "Mậu" -> 4
+                        "Kỷ" -> 5; "Canh" -> 6; "Tân" -> 7; "Nhâm" -> 8; "Quý" -> 9
+                        else -> 0
+                    }
+                    val chiIndex = when (canChi.second) {
+                        "Tý" -> 0; "Sửu" -> 1; "Dần" -> 2; "Mão" -> 3; "Thìn" -> 4; "Tỵ" -> 5
+                        "Ngọ" -> 6; "Mùi" -> 7; "Thân" -> 8; "Dậu" -> 9; "Tuất" -> 10; "Hợi" -> 11
+                        else -> 0
+                    }
+                    GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex, jd, yearMonth.monthValue)
+                } else null
+                days.add(
+                    CalendarDay(
+                        day = d,
+                        isCurrentMonth = true,
+                        isToday = date == today,
+                        lunarDate = if (lunar != null && (d == 1 || d == 15 || d == totalDays)) {
+                            "${lunar.day}"
+                        } else null,
+                        canChi = canChi,
+                        assessment = assessment
+                    )
                 )
-            )
-        }
+            }
         days
     }
 
@@ -118,12 +133,12 @@ private fun CalendarGrid(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing8))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = Spacing8),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { onYearMonthChange(yearMonth.minusMonths(1)) }) {
@@ -168,7 +183,7 @@ private fun CalendarGrid(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(Spacing8))
 
         Row(modifier = Modifier.fillMaxWidth()) {
             val headers = arrayOf("CN", "T2", "T3", "T4", "T5", "T6", "T7")
@@ -189,9 +204,9 @@ private fun CalendarGrid(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(horizontal = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
+                .padding(horizontal = Spacing4),
+            horizontalArrangement = Arrangement.spacedBy(Spacing2),
+            verticalArrangement = Arrangement.spacedBy(Spacing2)
         ) {
             items(days) { day ->
                 CalendarDayCell(
@@ -219,7 +234,7 @@ private fun CalendarDayCell(
         Column(
             modifier = Modifier
                 .size(width = 40.dp, height = 56.dp)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(Spacing8))
                 .background(bgColor)
                 .clickable { onClick() },
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -242,6 +257,19 @@ private fun CalendarDayCell(
                     fontSize = 9.sp
                 )
             }
+            if (day.assessment != null) {
+                val dotColor = when {
+                    day.assessment!!.score > 0 -> MaterialTheme.colorScheme.secondaryContainer
+                    day.assessment!!.score < 0 -> MaterialTheme.colorScheme.errorContainer
+                    else -> MaterialTheme.colorScheme.tertiaryContainer
+                }
+                Spacer(modifier = Modifier.height(Spacing2))
+                Box(
+                    modifier = Modifier
+                        .size(Spacing4)
+                        .background(dotColor, RoundedCornerShape(Spacing2))
+                )
+            }
         }
     }
 }
@@ -256,36 +284,8 @@ private fun CalendarDayDetail(
     onToday: () -> Unit
 ) {
     val date = remember { LocalDate.of(year, month, dayValue) }
-    val lunar = remember(date) {
-        LunarCalculator.solar2lunar(date.dayOfMonth, date.monthValue, date.year)
-    }
-    val calculatedJd = remember(date) {
-        LunarCalculator.jdFromDate(date.dayOfMonth, date.monthValue, date.year)
-    }
-    val dayCanChi = remember(date) { canChi ?: CanChiCalculator.getDayCanChi(calculatedJd) }
-
-    val assessment = remember(date, lunar, dayCanChi) {
-        if (lunar != null) {
-            val canIndex = when (dayCanChi.first) {
-                "Giáp" -> 0; "Ất" -> 1; "Bính" -> 2; "Đinh" -> 3; "Mậu" -> 4
-                "Kỷ" -> 5; "Canh" -> 6; "Tân" -> 7; "Nhâm" -> 8; "Quý" -> 9
-                else -> 0
-            }
-            val chiIndex = when (dayCanChi.second) {
-                "Tý" -> 0; "Sửu" -> 1; "Dần" -> 2; "Mão" -> 3; "Thìn" -> 4; "Tỵ" -> 5
-                "Ngọ" -> 6; "Mùi" -> 7; "Thân" -> 8; "Dậu" -> 9; "Tuất" -> 10; "Hợi" -> 11
-                else -> 0
-            }
-            GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex, calculatedJd, date.monthValue)
-        } else null
-    }
-
     val weekdayNames = remember {
         arrayOf("Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy")
-    }
-
-    val yearCanChi = remember(lunar) {
-        CanChiCalculator.getYearCanChi(lunar?.year ?: year)
     }
 
     Column(
@@ -296,7 +296,7 @@ private fun CalendarDayDetail(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = Spacing4, vertical = Spacing4),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
@@ -304,7 +304,7 @@ private fun CalendarDayDetail(
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "${date.dayOfMonth} ${weekdayNames[date.dayOfWeek.value % 7]}",
+                text = "${'$'}{date.dayOfMonth} ${'$'}{weekdayNames[date.dayOfWeek.value % 7]}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onBackground
@@ -314,134 +314,10 @@ private fun CalendarDayDetail(
                 Text("Hôm nay")
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "${date.dayOfMonth}",
-                style = MaterialTheme.typography.displayLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                letterSpacing = (-2).sp
-            )
-
-            Text(
-                text = weekdayNames[date.dayOfWeek.value % 7],
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (lunar != null) {
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.tertiaryContainer
-                    ) {
-                        Text(
-                            text = "Tháng ${lunar.month} năm ${CanChiCalculator.formatCanChi(yearCanChi)}",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = "Ngày ${lunar.day}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "Ngày ${CanChiCalculator.formatCanChi(dayCanChi)}",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            if (assessment != null) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    val (pillColor, onPillColor) = when {
-                        assessment.score > 0 -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-                        assessment.score < 0 -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-                        else -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-                    }
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = pillColor
-                    ) {
-                        Text(
-                            text = assessment.label,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold,
-                            color = onPillColor,
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-                        )
-                    }
-                }
-            }
-
-            if (assessment != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    HoursCard(
-                        title = "Giờ tốt",
-                        hours = assessment.goodHours,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.weight(1f)
-                    )
-                    HoursCard(
-                        title = "Giờ xấu",
-                        hours = assessment.badHours,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                if (assessment.goodActivities.isNotEmpty() || assessment.badActivities.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    ActivitiesCard(assessment)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+        DayDetailContent(date = date)
     }
-}
+
+
 
 @Composable
 private fun HoursCard(
@@ -454,27 +330,27 @@ private fun HoursCard(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Spacing1)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(Spacing14)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = color
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(Spacing8))
             hours.take(4).forEach { hour ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(vertical = 2.dp)
+                    modifier = Modifier.padding(vertical = Spacing2)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(8.dp)
-                            .background(color, RoundedCornerShape(4.dp))
+                            .size(Spacing8)
+                            .background(color, RoundedCornerShape(Spacing4))
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(Spacing8))
                     Column {
                         Text(
                             text = "Giờ ${hour.chiName}",
@@ -499,12 +375,12 @@ private fun ActivitiesCard(assessment: DayAssessment) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = Spacing16),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = Spacing1)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(Spacing16)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "Nên làm",
@@ -520,7 +396,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                 )
             }
             if (assessment.goodActivities.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing6))
                 assessment.goodActivities.take(6).forEach { activity ->
                     Row(
                         modifier = Modifier.padding(vertical = 3.dp),
@@ -531,7 +407,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.width(24.dp)
+                            modifier = Modifier.width(Spacing24)
                         )
                         Text(
                             text = activity,
@@ -541,7 +417,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(Spacing10))
             Text(
                 text = "Nên tránh",
                 style = MaterialTheme.typography.titleSmall,
@@ -549,7 +425,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                 color = MaterialTheme.colorScheme.error
             )
             if (assessment.badActivities.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(Spacing6))
                 assessment.badActivities.take(6).forEach { activity ->
                     Row(
                         modifier = Modifier.padding(vertical = 3.dp),
@@ -560,7 +436,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.width(24.dp)
+                            modifier = Modifier.width(Spacing24)
                         )
                         Text(
                             text = activity,

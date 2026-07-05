@@ -1,6 +1,8 @@
 package com.licham
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.util.Xml
 import androidx.compose.foundation.background
@@ -11,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,13 +22,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.xmlpull.v1.XmlPullParser
+import java.io.IOException
 import java.io.StringReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 data class NewsItem(
     val title: String,
@@ -37,15 +44,33 @@ data class NewsItem(
 @Composable
 fun NewsScreen() {
     val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("news_cache", Context.MODE_PRIVATE) }
     var news by remember { mutableStateOf<List<NewsItem>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    var refreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        fetchNews { items, err ->
-            news = items
-            error = err
+        val cachedXml = prefs.getString("rss_xml", null)
+        val cachedTime = prefs.getLong("rss_time", 0)
+        if (cachedXml != null && System.currentTimeMillis() - cachedTime < 3600000L) {
+            news = parseRss(cachedXml)
             loading = false
+        }
+        val result = fetchRss(context)
+        result.onSuccess { xml ->
+            val items = parseRss(xml)
+            news = items
+            prefs.edit()
+                .putString("rss_xml", xml)
+                .putLong("rss_time", System.currentTimeMillis())
+                .apply()
+            error = null
+            loading = false
+        }.onFailure { e ->
+            error = e.message ?: "Lỗi không xác định"
+            if (news.isEmpty()) loading = false
         }
     }
 
@@ -57,39 +82,75 @@ fun NewsScreen() {
         Surface(
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 0.dp,
-            shadowElevation = 1.dp
+            shadowElevation = Spacing1
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .padding(horizontal = Spacing16, vertical = Spacing12),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Article,
-                    contentDescription = null,
+                    contentDescription = "Tin tức",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(Spacing12))
                 Text(
                     text = "Tin tức",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = {
+                    refreshing = true
+                    error = null
+                    scope.launch {
+                        val result = fetchRss(context)
+                        result.onSuccess { xml ->
+                            val items = parseRss(xml)
+                            news = items
+                            prefs.edit()
+                                .putString("rss_xml", xml)
+                                .putLong("rss_time", System.currentTimeMillis())
+                                .apply()
+                            error = null
+                            refreshing = false
+                        }.onFailure { e ->
+                            error = e.message ?: "Lỗi không xác định"
+                            refreshing = false
+                        }
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Refresh,
+                        contentDescription = "Làm mới",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(Spacing24)
+                    )
+                }
             }
         }
 
+        if (refreshing) {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant
+            )
+        }
+
         when {
-            loading -> {
+            loading && news.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         CircularProgressIndicator()
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(Spacing12))
                         Text(
                             text = "Đang tải tin...",
                             style = MaterialTheme.typography.bodyMedium,
@@ -98,7 +159,7 @@ fun NewsScreen() {
                     }
                 }
             }
-            error != null -> {
+            error != null && news.isEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -109,20 +170,31 @@ fun NewsScreen() {
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(Spacing8))
                         Text(
                             text = error!!,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(Spacing16))
                         OutlinedButton(onClick = {
-                            loading = true
+                            refreshing = true
                             error = null
-                            fetchNews { items, err ->
-                                news = items
-                                error = err
-                                loading = false
+                            scope.launch {
+                                val result = fetchRss(context)
+                                result.onSuccess { xml ->
+                                    val items = parseRss(xml)
+                                    news = items
+                                    prefs.edit()
+                                        .putString("rss_xml", xml)
+                                        .putLong("rss_time", System.currentTimeMillis())
+                                        .apply()
+                                    error = null
+                                    refreshing = false
+                                }.onFailure { e ->
+                                    error = e.message ?: "Lỗi không xác định"
+                                    refreshing = false
+                                }
                             }
                         }) {
                             Text("Thử lại")
@@ -133,8 +205,8 @@ fun NewsScreen() {
             else -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    contentPadding = PaddingValues(Spacing12),
+                    verticalArrangement = Arrangement.spacedBy(Spacing8)
                 ) {
                     items(news) { item ->
                         NewsCard(item, context)
@@ -145,73 +217,20 @@ fun NewsScreen() {
     }
 }
 
-@Composable
-private fun NewsCard(item: NewsItem, context: android.content.Context) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
-                context.startActivity(intent)
-            },
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-    ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (item.description.isNotBlank()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = item.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = item.pubDate,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-            )
+private suspend fun fetchRss(context: Context): Result<String> = withContext(Dispatchers.IO) {
+    try {
+        val url = URL("https://vnexpress.net/rss/tin-moi-nhat.rss")
+        val conn = url.openConnection() as HttpURLConnection
+        conn.connectTimeout = 10000
+        conn.readTimeout = 10000
+        if (conn.responseCode != 200) {
+            return@withContext Result.failure(IOException("HTTP ${conn.responseCode}"))
         }
+        val xml = conn.inputStream.bufferedReader().readText()
+        Result.success(xml)
+    } catch (e: Exception) {
+        Result.failure(e)
     }
-}
-
-private data class RssFetchResult(
-    val items: List<NewsItem>,
-    val error: String?
-)
-
-private fun fetchNews(onResult: (List<NewsItem>, String?) -> Unit) {
-    Thread {
-        try {
-            val url = URL("https://vnexpress.net/rss/tin-moi-nhat.rss")
-            val conn = url.openConnection() as HttpURLConnection
-            conn.connectTimeout = 10000
-            conn.readTimeout = 10000
-
-            if (conn.responseCode != 200) {
-                onResult(emptyList(), "HTTP ${conn.responseCode}")
-                return@Thread
-            }
-
-            val xml = conn.inputStream.bufferedReader().readText()
-            val items = parseRss(xml)
-            onResult(items, null)
-        } catch (e: Exception) {
-            onResult(emptyList(), e.message ?: "Lỗi không xác định")
-        }
-    }.start()
 }
 
 private fun parseRss(xml: String): List<NewsItem> {
@@ -273,5 +292,47 @@ private fun formatRssDate(rssDate: String): String {
         outputFormat.format(date ?: return rssDate.take(16))
     } catch (_: Exception) {
         rssDate.take(16)
+    }
+}
+
+@Composable
+private fun NewsCard(item: NewsItem, context: Context) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.link))
+                context.startActivity(intent)
+            },
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = Spacing1)
+    ) {
+        Column(modifier = Modifier.padding(Spacing14)) {
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (item.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(Spacing4))
+                Text(
+                    text = item.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Spacer(modifier = Modifier.height(Spacing4))
+            Text(
+                text = item.pubDate,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        }
     }
 }
