@@ -64,21 +64,13 @@ jobs:
       - name: Show build errors
         if: failure()
         run: |
-          echo "::group::Lines before FAILED task"
-          sed -n '/FAILED/q;p' build-output.txt 2>/dev/null | tail -100
-          echo "::endgroup::"
-          echo "::group::FAILED task and after"
-          tail -40 build-output.txt 2>/dev/null
-          echo "::endgroup::"
-          echo "::group::Total lines"
-          wc -l build-output.txt 2>/dev/null
-          echo "::endgroup::"
           if grep -q 'FAILED' build-output.txt 2>/dev/null; then
             LINENUM=$(grep -n 'FAILED' build-output.txt | head -1 | cut -d: -f1)
-            echo "::group::Lines $((LINENUM > 100 ? LINENUM-100 : 1)) to $LINENUM (100 lines before FAILED)"
-            sed -n "$((LINENUM > 100 ? LINENUM-100 : 1)),$((LINENUM-1))p" build-output.txt 2>/dev/null
-            echo "::endgroup::"
+            echo "100 lines before first FAILED (line $LINENUM):"
+            sed -n "$((LINENUM > 100 ? LINENUM-100 : 1)),$((LINENUM-1))p" build-output.txt 2>/dev/null | head -100 | while IFS= read -r line; do echo "::error::$line"; done
           fi
+          echo "Last 40 lines of output:"
+          tail -40 build-output.txt 2>/dev/null | while IFS= read -r line; do echo "::error::$line"; done
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
