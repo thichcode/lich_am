@@ -38,14 +38,10 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Setup Gradle cache
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: 8.5
           cache-read-only: false
-
-      - name: Generate Gradle wrapper
-        run: gradle wrapper --gradle-version 8.5
 
       - name: Make gradlew executable
         run: chmod +x gradlew
