@@ -4,8 +4,18 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Crescent moon -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,28c-14.36,0 -26,11.64 -26,26s11.64,26 26,26c2.7,0 5.32,-0.41 7.8,-1.18c-5.74,-2.88 -9.8,-8.78 -9.8,-15.82c0,-9.66 7.84,-17.5 17.5,-17.5c2.3,0 4.5,0.44 6.5,1.24C70.9,34.34 63.08,28 54,28z"/>
+    <group android:translateX="2" android:translateY="2">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M52,18A34,34 0,1,1 52,86A34,34 0,1,1 52,18Z"/>
+        <path
+            android:fillColor="#C62828"
+            android:pathData="M52,18 A34,34 0,0,1 52,86 A17,17 0,0,0 52,52 A17,17 0,0,1 52,18 Z"/>
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M59,64 A5,5 0,1,1 59,74 A5,5 0,1,1 59,64 Z"/>
+        <path
+            android:fillColor="#C62828"
+            android:pathData="M45,36 A5,5 0,1,1 45,46 A5,5 0,1,1 45,36 Z"/>
+    </group>
 </vector>
