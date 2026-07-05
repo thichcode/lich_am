@@ -48,34 +48,15 @@ jobs:
 
       - name: Build debug APK
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: |
-          set -o pipefail
-          ./gradlew clean assembleDebug --console=plain 2>&1 | tee build-output.txt
+        run: ./gradlew assembleDebug --console=plain
 
-      - name: Upload build output on failure
-        if: failure()
+      - name: Upload debug APK
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: |
-            build-output.txt
-            app/build/reports/**/*
+          name: lich-am-debug
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: warn
-
-      - name: Show build errors
-        if: failure()
-        run: |
-          if [ -f build-output.txt ]; then
-            ERROR_MSG=$(python3 -c "
-import sys
-with open('build-output.txt') as f:
-    data = f.read()
-sys.stdout.write(data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')[:60000])
-" 2>/dev/null || echo "python3 failed")
-            echo "::error title=Build Output (full)::$ERROR_MSG"
-          else
-            echo "::error title=No build output::build-output.txt not found"
-          fi
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
@@ -113,15 +94,14 @@ sys.stdout.write(data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0
           if [ -f "keystore.properties" ]; then
             mv keystore.properties app/keystore.properties
           fi
-          ./gradlew clean assembleRelease
+          ./gradlew assembleRelease --console=plain
 
-      - name: Upload APK artifact
+      - name: Upload release APK
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         uses: actions/upload-artifact@v4
         with:
-          name: lich-am-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType || 'debug' }}
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/release/*.apk
+          name: lich-am-release
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
 
       - name: Generate version tag
@@ -130,8 +110,6 @@ sys.stdout.write(data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0
         run: |
           VER="v1.0.0-build$(date +%Y%m%d)-${{ github.run_number }}"
           echo "tag=$VER" >> $GITHUB_OUTPUT
-          echo "APK files:"
-          ls -la app/build/outputs/apk/release/*.apk 2>/dev/null || echo "No release APK found"
 
       - name: Create GitHub Release
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
@@ -141,14 +119,8 @@ sys.stdout.write(data.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0
           name: ${{ steps.version.outputs.tag }}
           body: |
             Build tự động từ GitHub Actions workflow_dispatch.
-
-            ## Ứng dụng Lịch Âm
-            - Phiên bản: ${{ steps.version.outputs.tag }}
-            - Ngày build: $(date +%Y-%m-%d)
-            - Yêu cầu: Android 6.0+
-
-            ## Ghi chú
-            - APK đã được build với chế độ release (có minify)
+            Phiên bản: ${{ steps.version.outputs.tag }}
+            Yêu cầu: Android 6.0+
           files: |
             app/build/outputs/apk/release/*.apk
           draft: false

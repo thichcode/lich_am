@@ -15,7 +15,7 @@ object LunarCalculator {
         val a = (14 - mm) / 12
         val y = yy + 4800 - a
         val m = mm + 12 * a - 3
-        return dd + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045
+        return dd.toLong() + (153L * m + 2) / 5 + 365L * y + y / 4 - y / 100 + y / 400 - 32045L
     }
 
     fun jdToDate(jd: Long): Triple<Int, Int, Int> {
