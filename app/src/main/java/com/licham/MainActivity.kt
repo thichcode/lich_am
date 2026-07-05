@@ -9,7 +9,7 @@ import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.automirrored.outlined.Article
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ enum class AppTab(val label: String, val icon: ImageVector) {
     Home("Hôm nay", Icons.Outlined.Home),
     Calendar("Lịch", Icons.Outlined.CalendarMonth),
     GoodDays("Ngày đẹp", Icons.Outlined.AutoAwesome),
-    Quotes("Thơ", Icons.AutoMirrored.Outlined.MenuBook),
+    News("Tin tức", Icons.AutoMirrored.Outlined.Article),
     Settings("Khác", Icons.Outlined.MoreHoriz)
 }
 
@@ -90,7 +90,7 @@ fun AppMain() {
                     onYearMonthChange = { calendarYearMonth = it }
                 )
                 AppTab.GoodDays -> GoodDayScreen()
-                AppTab.Quotes -> QuotesScreen()
+                AppTab.News -> NewsScreen()
                 AppTab.Settings -> SettingsScreen()
             }
         }
