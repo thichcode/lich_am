@@ -316,8 +316,7 @@ private fun CalendarDayDetail(
         }
         DayDetailContent(date = date)
     }
-
-
+}
 
 @Composable
 private fun HoursCard(
