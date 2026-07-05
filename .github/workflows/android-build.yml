@@ -61,12 +61,22 @@ jobs:
             app/build/reports/**/*
           if-no-files-found: warn
 
-      - name: Show build output in annotations
+      - name: Post build errors as commit comment
         if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          grep -E "(e:|error:|FAILED|FAILURE|Unresolved|Compilation|exception)" build-output.txt 2>/dev/null | tail -50 | while IFS= read -r line; do
-            echo "::error::$line"
-          done
+          cat > /tmp/comment.py << 'PYEOF'
+import json, sys
+body = "## Build failed\n\n```\n"
+for line in sys.stdin:
+    body += line.rstrip("\n") + "\n"
+body += "```\n"
+with open("/tmp/comment.json", "w") as f:
+    json.dump({"body": body}, f)
+PYEOF
+          grep -iE "(e:|error|FAILED|FAILURE|Unresolved|Compilation|exception|required|found|Type mismatch|Cannot)" build-output.txt 2>/dev/null | tail -30 | python3 /tmp/comment.py
+          gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" --input /tmp/comment.json 2>&1 || echo "Comment post failed (non-fatal)"
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
