@@ -62,18 +62,20 @@ jobs:
             app/build/reports/**/*
           if-no-files-found: warn
 
-      - name: Show build errors
+      - name: Post build error as commit comment
         if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::group::File size and line count"
-          ls -la build-output.txt 2>/dev/null
-          wc -l build-output.txt 2>/dev/null
-          echo "::endgroup::"
-          echo "::group::Full build output"
-          cat -v build-output.txt 2>/dev/null || echo "File not found"
-          echo "::endgroup::"
-          echo "::group::Last 100 lines as errors"
-          tail -100 build-output.txt 2>/dev/null | while IFS= read -r line; do echo "::error::$line"; done
+          COMMENT_FILE=$(mktemp)
+          {
+            echo "Build failed. Output:"
+            echo '```'
+            tail -200 build-output.txt 2>/dev/null
+            echo '```'
+          } | jq -Rs '{body: .}' > "$COMMENT_FILE"
+          gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
+            --input "$COMMENT_FILE"
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
