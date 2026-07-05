@@ -64,33 +64,26 @@ jobs:
       - name: Build debug APK
         if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
-          set +e
-          ./gradlew clean assembleDebug 2>&1 | tee build-output.txt
-          EXIT_CODE=${PIPESTATUS[0]}
-          echo "GRADLE_EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
-          exit $EXIT_CODE
+          ./gradlew clean assembleDebug 2>&1 | tee build-output.txt; exit ${PIPESTATUS[0]}
 
       - name: Upload build output on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: |
-            build-output.txt
-            app/build/reports/**/*
+          path: build-output.txt
           if-no-files-found: warn
 
-      - name: Show build output in summary
+      - name: Show build errors in annotations
         if: failure()
         run: |
-          {
-            echo "## Build Output"
-            echo '```'
-            cat build-output.txt 2>/dev/null || echo "No build-output.txt"
-            echo '```'
-            echo "## Build Reports"
-            find app/build/reports -type f 2>/dev/null | head -20
-          } >> $GITHUB_STEP_SUMMARY
+          echo "::group::Build Output"
+          cat build-output.txt 2>/dev/null || echo "No build-output.txt"
+          echo "::endgroup::"
+          echo "::error::See build-output artifact for full logs"
+          grep -E "(ERROR|error|Error|FAILED|failed|FAILURE|failure)" build-output.txt 2>/dev/null | head -20 | while read line; do
+            echo "::error::$line"
+          done
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
