@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -52,7 +54,7 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' }}
         run: ./gradlew clean assembleDebug
 
-      - name: Decode keystore (manual release)
+      - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -64,7 +66,7 @@ jobs:
             echo "No keystore secret set - building unsigned APK"
           fi
 
-      - name: Configure signing for release (manual release)
+      - name: Configure signing for release
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' && secrets.ANDROID_KEYSTORE_PASSWORD != '' }}
         run: |
           cat > keystore.properties << EOF
@@ -74,7 +76,7 @@ jobs:
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           EOF
 
-      - name: Build release APK (manual release)
+      - name: Build release APK
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         run: |
           if [ -f "keystore.properties" ]; then
@@ -82,7 +84,7 @@ jobs:
           fi
           ./gradlew clean assembleRelease
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: lich-am-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType || 'debug' }}
@@ -90,3 +92,35 @@ jobs:
             app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
+
+      - name: Generate version tag
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
+        id: version
+        run: |
+          VER="v1.0.0-build$(date +%Y%m%d)-${{ github.run_number }}"
+          echo "tag=$VER" >> $GITHUB_OUTPUT
+          echo "APK files:"
+          ls -la app/build/outputs/apk/release/*.apk 2>/dev/null || echo "No release APK found"
+
+      - name: Create GitHub Release
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          body: |
+            Build tự động từ GitHub Actions workflow_dispatch.
+
+            ## Ứng dụng Lịch Âm
+            - Phiên bản: ${{ steps.version.outputs.tag }}
+            - Ngày build: $(date +%Y-%m-%d)
+            - Yêu cầu: Android 6.0+
+
+            ## Ghi chú
+            - APK đã được build với chế độ release (có minify)
+          files: |
+            app/build/outputs/apk/release/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
