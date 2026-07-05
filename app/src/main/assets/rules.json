@@ -1,0 +1,18 @@
+{
+  "score": {
+    "hoang_dao": 20,
+    "hac_dao": -20,
+    "tam_nuong": -30,
+    "nguyet_ky": -25,
+    "sat_chu": -40,
+    "duong_cong_ky": -35,
+    "truc_tot": 10,
+    "truc_xau": -10,
+    "tu_tot": 5,
+    "tu_xau": -5
+  },
+  "activities": {
+    "good_default": ["Cúng lễ", "Gặp gỡ", "Xuất hành", "Cưới hỏi", "Khai trương"],
+    "bad_default": ["Động thổ", "Tranh cãi", "Đi xa", "Đầu tư", "Ma chay"]
+  }
+}

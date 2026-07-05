@@ -259,10 +259,10 @@ private fun CalendarDayDetail(
     val lunar = remember(date) {
         LunarCalculator.solar2lunar(date.dayOfMonth, date.monthValue, date.year)
     }
-    val jd = remember(date) {
+    val calculatedJd = remember(date) {
         LunarCalculator.jdFromDate(date.dayOfMonth, date.monthValue, date.year)
     }
-    val dayCanChi = remember(date) { canChi ?: CanChiCalculator.getDayCanChi(jd) }
+    val dayCanChi = remember(date) { canChi ?: CanChiCalculator.getDayCanChi(calculatedJd) }
 
     val assessment = remember(date, lunar, dayCanChi) {
         if (lunar != null) {
@@ -276,7 +276,7 @@ private fun CalendarDayDetail(
                 "Ngọ" -> 6; "Mùi" -> 7; "Thân" -> 8; "Dậu" -> 9; "Tuất" -> 10; "Hợi" -> 11
                 else -> 0
             }
-            GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex)
+            GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex, calculatedJd, date.monthValue)
         } else null
     }
 
@@ -389,21 +389,20 @@ private fun CalendarDayDetail(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    val (pillColor, onPillColor) = when {
+                        assessment.score > 0 -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
+                        assessment.score < 0 -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+                        else -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+                    }
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = if (assessment.isGood)
-                            MaterialTheme.colorScheme.secondaryContainer
-                        else
-                            MaterialTheme.colorScheme.errorContainer
+                        color = pillColor
                     ) {
                         Text(
                             text = assessment.label,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (assessment.isGood)
-                                MaterialTheme.colorScheme.onSecondaryContainer
-                            else
-                                MaterialTheme.colorScheme.onErrorContainer,
+                            color = onPillColor,
                             modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                         )
                     }
@@ -433,9 +432,10 @@ private fun CalendarDayDetail(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                ActivitiesCard(assessment)
+                if (assessment.goodActivities.isNotEmpty() || assessment.badActivities.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ActivitiesCard(assessment)
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -507,13 +507,10 @@ private fun ActivitiesCard(assessment: DayAssessment) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (assessment.isGood) "Nên làm" else "Nên tránh",
+                    text = "Nên làm",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = if (assessment.isGood)
-                        MaterialTheme.colorScheme.secondary
-                    else
-                        MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
@@ -522,28 +519,55 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            val activities = if (assessment.isGood) assessment.goodActivities else assessment.badActivities
-            activities.take(6).forEach { activity ->
-                Row(
-                    modifier = Modifier.padding(vertical = 3.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = if (assessment.isGood) "+" else "\u2013",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = if (assessment.isGood)
-                            MaterialTheme.colorScheme.secondary
-                        else
-                            MaterialTheme.colorScheme.error,
-                        modifier = Modifier.width(24.dp)
-                    )
-                    Text(
-                        text = activity,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+            if (assessment.goodActivities.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                assessment.goodActivities.take(6).forEach { activity ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "+",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.width(24.dp)
+                        )
+                        Text(
+                            text = activity,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = "Nên tránh",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.error
+            )
+            if (assessment.badActivities.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                assessment.badActivities.take(6).forEach { activity ->
+                    Row(
+                        modifier = Modifier.padding(vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "–",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.width(24.dp)
+                        )
+                        Text(
+                            text = activity,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }

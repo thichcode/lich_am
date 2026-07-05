@@ -22,10 +22,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val quotesJson = assets.open("quotes.json").bufferedReader().use { it.readText() }
-        val rulesJson = assets.open("good_bad_rules.json").bufferedReader().use { it.readText() }
+        val rulesJson = assets.open("rules.json").bufferedReader().use { it.readText() }
+        val eventsJson = assets.open("events.json")
 
         QuoteProvider.loadQuotes(quotesJson)
         GoodBadEngine.loadRules(rulesJson)
+        EventProvider.load(eventsJson)
 
         setContent {
             LichAmTheme {

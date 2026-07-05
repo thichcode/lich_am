@@ -46,7 +46,7 @@ fun GoodDayScreen() {
                     "Ngọ" -> 6; "Mùi" -> 7; "Thân" -> 8; "Dậu" -> 9; "Tuất" -> 10; "Hợi" -> 11
                     else -> 0
                 }
-                GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex)
+                GoodBadEngine.assessDay(lunar.day, lunar.month, canIndex, chiIndex, jd, currentMonth.monthValue)
             } else null
             DayInfo(date, lunar, assessment)
         }
@@ -105,18 +105,31 @@ fun GoodDayScreen() {
 
 @Composable
 private fun GoodBadDayCard(dayInfo: DayInfo) {
-    val isGood = dayInfo.assessment?.isGood ?: true
+    val score = dayInfo.assessment?.score ?: 0
     val isToday = dayInfo.date == LocalDate.now()
+
+    val (cardColor, onCardColor, icon) = when {
+        score > 0 -> Triple(
+            MaterialTheme.colorScheme.secondaryContainer,
+            MaterialTheme.colorScheme.onSecondaryContainer,
+            Icons.Outlined.AutoAwesome
+        )
+        score < 0 -> Triple(
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
+            Icons.Outlined.Block
+        )
+        else -> Triple(
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.onTertiaryContainer,
+            Icons.Outlined.AutoAwesome
+        )
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = if (isGood)
-                MaterialTheme.colorScheme.secondaryContainer
-            else
-                MaterialTheme.colorScheme.errorContainer
-        ),
+        colors = CardDefaults.cardColors(containerColor = cardColor),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isToday) 2.dp else 0.dp
         )
@@ -128,12 +141,9 @@ private fun GoodBadDayCard(dayInfo: DayInfo) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = if (isGood) Icons.Outlined.AutoAwesome else Icons.Outlined.Block,
+                imageVector = icon,
                 contentDescription = null,
-                tint = if (isGood)
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                else
-                    MaterialTheme.colorScheme.onErrorContainer,
+                tint = onCardColor,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -143,10 +153,7 @@ private fun GoodBadDayCard(dayInfo: DayInfo) {
                         text = "Ngày ${dayInfo.date.dayOfMonth}",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (isGood)
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        else
-                            MaterialTheme.colorScheme.onErrorContainer
+                        color = onCardColor
                     )
                     if (isToday) {
                         Spacer(modifier = Modifier.width(8.dp))
@@ -167,10 +174,7 @@ private fun GoodBadDayCard(dayInfo: DayInfo) {
                     Text(
                         text = "${dayInfo.lunarDate.day} tháng ${dayInfo.lunarDate.month} âm lịch",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (isGood)
-                            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
-                        else
-                            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                        color = onCardColor.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -180,18 +184,12 @@ private fun GoodBadDayCard(dayInfo: DayInfo) {
                         text = dayInfo.assessment.label,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        color = if (isGood)
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        else
-                            MaterialTheme.colorScheme.onErrorContainer
+                        color = onCardColor
                     )
                     Text(
                         text = "${dayInfo.assessment.score}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isGood)
-                            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
-                        else
-                            MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f)
+                        color = onCardColor.copy(alpha = 0.7f)
                     )
                 }
             }
