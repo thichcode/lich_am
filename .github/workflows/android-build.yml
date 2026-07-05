@@ -46,17 +46,42 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      - name: Read app version
+        run: |
+          VERSION_NAME=$(grep versionName app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
+          echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION_NAME-b${{ github.run_number }}" >> $GITHUB_OUTPUT
+        id: app_version
+
       - name: Build debug APK
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'push' }}
         run: ./gradlew assembleDebug --console=plain
 
       - name: Upload debug APK
-        if: ${{ github.event_name != 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'push' }}
         uses: actions/upload-artifact@v4
         with:
-          name: lich-am-debug
+          name: lich-am-${{ steps.app_version.outputs.tag }}
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: warn
+
+      - name: Create GitHub Release (debug)
+        if: ${{ github.event_name == 'push' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.app_version.outputs.tag }}
+          name: ${{ steps.app_version.outputs.tag }}
+          body: |
+            Auto-build từ push lên main.
+            - Phiên bản ứng dụng: ${{ steps.app_version.outputs.version }}
+            - Yêu cầu: Android 6.0+
+            - APK debug (unsigned)
+          files: |
+            app/build/outputs/apk/debug/*.apk
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
@@ -100,27 +125,20 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         uses: actions/upload-artifact@v4
         with:
-          name: lich-am-release
+          name: lich-am-release-${{ steps.app_version.outputs.tag }}
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
 
-      - name: Generate version tag
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
-        id: version
-        run: |
-          VER="v1.0.0-build$(date +%Y%m%d)-${{ github.run_number }}"
-          echo "tag=$VER" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
+      - name: Create GitHub Release (release build)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: ${{ steps.version.outputs.tag }}
+          tag_name: ${{ steps.app_version.outputs.tag }}
+          name: ${{ steps.app_version.outputs.tag }}
           body: |
-            Build tự động từ GitHub Actions workflow_dispatch.
-            Phiên bản: ${{ steps.version.outputs.tag }}
-            Yêu cầu: Android 6.0+
+            Release build từ workflow_dispatch.
+            - Phiên bản ứng dụng: ${{ steps.app_version.outputs.version }}
+            - Yêu cầu: Android 6.0+
           files: |
             app/build/outputs/apk/release/*.apk
           draft: false
