@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#B71C1C</color>
+    <color name="primary_variant">#7F0000</color>
+    <color name="secondary">#F9A825</color>
+    <color name="background">#FFF8E1</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="today_highlight">#FFCDD2</color>
+    <color name="full_moon_highlight">#FFF9C4</color>
+    <color name="good_day">#2E7D32</color>
+    <color name="bad_day">#C62828</color>
+    <color name="lunar_text">#757575</color>
+</resources>
