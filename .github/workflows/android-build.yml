@@ -46,44 +46,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Debug environment
-        run: |
-          echo "Java:"
-          java -version 2>&1
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          if [ -n "$ANDROID_HOME" ]; then
-            echo "Cmdline tools:"
-            ls "$ANDROID_HOME/cmdline-tools/" 2>/dev/null || echo "  none"
-            echo "Platforms:"
-            ls "$ANDROID_HOME/platforms/" 2>/dev/null || echo "  none"
-            echo "Build tools:"
-            ls "$ANDROID_HOME/build-tools/" 2>/dev/null || echo "  none"
-          fi
-
       - name: Build debug APK
         if: ${{ github.event_name != 'workflow_dispatch' }}
-        run: |
-          ./gradlew clean assembleDebug 2>&1 | tee build-output.txt; exit ${PIPESTATUS[0]}
-
-      - name: Upload build output on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: build-output.txt
-          if-no-files-found: warn
-
-      - name: Show build errors in annotations
-        if: failure()
-        run: |
-          echo "::group::Build Output"
-          cat build-output.txt 2>/dev/null || echo "No build-output.txt"
-          echo "::endgroup::"
-          echo "::error::See build-output artifact for full logs"
-          grep -E "(ERROR|error|Error|FAILED|failed|FAILURE|failure)" build-output.txt 2>/dev/null | head -20 | while read line; do
-            echo "::error::$line"
-          done
+        run: ./gradlew clean assembleDebug
 
       - name: Decode keystore (release only)
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
