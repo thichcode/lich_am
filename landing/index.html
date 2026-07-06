@@ -3,18 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Lịch Âm - Lịch âm dương Việt Nam</title>
+<title>Lịch Âm - Lịch bloc Việt Nam</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Noto Sans, sans-serif;
   background: #FFFFFF;
   color: #202124;
-  line-height: 1.5;
+  line-height: 1.4;
   -webkit-font-smoothing: antialiased;
   max-width: 500px;
   margin: 0 auto;
-  padding: 0 0 100px;
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: #EAEAEA; border-radius: 4px; }
@@ -23,19 +26,21 @@ body {
 .top-bar {
   display: flex;
   align-items: center;
-  padding: 8px 4px;
+  padding: 6px 4px;
   background: #FFFFFF;
+  border-bottom: 1px solid #EAEAEA;
+  flex-shrink: 0;
 }
 .top-bar button {
   background: none;
   border: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 22px;
+  font-size: 24px;
   color: #202124;
   border-radius: 50%;
   touch-action: manipulation;
@@ -46,57 +51,68 @@ body {
 .top-bar .app-title {
   flex: 1;
   text-align: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #202124;
 }
 
-/* ========== DATE NAV ========== */
+/* ========== SCROLLABLE CONTENT ========== */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 8px;
+}
+
+/* ========== TAB CONTENT ========== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ========== DATE NAV (subtle) ========== */
 .date-nav {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 4px 16px 12px;
+  gap: 6px;
+  padding: 2px 16px 10px;
   border-bottom: 1px solid #EAEAEA;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .date-nav button {
   background: none;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 20px;
-  color: #202124;
+  font-size: 18px;
+  color: #5F6368;
   border-radius: 50%;
   touch-action: manipulation;
   flex-shrink: 0;
 }
-.date-nav button:hover { background: #FAFAFA; }
-.date-nav button:active { background: #EAEAEA; }
+.date-nav button:hover { background: #F5F5F5; }
 .date-nav .nav-date-label {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #202124;
-  min-width: 120px;
+  min-width: 100px;
   text-align: center;
 }
 .date-nav .nav-today {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #C62828;
   background: none;
   border: 2px solid #C62828;
   border-radius: 20px;
-  padding: 4px 16px;
+  padding: 2px 14px;
   cursor: pointer;
   touch-action: manipulation;
   height: auto;
   width: auto;
+  line-height: 28px;
 }
 .date-nav .nav-today:hover { background: #FFF0F0; }
 
@@ -106,55 +122,55 @@ body {
   padding: 0 16px;
 }
 .weekday {
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 700;
   color: #5F6368;
   letter-spacing: -0.5px;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 .day-number {
-  font-size: 80px;
+  font-size: 88px;
   font-weight: 700;
   color: #C62828;
   letter-spacing: -2px;
   line-height: 1;
-  margin: 4px 0;
+  margin: 2px 0;
 }
 .solar-date {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
   color: #202124;
-  margin: 8px 0 4px;
+  margin: 6px 0 4px;
 }
 .lunar-date {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #C62828;
   margin: 4px 0;
 }
 .canchi-line {
-  font-size: 16px;
+  font-size: 18px;
   color: #5F6368;
   margin: 4px 0;
 }
 .assessment-pill {
   display: inline-block;
-  padding: 8px 20px;
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 10px 24px;
+  border-radius: 14px;
+  font-size: 18px;
   font-weight: 700;
-  margin: 12px 0 0;
+  margin: 14px 0 0;
 }
 .assessment-pill.good { background: #E8F5E9; color: #2E7D32; }
-.assessment-pill.neutral { background: #FFF8E1; color: #F9A825; }
+.assessment-pill.neutral { background: #FFF8E1; color: #B8860B; }
 .assessment-pill.bad { background: #FFEBEE; color: #D32F2F; }
 
 /* ========== CARDS ========== */
 .card {
   background: #FAFAFA;
   border-radius: 18px;
-  padding: 16px;
-  margin: 0 16px 12px;
+  padding: 18px;
+  margin: 0 14px 10px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 .card-title {
@@ -165,13 +181,14 @@ body {
 }
 .card-row {
   display: flex;
-  gap: 10px;
-  padding: 0 16px;
-  margin-bottom: 12px;
+  gap: 8px;
+  padding: 0 14px;
+  margin-bottom: 10px;
 }
 .card-row .card {
   flex: 1;
   margin: 0;
+  padding: 14px 12px;
 }
 
 /* ========== HOURS ========== */
@@ -179,53 +196,51 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 3px 0;
-  font-size: 16px;
+  padding: 4px 0;
+  font-size: 17px;
 }
-.hour-item .hour-label { color: #202124; font-weight: 500; }
-.hour-item .hour-time { color: #5F6368; font-size: 14px; }
+.hour-item .hour-label { color: #202124; font-weight: 600; }
+.hour-item .hour-time { color: #5F6368; font-size: 15px; }
 
 /* ========== LUNAR MINI ========== */
-.lunar-mini {
-  text-align: center;
-}
+.lunar-mini { text-align: center; }
 .lunar-mini .lm-day {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #C62828;
 }
 .lunar-mini .lm-month {
-  font-size: 16px;
+  font-size: 18px;
   color: #202124;
-  font-weight: 500;
+  font-weight: 600;
 }
 .lunar-mini .lm-canchi {
-  font-size: 14px;
+  font-size: 15px;
   color: #5F6368;
   margin-top: 4px;
 }
 
 /* ========== ACTIONS ========== */
-.action-group { margin-bottom: 8px; }
+.action-group { margin-bottom: 10px; }
 .action-group:last-child { margin-bottom: 0; }
 .action-group .action-label {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .action-list { list-style: none; padding: 0; }
 .action-list li {
-  font-size: 16px;
-  padding: 2px 0;
+  font-size: 18px;
+  padding: 4px 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .action-list li::before {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -236,8 +251,8 @@ body {
 
 /* ========== TERM ========== */
 .term-line {
-  font-size: 16px;
-  padding: 2px 0;
+  font-size: 18px;
+  padding: 3px 0;
 }
 .term-line .term-name { font-weight: 600; color: #202124; }
 .term-line .term-date { color: #5F6368; }
@@ -247,57 +262,138 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 16px;
-  padding: 4px 0;
+  font-size: 18px;
+  padding: 5px 0;
 }
-.event-item .event-star { color: #F9A825; font-size: 18px; flex-shrink: 0; }
-.event-item .event-text { color: #202124; font-weight: 500; }
+.event-item .event-star { color: #F9A825; font-size: 20px; flex-shrink: 0; }
+.event-item .event-text { color: #202124; font-weight: 600; }
 
 /* ========== QUOTE ========== */
 .quote-text {
-  font-size: 16px;
+  font-size: 18px;
   color: #5F6368;
   text-align: center;
   font-style: italic;
   line-height: 1.6;
 }
 
-/* ========== DOWNLOAD SECTION ========== */
-.download-section {
-  text-align: center;
-  padding: 32px 16px;
+/* ========== BOTTOM NAV ========== */
+.bottom-nav {
+  display: flex;
+  background: #FFFFFF;
   border-top: 1px solid #EAEAEA;
-  margin-top: 16px;
+  flex-shrink: 0;
+  padding: 4px 0;
+  padding-bottom: max(4px, env(safe-area-inset-bottom));
 }
-.download-section h3 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-.download-section p {
-  font-size: 16px;
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 2px;
+  cursor: pointer;
+  border: none;
+  background: none;
   color: #5F6368;
-  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  touch-action: manipulation;
+  min-height: 56px;
+  gap: 2px;
 }
-.download-btn {
-  display: inline-block;
-  background: #C62828;
-  color: #FFFFFF;
-  text-decoration: none;
-  padding: 14px 40px;
-  border-radius: 12px;
-  font-size: 18px;
-  font-weight: 700;
-  transition: background 0.2s;
+.nav-item .nav-icon { font-size: 22px; line-height: 1; }
+.nav-item .nav-label { font-size: 12px; line-height: 1.2; }
+.nav-item.active { color: #C62828; }
+.nav-item:hover { background: #FAFAFA; }
+
+/* ========== CALENDAR TAB ========== */
+.cal-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px 4px;
 }
-.download-btn:hover { background: #B71C1C; }
+.cal-nav button {
+  background: none; border: none; width: 44px; height: 44px;
+  cursor: pointer; font-size: 22px; color: #202124;
+  border-radius: 50%; touch-action: manipulation;
+}
+.cal-nav button:hover { background: #FAFAFA; }
+.cal-nav .cal-title { font-size: 20px; font-weight: 700; text-align: center; }
+.cal-nav .cal-sub { font-size: 14px; color: #5F6368; text-align: center; }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  padding: 0 8px; gap: 2px;
+}
+.cal-header {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  padding: 0 8px; gap: 2px; margin-bottom: 2px;
+}
+.cal-header span { text-align: center; font-size: 15px; font-weight: 600; color: #5F6368; padding: 6px 0; }
+.cal-cell {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; border-radius: 12px;
+  cursor: pointer; min-height: 48px;
+}
+.cal-cell:hover { background: #FAFAFA; }
+.cal-cell.empty { cursor: default; }
+.cal-cell.empty:hover { background: transparent; }
+.cal-cell.today { background: #FFEBEE; }
+.cal-cell .cal-solar { font-size: 18px; font-weight: 600; color: #202124; }
+.cal-cell.today .cal-solar { color: #C62828; }
+.cal-cell .cal-lunar { font-size: 11px; color: #5F6368; }
+.cal-cell .cal-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 2px; }
+.cal-cell .cal-dot.good { background: #2E7D32; }
+.cal-cell .cal-dot.neutral { background: #F9A825; }
+.cal-cell .cal-dot.bad { background: #D32F2F; }
+
+/* ========== GOOD DAY TAB ========== */
+.good-list { padding: 0 14px; }
+.good-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 14px; margin-bottom: 6px; cursor: pointer;
+}
+.good-item:hover { opacity: 0.85; }
+.good-item.good { background: #E8F5E9; }
+.good-item.neutral { background: #FFF8E1; }
+.good-item.bad { background: #FFEBEE; }
+.good-item .gi-icon { font-size: 20px; flex-shrink: 0; }
+.good-item .gi-info { flex: 1; }
+.good-item .gi-day { font-size: 18px; font-weight: 700; }
+.good-item .gi-lunar { font-size: 15px; color: #5F6368; }
+.good-item .gi-score { font-size: 16px; font-weight: 700; }
+
+/* ========== VAN KHAN TAB ========== */
+.vk-list { padding: 0 14px; }
+.vk-item {
+  background: #FAFAFA; border-radius: 18px; padding: 16px;
+  margin-bottom: 8px; cursor: pointer; font-size: 18px; font-weight: 600;
+}
+.vk-item:hover { background: #F0F0F0; }
+.vk-detail { padding: 0 14px; }
+.vk-back {
+  background: none; border: none; font-size: 18px; font-weight: 600;
+  color: #C62828; cursor: pointer; padding: 8px 0; margin-bottom: 8px;
+}
+.vk-body { font-size: 18px; color: #202124; white-space: pre-line; line-height: 1.7; }
+
+/* ========== SETTINGS TAB ========== */
+.settings-content { padding: 20px 14px; text-align: center; }
+.settings-content h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.settings-content p { font-size: 18px; color: #5F6368; margin-bottom: 20px; }
+.settings-content .download-btn {
+  display: inline-block; background: #C62828; color: #FFFFFF;
+  text-decoration: none; padding: 16px 48px; border-radius: 14px;
+  font-size: 20px; font-weight: 700; min-height: 56px; line-height: 1.4;
+}
+.settings-content .download-btn:hover { background: #B71C1C; }
 
 /* ========== RESPONSIVE ========== */
-@media (max-width: 400px) {
-  .day-number { font-size: 64px; }
-  .weekday { font-size: 28px; }
-  .lunar-date { font-size: 20px; }
-  .card { padding: 12px; }
+@media (max-width: 380px) {
+  .day-number { font-size: 72px; }
+  .weekday { font-size: 30px; }
+  .lunar-date { font-size: 22px; }
+  .card { padding: 14px; }
 }
 </style>
 </head>
@@ -305,71 +401,133 @@ body {
 
 <!-- TOP BAR -->
 <div class="top-bar">
-  <button id="menuBtn" aria-label="Menu">☰</button>
+  <button id="menuBtn">☰</button>
   <div class="app-title">Lịch Âm</div>
-  <button id="speakerBtn" aria-label="Đọc">🔊</button>
+  <button id="speakerBtn">🔊</button>
 </div>
 
-<!-- DATE NAV -->
-<div class="date-nav">
-  <button id="prevDay" aria-label="Ngày trước">‹</button>
-  <div class="nav-date-label" id="navDateLabel"></div>
-  <button id="nextDay" aria-label="Ngày sau">›</button>
-  <button class="nav-today" id="gotoToday">Hôm nay</button>
-</div>
+<!-- SCROLL AREA -->
+<div class="scroll-area" id="scrollArea">
 
-<!-- MAIN DATE BLOCK -->
-<div class="date-block">
-  <div class="weekday" id="weekday"></div>
-  <div class="day-number" id="dayNum"></div>
-  <div class="solar-date" id="solarDate"></div>
-  <div class="lunar-date" id="lunarDate"></div>
-  <div class="canchi-line" id="canchiLine"></div>
-  <div class="assessment-pill" id="pill"></div>
-</div>
-
-<!-- QUOTE CARD -->
-<div class="card" style="margin-top:16px">
-  <div class="quote-text" id="quoteText"></div>
-</div>
-
-<!-- THREE INFO CARDS -->
-<div class="card-row">
-  <div class="card" id="goodHoursCard">
-    <div class="card-title" style="color:#2E7D32">Giờ tốt</div>
-    <div id="goodHoursList"></div>
+<!-- TAB: HÔM NAY -->
+<div class="tab-content active" id="tabHome">
+  <div class="date-nav">
+    <button id="prevDay">‹</button>
+    <div class="nav-date-label" id="navDateLabel"></div>
+    <button id="nextDay">›</button>
+    <button class="nav-today" id="gotoToday">Hôm nay</button>
   </div>
-  <div class="card" id="lunarMiniCard">
-    <div class="lunar-mini" id="lunarMiniContent"></div>
+
+  <div class="date-block">
+    <div class="weekday" id="weekday"></div>
+    <div class="day-number" id="dayNum"></div>
+    <div class="solar-date" id="solarDate"></div>
+    <div class="lunar-date" id="lunarDate"></div>
+    <div class="canchi-line" id="canchiLine"></div>
+    <div class="assessment-pill" id="pill"></div>
   </div>
-  <div class="card" id="badHoursCard">
-    <div class="card-title" style="color:#D32F2F">Giờ xấu</div>
-    <div id="badHoursList"></div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="quote-text" id="quoteText"></div>
+  </div>
+
+  <div class="card-row">
+    <div class="card">
+      <div class="card-title" style="color:#2E7D32">Giờ tốt</div>
+      <div id="goodHoursList"></div>
+    </div>
+    <div class="card" id="lunarMiniCard">
+      <div class="lunar-mini" id="lunarMiniContent"></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#D32F2F">Giờ xấu</div>
+      <div id="badHoursList"></div>
+    </div>
+  </div>
+
+  <div class="card" id="activitiesCard" style="display:none">
+    <div id="goodActs"></div>
+    <div id="badActs"></div>
+  </div>
+
+  <div class="card" id="termCard">
+    <div class="card-title">Tiết khí</div>
+    <div id="termContent"></div>
+  </div>
+
+  <div class="card" id="eventCard" style="display:none">
+    <div id="eventContent"></div>
   </div>
 </div>
 
-<!-- ACTIVITIES CARD -->
-<div class="card" id="activitiesCard" style="display:none">
-  <div id="goodActs"></div>
-  <div id="badActs"></div>
+<!-- TAB: LỊCH THÁNG -->
+<div class="tab-content" id="tabCalendar">
+  <div class="cal-nav">
+    <button id="calPrev">‹</button>
+    <div>
+      <div class="cal-title" id="calTitle"></div>
+      <div class="cal-sub" id="calSub"></div>
+    </div>
+    <button id="calNext">›</button>
+    <button style="background:none;border:none;width:44px;height:44px;cursor:pointer;font-size:20px;color:#5F6368;border-radius:50%" id="calToday">●</button>
+  </div>
+  <div class="cal-header">
+    <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
 </div>
 
-<!-- SOLAR TERM CARD -->
-<div class="card" id="termCard">
-  <div class="card-title">Tiết khí</div>
-  <div id="termContent"></div>
+<!-- TAB: NGÀY TỐT -->
+<div class="tab-content" id="tabGoodDay">
+  <div style="padding:12px 14px 8px">
+    <span style="font-size:20px;font-weight:700" id="gdTitle"></span>
+  </div>
+  <div class="good-list" id="gdList"></div>
 </div>
 
-<!-- EVENT CARD -->
-<div class="card" id="eventCard" style="display:none">
-  <div id="eventContent"></div>
+<!-- TAB: VĂN KHẤN -->
+<div class="tab-content" id="tabVanKhan">
+  <div class="vk-list" id="vkList"></div>
+  <div class="vk-detail" id="vkDetail" style="display:none"></div>
 </div>
 
-<!-- DOWNLOAD -->
-<div class="download-section">
-  <h3>Tải ứng dụng Android</h3>
-  <p>Trải nghiệm đầy đủ trên điện thoại. Offline, miễn phí, không quảng cáo.</p>
-  <a class="download-btn" href="https://github.com/thichcode/lich_am/releases" target="_blank">⬇ Tải APK</a>
+<!-- TAB: THÊM -->
+<div class="tab-content" id="tabSettings">
+  <div class="settings-content">
+    <h3>Lịch Âm</h3>
+    <p>Ứng dụng lịch âm Việt Nam offline, miễn phí, không quảng cáo.</p>
+    <a class="download-btn" href="https://github.com/thichcode/lich_am/releases" target="_blank">⬇ Tải APK cho Android</a>
+    <p style="margin-top:20px;font-size:16px;color:#9E9E9E">
+      Phiên bản dùng thử trên web<br>
+      <a href="https://github.com/thichcode/lich_am" target="_blank" style="color:#C62828">GitHub: thichcode/lich_am</a>
+    </p>
+  </div>
+</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-item active" data-tab="tabHome">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Hôm nay</span>
+  </button>
+  <button class="nav-item" data-tab="tabCalendar">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">Lịch tháng</span>
+  </button>
+  <button class="nav-item" data-tab="tabGoodDay">
+    <span class="nav-icon">⭐</span>
+    <span class="nav-label">Ngày tốt</span>
+  </button>
+  <button class="nav-item" data-tab="tabVanKhan">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">Văn khấn</span>
+  </button>
+  <button class="nav-item" data-tab="tabSettings">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">Thêm</span>
+  </button>
 </div>
 
 <script>
@@ -383,7 +541,6 @@ function jdFromDate(dd, mm, yy) {
   const m = mm + 12 * a - 3;
   return dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
 }
-
 function jdToDate(jd) {
   const a = jd + 32044;
   const b = Math.floor((4 * a + 3) / 146097);
@@ -396,10 +553,8 @@ function jdToDate(jd) {
   const year = b * 100 + d - 4800 + Math.floor(m / 10);
   return { day, month, year };
 }
-
 function sunLongitude(jd) {
-  const T = (jd - 2451545.0) / 36525.0;
-  const T2 = T * T;
+  const T = (jd - 2451545.0) / 36525.0, T2 = T * T;
   const m = 357.5291 + 35999.0503 * T - 0.0001559 * T2;
   const l0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
   let dl = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(m * Math.PI / 180);
@@ -410,26 +565,18 @@ function sunLongitude(jd) {
   if (l < 0) l += 360;
   return l;
 }
-
 function newMoonDay(k) {
-  const T = k / 1236.85;
-  const T2 = T * T;
-  const T3 = T2 * T;
+  const T = k / 1236.85, T2 = T * T, T3 = T2 * T;
   let jd = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
   jd += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * Math.PI / 180);
   const m = 2.5534 + 29.10535669 * k - 0.0000218 * T2 - 0.00000011 * T3;
   const mp = 160.7108 + 390.67050274 * k - 0.0016341 * T2 - 0.00000227 * T3;
   const f = 201.5643 + 385.81693528 * k + 0.0107438 * T2 + 0.00001239 * T3;
-  jd += 1.122 * Math.sin(m * Math.PI / 180);
-  jd -= 0.406 * Math.sin((mp - m) * Math.PI / 180);
-  jd += 0.541 * Math.sin(2 * f * Math.PI / 180);
-  jd -= 0.166 * Math.sin(2 * m * Math.PI / 180);
-  jd += 0.207 * Math.sin(2 * mp * Math.PI / 180);
-  jd += 0.136 * Math.sin(2 * (mp - m) * Math.PI / 180);
-  jd -= 0.049 * Math.sin(2 * (mp + m) * Math.PI / 180);
+  jd += 1.122 * Math.sin(m * Math.PI / 180) - 0.406 * Math.sin((mp - m) * Math.PI / 180);
+  jd += 0.541 * Math.sin(2 * f * Math.PI / 180) - 0.166 * Math.sin(2 * m * Math.PI / 180);
+  jd += 0.207 * Math.sin(2 * mp * Math.PI / 180) + 0.136 * Math.sin(2 * (mp - m) * Math.PI / 180) - 0.049 * Math.sin(2 * (mp + m) * Math.PI / 180);
   return Math.round(jd);
 }
-
 function getLunarMonth11(yy) {
   const off = jdFromDate(31, 12, yy) - 2415021;
   let k = Math.floor(off / 29.530588853);
@@ -437,35 +584,26 @@ function getLunarMonth11(yy) {
   while (sunLongitude(newMoonDay(k - 1)) > 270) k--;
   return k;
 }
-
 function getLeapMonthOffset(a11) {
   for (let i = 1; i < 15; i++) {
-    const sl1 = sunLongitude(newMoonDay(a11 + i));
-    const sl2 = sunLongitude(newMoonDay(a11 + i + 1));
-    if (Math.floor(sl1 / 30) === Math.floor(sl2 / 30)) return i;
+    if (Math.floor(sunLongitude(newMoonDay(a11 + i)) / 30) === Math.floor(sunLongitude(newMoonDay(a11 + i + 1)) / 30)) return i;
   }
   return -1;
 }
-
 function solar2lunar(dd, mm, yy) {
   const jd = jdFromDate(dd, mm, yy);
   let k = Math.floor((jd - 2415021) / 29.530588853);
   let nm = newMoonDay(k);
-  if (nm > jd) {
-    k = k - 1;
-    nm = newMoonDay(k);
-  }
+  if (nm > jd) { k--; nm = newMoonDay(k); }
   const lunarDay = jd - nm + 1;
-  const k11 = getLunarMonth11(yy);
-  const k11Prev = getLunarMonth11(yy - 1);
+  const k11 = getLunarMonth11(yy), k11Prev = getLunarMonth11(yy - 1);
   let lunarYear, monthOffset;
   if (k >= k11) { lunarYear = yy; monthOffset = k - k11; }
   else if (k >= k11Prev) { lunarYear = yy - 1; monthOffset = k - k11Prev; }
-  else { const k11Prev2 = getLunarMonth11(yy - 2); lunarYear = yy - 2; monthOffset = k - k11Prev2; }
+  else { lunarYear = yy - 2; monthOffset = k - getLunarMonth11(yy - 2); }
   if (monthOffset < 0) return null;
   const leapOffset = getLeapMonthOffset(k >= k11 ? k11 : k11Prev);
-  let lunarMonth = monthOffset + 11;
-  let isLeap = false;
+  let lunarMonth = monthOffset + 11, isLeap = false;
   if (leapOffset > 0 && monthOffset >= leapOffset) {
     if (monthOffset === leapOffset) { isLeap = true; lunarMonth = leapOffset + 10; }
     else { lunarMonth = monthOffset + 10; }
@@ -474,294 +612,337 @@ function solar2lunar(dd, mm, yy) {
   return { day: lunarDay, month: lunarMonth, year: lunarYear, isLeap };
 }
 
-// ============================================================
-// CAN CHI
-// ============================================================
-
 const CAN = ["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"];
 const CHI = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
 
 function getDayCanChi(jd) {
-  const canIndex = ((jd + 9) % 10 + 10) % 10;
-  const chiIndex = ((jd - 1) % 12 + 12) % 12;
-  return { can: CAN[canIndex], chi: CHI[chiIndex], canIndex, chiIndex };
+  const ci = ((jd + 9) % 10 + 10) % 10, chi = ((jd - 1) % 12 + 12) % 12;
+  return { can: CAN[ci], chi: CHI[chi], canIndex: ci, chiIndex: chi };
 }
 function getYearCanChi(year) {
-  const canIndex = ((year - 4) % 10 + 10) % 10;
-  const chiIndex = ((year - 4) % 12 + 12) % 12;
-  return { can: CAN[canIndex], chi: CHI[chiIndex] };
+  return { can: CAN[((year - 4) % 10 + 10) % 10], chi: CHI[((year - 4) % 12 + 12) % 12] };
 }
 function getYearCanIndex(year) { return ((year - 4) % 10 + 10) % 10; }
-function getMonthCanChi(lunarMonth, yearCanIndex) {
-  const monthCan = (lunarMonth + yearCanIndex * 2 + 1) % 10;
-  const monthChi = (lunarMonth + 1) % 12;
-  return { can: CAN[monthCan], chi: CHI[monthChi] };
+function getMonthCanChi(lm, yi) {
+  return { can: CAN[(lm + yi * 2 + 1) % 10], chi: CHI[(lm + 1) % 12] };
 }
 
-// ============================================================
-// GOOD / BAD ENGINE
-// ============================================================
-
-const TRUC_NAMES = ["Kiến","Trừ","Mãn","Bình","Định","Chấp","Phá","Nguy","Thành","Thu","Khai","Bế"];
-const TU_NAMES = ["Giác","Cang","Đê","Phòng","Tâm","Vĩ","Cơ","Đẩu","Ngưu","Nữ","Hư","Nguy","Thất","Bích","Khuê","Lâu","Vị","Mão","Tất","Chủy","Sâm","Tỉnh","Quỷ","Liễu","Tinh","Trương","Dực","Chẩn"];
+const TRUC = ["Kiến","Trừ","Mãn","Bình","Định","Chấp","Phá","Nguy","Thành","Thu","Khai","Bế"];
+const TU = ["Giác","Cang","Đê","Phòng","Tâm","Vĩ","Cơ","Đẩu","Ngưu","Nữ","Hư","Nguy","Thất","Bích","Khuê","Lâu","Vị","Mão","Tất","Chủy","Sâm","Tỉnh","Quỷ","Liễu","Tinh","Trương","Dực","Chẩn"];
 const GOOD_TU = new Set([3,4,5,7,10,12,14,15,16,17,18,19,21,22,25,26]);
 const BAD_TU = new Set([0,1,2,6,8,9,11,13,20,23,24,27]);
-const HOUR_TIME_RANGES = ["23:00–00:59","01:00–02:59","03:00–04:59","05:00–06:59","07:00–08:59","09:00–10:59","11:00–12:59","13:00–14:59","15:00–16:59","17:00–18:59","19:00–20:59","21:00–22:59"];
-const HOANG_DAO = [[1,3,5,7,9,11],[2,4,6,8,10,0],[3,5,7,9,11,1],[4,6,8,10,0,2],[5,7,9,11,1,3],[6,8,10,0,2,4],[7,9,11,1,3,5],[8,10,0,2,4,6],[9,11,1,3,5,7],[10,0,2,4,6,8],[11,1,3,5,7,9],[0,2,4,6,8,10]];
-const TAM_NUONG = new Set([3,7,13,18,22,27]);
-const NGUYET_KY = new Set([5,14,23]);
-const DUONG_CONG_KY = new Set(["13-1","11-2","9-3","7-4","5-5","3-6","1-7","29-7","27-8","25-9","23-10","21-11","19-12"]);
-const GOOD_DEFAULT = ["Cúng lễ","Gặp gỡ","Xuất hành"];
-const BAD_DEFAULT = ["Động thổ","Tranh cãi","Đi xa"];
+const HR = ["23:00–00:59","01:00–02:59","03:00–04:59","05:00–06:59","07:00–08:59","09:00–10:59","11:00–12:59","13:00–14:59","15:00–16:59","17:00–18:59","19:00–20:59","21:00–22:59"];
+const HD = [[1,3,5,7,9,11],[2,4,6,8,10,0],[3,5,7,9,11,1],[4,6,8,10,0,2],[5,7,9,11,1,3],[6,8,10,0,2,4],[7,9,11,1,3,5],[8,10,0,2,4,6],[9,11,1,3,5,7],[10,0,2,4,6,8],[11,1,3,5,7,9],[0,2,4,6,8,10]];
+const TN = new Set([3,7,13,18,22,27]);
+const NK = new Set([5,14,23]);
+const DCK = new Set(["13-1","11-2","9-3","7-4","5-5","3-6","1-7","29-7","27-8","25-9","23-10","21-11","19-12"]);
+const GD = ["Cúng lễ","Gặp gỡ","Xuất hành"];
+const BD = ["Động thổ","Tranh cãi","Đi xa"];
 
-function isSatChu(dayChi, solarMonth) {
-  let season;
-  if (solarMonth >= 2 && solarMonth <= 4) season = new Set([5,9,1]);
-  else if (solarMonth >= 5 && solarMonth <= 7) season = new Set([2,6,10]);
-  else if (solarMonth >= 8 && solarMonth <= 10) season = new Set([11,4,7]);
-  else season = new Set([8,0,4]);
-  return season.has(dayChi);
+function isSatChu(dc, sm) {
+  let s;
+  if (sm >= 2 && sm <= 4) s = new Set([5,9,1]);
+  else if (sm >= 5 && sm <= 7) s = new Set([2,6,10]);
+  else if (sm >= 8 && sm <= 10) s = new Set([11,4,7]);
+  else s = new Set([8,0,4]);
+  return s.has(dc);
 }
 
-function assessDay(lunarDay, lunarMonth, dayCanIndex, dayChiIndex, jd, solarMonth) {
-  const monthBranch = solarMonth % 12;
-  const trucIdx = ((dayChiIndex - monthBranch + 12) % 12);
-  const trucName = TRUC_NAMES[trucIdx];
-  const hoangDaoDay = [2,3,4,5,8,10].includes(trucIdx);
-  const tuIdx = (((jd - 2449747) % 28) + 28) % 28;
-  const tuName = TU_NAMES[tuIdx];
-  const satChu = isSatChu(dayChiIndex, solarMonth);
-  const tamNuong = TAM_NUONG.has(lunarDay);
-  const nguyetKy = NGUYET_KY.has(lunarDay);
-  const duongCong = DUONG_CONG_KY.has(lunarDay + "-" + lunarMonth);
-  const R = { hoang_dao: 20, hac_dao: -20, truc_tot: 10, truc_xau: -10, tu_tot: 5, tu_xau: -5, tam_nuong: -30, nguyet_ky: -25, sat_chu: -40, duong_cong_ky: -35 };
-  let score = 0;
-  score += hoangDaoDay ? R.hoang_dao : R.hac_dao;
-  if ([2,3,4,5,8,10].includes(trucIdx)) score += R.truc_tot;
-  if ([0,1,6,7,9,11].includes(trucIdx)) score += R.truc_xau;
-  if (GOOD_TU.has(tuIdx)) score += R.tu_tot;
-  if (BAD_TU.has(tuIdx)) score += R.tu_xau;
-  score += (dayCanIndex % 2 === 0) ? 3 : -2;
-  if (tamNuong) score += R.tam_nuong;
-  if (nguyetKy) score += R.nguyet_ky;
-  if (satChu) score += R.sat_chu;
-  if (duongCong) score += R.duong_cong_ky;
-  score += (lunarDay === 15 ? 10 : 0) + (lunarDay === 1 ? 8 : 0);
-  const isTet = lunarDay === 1 && lunarMonth === 1;
-  const label = isTet ? "Tết Nguyên Đán" : score >= 30 ? "Đại Cát" : score > 0 ? "Ngày Tốt" : score === 0 ? "Ngày Bình Thường" : score >= -30 ? "Ngày Xấu" : "Đại Hung";
-  const goodActs = score > 0 ? GOOD_DEFAULT : [];
-  const badActs = score < 0 ? BAD_DEFAULT : [];
-  const gh = HOANG_DAO[dayChiIndex];
-  const goodHours = gh.map(h => ({ chi: CHI[h], time: HOUR_TIME_RANGES[h] }));
-  const allHours = new Set([0,1,2,3,4,5,6,7,8,9,10,11]);
-  const badHours = [...allHours].filter(x => !gh.includes(x)).sort().map(h => ({ chi: CHI[h], time: HOUR_TIME_RANGES[h] }));
-  return { isGood: score > 0 || isTet, score, label, goodActs, badActs, goodHours, badHours, truc: trucName, tu: tuName };
+function assessDay(ld, lm, dci, dchi, jd, sm) {
+  const mb = sm % 12, ti = ((dchi - mb + 12) % 12), tn = TRUC[ti];
+  const hdd = [2,3,4,5,8,10].includes(ti);
+  const tui = (((jd - 2449747) % 28) + 28) % 28;
+  let sc = 0;
+  sc += hdd ? 20 : -20;
+  if ([2,3,4,5,8,10].includes(ti)) sc += 10;
+  if ([0,1,6,7,9,11].includes(ti)) sc -= 10;
+  if (GOOD_TU.has(tui)) sc += 5;
+  if (BAD_TU.has(tui)) sc -= 5;
+  sc += (dci % 2 === 0) ? 3 : -2;
+  if (TN.has(ld)) sc -= 30;
+  if (NK.has(ld)) sc -= 25;
+  if (isSatChu(dchi, sm)) sc -= 40;
+  if (DCK.has(ld + "-" + lm)) sc -= 35;
+  sc += (ld === 15 ? 10 : 0) + (ld === 1 ? 8 : 0);
+  const tet = ld === 1 && lm === 1;
+  const label = tet ? "Tết Nguyên Đán" : sc >= 30 ? "Đại Cát" : sc > 0 ? "Ngày Tốt" : sc === 0 ? "Ngày Bình Thường" : sc >= -30 ? "Ngày Xấu" : "Đại Hung";
+  const ga = sc > 0 ? GD : [], ba = sc < 0 ? BD : [];
+  const gh = HD[dchi];
+  const ghL = gh.map(h => ({ chi: CHI[h], time: HR[h] }));
+  const bhL = [...new Set([0,1,2,3,4,5,6,7,8,9,10,11])].filter(x => !gh.includes(x)).sort().map(h => ({ chi: CHI[h], time: HR[h] }));
+  return { score: sc, label, goodActs: ga, badActs: ba, goodHours: ghL, badHours: bhL, truc: tn, tu: TU[tui] };
 }
 
-// ============================================================
-// SOLAR TERMS
-// ============================================================
+const TN_NAMES = ["Lập Xuân","Vũ Thủy","Kinh Trập","Xuân Phân","Thanh Minh","Cốc Vũ","Lập Hạ","Tiểu Mãn","Mang Chủng","Hạ Chí","Tiểu Thử","Đại Thử","Lập Thu","Xử Thử","Bạch Lộ","Thu Phân","Hàn Lộ","Sương Giáng","Lập Đông","Tiểu Tuyết","Đại Tuyết","Đông Chí","Tiểu Hàn","Đại Hàn"];
+const TL = [315,330,345,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300];
+const TO = [33,48,63,79,94,110,125,141,156,172,187,203,219,235,250,265,281,296,311,326,340,355,4,19];
 
-const TERM_NAMES = ["Lập Xuân","Vũ Thủy","Kinh Trập","Xuân Phân","Thanh Minh","Cốc Vũ","Lập Hạ","Tiểu Mãn","Mang Chủng","Hạ Chí","Tiểu Thử","Đại Thử","Lập Thu","Xử Thử","Bạch Lộ","Thu Phân","Hàn Lộ","Sương Giáng","Lập Đông","Tiểu Tuyết","Đại Tuyết","Đông Chí","Tiểu Hàn","Đại Hàn"];
-const TERM_LON = [315,330,345,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300];
-const TERM_OFFSET = [33,48,63,79,94,110,125,141,156,172,187,203,219,235,250,265,281,296,311,326,340,355,4,19];
-
-function getSunLongitudeForTerm(jd) {
-  const T = (jd - 2451545.0) / 36525.0;
-  const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+function getSunLonT(jd) {
+  const T = (jd - 2451545) / 36525;
+  const L = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
   const M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * Math.PI / 180;
   const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M) + (0.019993 - 0.000101 * T) * Math.sin(2 * M) + 0.000289 * Math.sin(3 * M);
-  let lambda = L0 + C;
-  lambda = ((lambda % 360) + 360) % 360;
-  return lambda;
+  return ((L + C) % 360 + 360) % 360;
 }
-
-function findTermJD(cycleYear, termIndex) {
-  const targetLon = TERM_LON[termIndex];
-  const termYear = termIndex >= 22 ? cycleYear + 1 : cycleYear;
-  const jan1JD = jdFromDate(1, 1, termYear);
-  let jd = jan1JD + TERM_OFFSET[termIndex];
+function findTermJD(cy, ti) {
+  const ty = ti >= 22 ? cy + 1 : cy;
+  let jd = jdFromDate(1, 1, ty) + TO[ti];
   for (let i = 0; i < 40; i++) {
-    const lon = getSunLongitudeForTerm(jd);
-    let diff = ((targetLon - lon + 540) % 360) - 180;
-    if (Math.abs(diff) < 0.001) break;
-    jd += diff;
+    const lon = getSunLonT(jd);
+    let d = ((TL[ti] - lon + 540) % 360) - 180;
+    if (Math.abs(d) < 0.001) break;
+    jd += d;
   }
   return jd;
 }
-
-function getCurrentAndNext(date) {
-  const jd = jdFromDate(date.day, date.month, date.year);
-  const lon = getSunLongitudeForTerm(jd);
-  const norm = ((lon - 315) % 360 + 360) % 360;
-  const idx = Math.floor(norm / 15) % 24;
-  const nextIdx = (idx + 1) % 24;
-  const cycleYear = idx >= 22 ? date.year - 1 : date.year;
-  const currentJD = findTermJD(cycleYear, idx);
-  const cd = jdToDate(Math.round(currentJD));
-  const current = { name: TERM_NAMES[idx], date: cd };
-  let nextCycleYear = nextIdx === 0 ? cycleYear + 1 : (nextIdx >= 22 && idx < 22 ? cycleYear : (nextIdx <= idx ? cycleYear + 1 : cycleYear));
-  const nextJD = findTermJD(nextCycleYear, nextIdx);
-  const nd = jdToDate(Math.round(nextJD));
-  const next = { name: TERM_NAMES[nextIdx], date: nd };
-  return { current, next };
+function getTerms(date) {
+  const jd = jdFromDate(date.d, date.m, date.y);
+  const lon = getSunLonT(jd);
+  const idx = Math.floor((((lon - 315) % 360 + 360) % 360) / 15) % 24;
+  const nidx = (idx + 1) % 24;
+  const cy = idx >= 22 ? date.y - 1 : date.y;
+  const cd = jdToDate(Math.round(findTermJD(cy, idx)));
+  const ncy = nidx === 0 ? cy + 1 : (nidx >= 22 && idx < 22 ? cy : (nidx <= idx ? cy + 1 : cy));
+  const nd = jdToDate(Math.round(findTermJD(ncy, nidx)));
+  return { cur: { n: TN_NAMES[idx], d: cd }, nxt: { n: TN_NAMES[nidx], d: nd } };
 }
 
-// ============================================================
-// QUOTES
-// ============================================================
-
-const QUOTES = [
-  "Ăn quả nhớ kẻ trồng cây","Uống nước nhớ nguồn","Có công mài sắt, có ngày nên kim",
-  "Tốt gỗ hơn tốt nước sơn","Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao",
-  "Đi một ngày đàng, học một sàng khôn","Cái khó bó cái khôn",
-  "Gần mực thì đen, gần đèn thì sáng","Lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau",
-  "Thương người như thể thương thân","Lá lành đùm lá rách","Một miếng khi đói bằng một gói khi no",
-  "Anh em như thể tay chân","Công cha như núi Thái Sơn, nghĩa mẹ như nước trong nguồn chảy ra",
-  "Không thầy đố mày làm nên","Học thầy không tày học bạn","Có chí thì nên",
-  "Thất bại là mẹ thành công","Kiến tha lâu cũng đầy tổ","Nước chảy đá mòn",
-  "Ở hiền gặp lành","Gieo gió gặt bão","Chín bỏ làm mười","Còn nước còn tát",
-  "Tre già măng mọc","Cha mẹ sinh con, trời sinh tính","Mỗi cây mỗi hoa, mỗi nhà mỗi cảnh"
-];
-
-// ============================================================
-// EVENTS
-// ============================================================
+const QUOTES = ["Ăn quả nhớ kẻ trồng cây","Uống nước nhớ nguồn","Có công mài sắt có ngày nên kim","Tốt gỗ hơn tốt nước sơn","Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao","Đi một ngày đàng học một sàng khôn","Cái khó bó cái khôn","Gần mực thì đen gần đèn thì sáng","Lời nói chẳng mất tiền mua lựa lời mà nói cho vừa lòng nhau","Thương người như thể thương thân","Lá lành đùm lá rách","Một miếng khi đói bằng một gói khi no","Anh em như thể tay chân","Công cha như núi Thái Sơn nghĩa mẹ như nước trong nguồn chảy ra","Không thầy đố mày làm nên","Học thầy không tày học bạn","Có chí thì nên","Thất bại là mẹ thành công","Kiến tha lâu cũng đầy tổ","Nước chảy đá mòn","Ở hiền gặp lành","Gieo gió gặt bão","Chín bỏ làm mười","Còn nước còn tát","Tre già măng mọc","Cha mẹ sinh con trời sinh tính","Mỗi cây mỗi hoa mỗi nhà mỗi cảnh"];
 
 const EVENTS = [
-  { lunar: { d:1, m:1 }, text:"Tết Nguyên Đán" }, { lunar: { d:15, m:1 }, text:"Tết Nguyên Tiêu (Rằm tháng Giêng)" },
-  { lunar: { d:10, m:3 }, text:"Giỗ Tổ Hùng Vương" }, { lunar: { d:15, m:4 }, text:"Phật Đản (Rằm tháng Tư)" },
-  { lunar: { d:5, m:5 }, text:"Tết Đoan Ngọ" }, { lunar: { d:15, m:7 }, text:"Lễ Vu Lan (Rằm tháng Bảy)" },
-  { lunar: { d:15, m:8 }, text:"Tết Trung Thu" }, { lunar: { d:23, m:12 }, text:"Ông Táo chầu trời" },
-  { solar: { d:1, m:1 }, text:"Tết Dương lịch" }, { solar: { d:30, m:4 }, text:"Ngày Giải phóng" },
-  { solar: { d:1, m:5 }, text:"Quốc tế Lao động" }, { solar: { d:2, m:9 }, text:"Quốc khánh" },
-  { solar: { d:20, m:10 }, text:"Ngày Phụ nữ Việt Nam" }, { solar: { d:20, m:11 }, text:"Ngày Nhà giáo" },
-  { solar: { d:22, m:12 }, text:"Ngày Quân đội Nhân dân" }
+  { l: {d:1,m:1}, t:"Tết Nguyên Đán" }, { l: {d:15,m:1}, t:"Tết Nguyên Tiêu" },
+  { l: {d:10,m:3}, t:"Giỗ Tổ Hùng Vương" }, { l: {d:15,m:4}, t:"Phật Đản" },
+  { l: {d:5,m:5}, t:"Tết Đoan Ngọ" }, { l: {d:15,m:7}, t:"Lễ Vu Lan" },
+  { l: {d:15,m:8}, t:"Tết Trung Thu" }, { l: {d:23,m:12}, t:"Ông Táo chầu trời" },
+  { s: {d:1,m:1}, t:"Tết Dương lịch" }, { s: {d:30,m:4}, t:"Ngày Giải phóng" },
+  { s: {d:1,m:5}, t:"Quốc tế Lao động" }, { s: {d:2,m:9}, t:"Quốc khánh" },
+  { s: {d:20,m:10}, t:"Phụ nữ Việt Nam" }, { s: {d:20,m:11}, t:"Nhà giáo Việt Nam" },
+  { s: {d:22,m:12}, t:"Quân đội Nhân dân" }
 ];
 
-function getEventsForDay(solarDay, solarMonth, lunarDay, lunarMonth) {
-  const r = [];
-  for (const e of EVENTS) {
-    if (e.solar && e.solar.d === solarDay && e.solar.m === solarMonth) { r.push(e.text); continue; }
-    if (e.lunar && e.lunar.d === lunarDay && e.lunar.m === lunarMonth) { r.push(e.text); }
-  }
-  return r;
-}
+const VK = [
+  { t:"Văn khấn Thổ Công (ngày rằm, mùng 1)", b:"Nam mô A Di Đà Phật! (3 lần)\n\nCon lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.\n\nCon kính lạy Hoàng Thiên Hậu Thổ chư vị Tôn thần.\nCon kính lạy ngài Đông Trù Tư Mệnh Táo Phủ Thần quân.\nCon kính lạy các ngày Thần linh bản xứ cai quản trong xứ này.\n\nHôm nay là ngày... tháng... năm...\nTín chủ con là: ...\nNgụ tại: ...\nThành tâm sửa biện hương hoa, lễ vật, kim ngân trà quả, dâng lên trước án.\n\nChúng con kính mời ngài Đông Trù Tư Mệnh Táo Phủ Thần quân, Thổ Địa Long Mạch Tôn thần, các ngài Thần linh cai quản trong xứ này.\nCúi xin giáng lâm trước án, chứng giám lòng thành, thụ hưởng lễ vật.\n\nTín chủ con lại kính mời các vị Tiền chủ, Hậu chủ ngụ tại nhà này, cùng về hâm hưởng.\n\nCúi xin các ngài phù hộ cho toàn gia chúng con: sức khỏe dồi dào, vạn sự tốt lành, mọi việc hanh thông.\n\nNam mô A Di Đà Phật! (3 lần)" },
+  { t:"Văn khấn Gia Tiên (ngày rằm, mùng 1)", b:"Nam mô A Di Đà Phật! (3 lần)\n\nCon lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.\n\nCon kính lạy tổ tiên nội ngoại họ...\n\nHôm nay là ngày... tháng... năm...\nTín chủ con là: ...\nNgụ tại: ...\n\nNhân ngày lễ tháng... năm..., chúng con thành tâm sửa biện hương hoa, lễ vật, kim ngân trà quả, dâng lên trước án.\n\nKính mời các cụ Cao Tằng Tổ Khảo, Cao Tằng Tổ Tỷ, Bá Thúc Huynh Đệ, Cô Di Tỷ Muội, nội ngoại họ...\nCúi xin thương xót con cháu, giáng về linh sàng, chứng giám lòng thành, thụ hưởng lễ vật.\n\nKính xin phù hộ cho con cháu: mạnh khỏe, bình an, làm ăn thuận lợi, gia đạo hưng long.\n\nNam mô A Di Đà Phật! (3 lần)" },
+  { t:"Văn khấn Ông Táo (23 tháng Chạp)", b:"Nam mô A Di Đà Phật! (3 lần)\n\nCon lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.\n\nCon kính lạy ngài Đông Trù Tư Mệnh Táo Phủ Thần quân.\n\nHôm nay là ngày 23 tháng Chạp năm...\nTín chủ con là: ...\nNgụ tại: ...\n\nNhân ngày Táo Quân chầu trời, chúng con thành tâm sửa biện hương hoa, lễ vật, dâng lên trước án.\n\nKính mời ngài Đông Trù Tư Mệnh Táo Phủ Thần quân.\nCúi xin ngài giáng lâm trước án, chứng giám lòng thành, thụ hưởng lễ vật.\n\nCúi xin ngài tâu với Ngọc Hoàng Thượng Đế những điều phúc đức, tốt lành cho gia đình chúng con.\nXin ngài phù hộ cho toàn gia: sức khỏe dồi dào, mọi việc hanh thông.\n\nNam mô A Di Đà Phật! (3 lần)" },
+  { t:"Văn khấn Thần Tài (ngày mùng 1)", b:"Nam mô A Di Đà Phật! (3 lần)\n\nCon lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.\n\nCon kính lạy ngài Thần Tài, Thổ Địa, các ngài Thần linh cai quản trong xứ này.\n\nHôm nay là ngày... tháng... năm...\nTín chủ con là: ...\nNgụ tại: ...\n\nThành tâm sửa biện hương hoa, lễ vật, dâng lên trước án.\n\nKính mời ngài Thần Tài, Thổ Địa, các ngài Thần linh.\nCúi xin các ngài giáng lâm chứng giám, thụ hưởng lễ vật.\n\nCúi xin các ngài phù hộ cho gia đình chúng con: làm ăn phát đạt, buôn may bán đắt, tài lộc dồi dào, vạn sự hanh thông.\n\nNam mô A Di Đà Phật! (3 lần)" },
+  { t:"Văn khấn Lễ Phật (ngày rằm, mùng 1)", b:"Nam mô A Di Đà Phật! (3 lần)\n\nCon lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.\n\nHôm nay là ngày... tháng... năm...\nTín chủ con là: ...\nNgụ tại: ...\n\nThành tâm dâng lên Phật đài hương hoa, lễ vật, trà quả.\n\nCon xin phát nguyện tu hành: giữ gìn giới luật, làm lành lánh dữ.\nCúi xin Chư Phật từ bi gia hộ cho con và gia đình: thân tâm an lạc, trí tuệ sáng suốt, vạn sự tốt lành.\n\nNam mô A Di Đà Phật! (3 lần)" }
+];
 
 // ============================================================
-// STATE & RENDER
+// STATE
 // ============================================================
+let viewDate = new Date(); viewDate.setHours(0,0,0,0);
+const today = new Date(); today.setHours(0,0,0,0);
+let calYM = { y: today.getFullYear(), m: today.getMonth() + 1 };
 
-let viewingDate = new Date();
-viewingDate.setHours(0, 0, 0, 0);
-const today = new Date();
-today.setHours(0, 0, 0, 0);
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const id = btn.dataset.tab;
+    document.getElementById(id).classList.add('active');
+    document.getElementById('scrollArea').scrollTop = 0;
+    if (id === 'tabCalendar') renderCal(calYM.y, calYM.m);
+    if (id === 'tabGoodDay') renderGoodDays();
+    if (id === 'tabVanKhan') renderVanKhan();
+  });
+});
 
-function renderDay(date) {
+// ============================================================
+// HOME TAB RENDER
+// ============================================================
+function renderHome(date) {
   const d = date.getDate(), m = date.getMonth() + 1, y = date.getFullYear();
   const jd = jdFromDate(d, m, y);
   const lunar = solar2lunar(d, m, y);
-  const canchi = lunar ? getDayCanChi(jd) : null;
-  const yearCan = lunar ? getYearCanChi(lunar.year) : null;
-  const yearIdx = lunar ? getYearCanIndex(lunar.year) : 0;
-  const monthCan = (lunar && yearCan) ? getMonthCanChi(lunar.month, yearIdx) : null;
-  const assessment = (lunar && canchi) ? assessDay(lunar.day, lunar.month, canchi.canIndex, canchi.chiIndex, jd, m) : null;
-  const terms = getCurrentAndNext({ day: d, month: m, year: y });
-  const events = lunar ? getEventsForDay(d, m, lunar.day, lunar.month) : [];
-  const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  const cc = lunar ? getDayCanChi(jd) : null;
+  const yc = lunar ? getYearCanChi(lunar.year) : null;
+  const yi = lunar ? getYearCanIndex(lunar.year) : 0;
+  const mc = (lunar && yc) ? getMonthCanChi(lunar.month, yi) : null;
+  const as = (lunar && cc) ? assessDay(lunar.day, lunar.month, cc.canIndex, cc.chiIndex, jd, m) : null;
+  const terms = getTerms({ d, m, y });
+  const evs = lunar ? (() => {
+    const r = [];
+    for (const e of EVENTS) { if (e.s && e.s.d === d && e.s.m === m) r.push(e.t); if (e.l && e.l.d === lunar.day && e.l.m === lunar.month) r.push(e.t); }
+    return r;
+  })() : [];
+  const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  const wd = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
+  const isT = date.getTime() === today.getTime();
 
-  const weekdayNames = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
-  const dow = date.getDay();
-  const isToday = date.getTime() === today.getTime();
+  document.getElementById('navDateLabel').textContent = isT ? 'Hôm nay' : `${d}/${m}/${y}`;
+  document.getElementById('weekday').textContent = wd[date.getDay()];
+  document.getElementById('dayNum').textContent = d;
+  document.getElementById('solarDate').textContent = `Ngày ${d} tháng ${m} năm ${y}`;
+  document.getElementById('lunarDate').textContent = lunar ? `Ngày ${lunar.day} tháng ${lunar.month} âm lịch` : '';
 
-  document.getElementById("navDateLabel").textContent = isToday ? "Hôm nay" : `${d}/${m}/${y}`;
-  document.getElementById("weekday").textContent = weekdayNames[dow];
-  document.getElementById("dayNum").textContent = d;
-  document.getElementById("solarDate").textContent = `Ngày ${d} tháng ${m} năm ${y}`;
-  document.getElementById("lunarDate").textContent = lunar ? `Ngày ${lunar.day} tháng ${lunar.month} âm lịch` : "";
-  document.getElementById("canchiLine").textContent = (canchi && monthCan && yearCan) ?
-    `Ngày ${canchi.can} ${canchi.chi} · Tháng ${monthCan.can} ${monthCan.chi} · Năm ${yearCan.can} ${yearCan.chi}` : "";
-
-  const pill = document.getElementById("pill");
-  if (assessment) {
-    pill.textContent = assessment.label;
-    pill.className = "assessment-pill";
-    if (assessment.score > 0) pill.classList.add("good");
-    else if (assessment.score < 0) pill.classList.add("bad");
-    else pill.classList.add("neutral");
-    pill.style.display = "inline-block";
-  } else { pill.style.display = "none"; }
-
-  document.getElementById("quoteText").textContent = `"${quote}"`;
-
-  // Hours
-  if (assessment) {
-    document.getElementById("goodHoursList").innerHTML = assessment.goodHours.slice(0, 3).map(h =>
-      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
-    ).join("");
-    document.getElementById("badHoursList").innerHTML = assessment.badHours.slice(0, 3).map(h =>
-      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
-    ).join("");
-  }
-
-  // Lunar mini card
-  if (lunar && monthCan && yearCan) {
-    document.getElementById("lunarMiniContent").innerHTML =
-      `<div class="lm-day">${lunar.day}</div><div class="lm-month">tháng ${lunar.month}</div>` +
-      `<div class="lm-canchi">${monthCan.can} ${monthCan.chi} · ${yearCan.can} ${yearCan.chi}</div>`;
-  }
-
-  // Activities
-  const actsEl = document.getElementById("activitiesCard");
-  if (assessment && (assessment.goodActs.length > 0 || assessment.badActs.length > 0)) {
-    actsEl.style.display = "block";
-    document.getElementById("goodActs").innerHTML = assessment.goodActs.length > 0 ?
-      `<div class="action-group good"><div class="action-label">Việc nên làm</div><ul class="action-list">${assessment.goodActs.map(a => `<li>${a}</li>`).join("")}</ul></div>` : "";
-    document.getElementById("badActs").innerHTML = assessment.badActs.length > 0 ?
-      `<div class="action-group bad"><div class="action-label">Việc nên tránh</div><ul class="action-list">${assessment.badActs.map(a => `<li>${a}</li>`).join("")}</ul></div>` : "";
+  if (cc && mc && yc) {
+    document.getElementById('canchiLine').textContent = `Ngày ${cc.can} ${cc.chi} · Tháng ${mc.can} ${mc.chi} · Năm ${yc.can} ${yc.chi}`;
   } else {
-    actsEl.style.display = "none";
+    document.getElementById('canchiLine').textContent = '';
   }
 
-  // Term
+  const pill = document.getElementById('pill');
+  if (as) {
+    pill.textContent = as.label;
+    pill.className = 'assessment-pill';
+    if (as.score > 0) pill.classList.add('good');
+    else if (as.score < 0) pill.classList.add('bad');
+    else pill.classList.add('neutral');
+    pill.style.display = 'inline-block';
+  } else { pill.style.display = 'none'; }
+
+  document.getElementById('quoteText').textContent = `"${q}"`;
+
+  if (as) {
+    document.getElementById('goodHoursList').innerHTML = as.goodHours.slice(0,3).map(h =>
+      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    ).join('');
+    document.getElementById('badHoursList').innerHTML = as.badHours.slice(0,3).map(h =>
+      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    ).join('');
+  }
+
+  if (lunar && mc && yc) {
+    document.getElementById('lunarMiniContent').innerHTML =
+      `<div class="lm-day">${lunar.day}</div><div class="lm-month">tháng ${lunar.month}</div><div class="lm-canchi">${mc.can} ${mc.chi} · ${yc.can} ${yc.chi}</div>`;
+  }
+
+  const actsEl = document.getElementById('activitiesCard');
+  if (as && (as.goodActs.length > 0 || as.badActs.length > 0)) {
+    actsEl.style.display = 'block';
+    document.getElementById('goodActs').innerHTML = as.goodActs.length > 0 ?
+      `<div class="action-group good"><div class="action-label">Việc nên làm</div><ul class="action-list">${as.goodActs.map(a => `<li>${a}</li>`).join('')}</ul></div>` : '';
+    document.getElementById('badActs').innerHTML = as.badActs.length > 0 ?
+      `<div class="action-group bad"><div class="action-label">Việc nên tránh</div><ul class="action-list">${as.badActs.map(a => `<li>${a}</li>`).join('')}</ul></div>` : '';
+  } else {
+    actsEl.style.display = 'none';
+  }
+
   if (terms) {
-    document.getElementById("termContent").innerHTML =
-      `<div class="term-line"><span class="term-name">${terms.current.name}</span> <span class="term-date">(từ ${terms.current.date.day}/${terms.current.date.month})</span></div>` +
-      `<div class="term-line"><span class="term-name">${terms.next.name}</span> <span class="term-date">(${terms.next.date.day}/${terms.next.date.month})</span></div>`;
+    document.getElementById('termContent').innerHTML =
+      `<div class="term-line"><span class="term-name">${terms.cur.n}</span> <span class="term-date">(từ ${terms.cur.d.day}/${terms.cur.d.month})</span></div>` +
+      `<div class="term-line"><span class="term-name">${terms.nxt.n}</span> <span class="term-date">(${terms.nxt.d.day}/${terms.nxt.d.month})</span></div>`;
   }
 
-  // Events
-  const evtEl = document.getElementById("eventCard");
-  if (events.length > 0) {
-    evtEl.style.display = "block";
-    document.getElementById("eventContent").innerHTML = events.map(e =>
+  const evtEl = document.getElementById('eventCard');
+  if (evs.length > 0) {
+    evtEl.style.display = 'block';
+    document.getElementById('eventContent').innerHTML = evs.map(e =>
       `<div class="event-item"><span class="event-star">✦</span><span class="event-text">${e}</span></div>`
-    ).join("");
-  } else {
-    evtEl.style.display = "none";
+    ).join('');
+  } else { evtEl.style.display = 'none'; }
+}
+
+// ============================================================
+// CALENDAR TAB
+// ============================================================
+function renderCal(y, m) {
+  calYM = { y, m };
+  const mn = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  document.getElementById('calTitle').textContent = `${mn[m-1]} ${y}`;
+  const lr = solar2lunar(1, m, y);
+  if (lr) { const yc = getYearCanChi(lr.year); document.getElementById('calSub').textContent = `tháng ${lr.month} · ${yc.can} ${yc.chi}`; }
+  const first = new Date(y, m-1, 1);
+  const last = new Date(y, m, 0);
+  let sd = first.getDay(); sd = (sd + 6) % 7;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < sd; i++) { const c = document.createElement('div'); c.className = 'cal-cell empty'; grid.appendChild(c); }
+  for (let d = 1; d <= last.getDate(); d++) {
+    const isToday = d === today.getDate() && m === today.getMonth()+1 && y === today.getFullYear();
+    const lunar = solar2lunar(d, m, y);
+    const jd = jdFromDate(d, m, y);
+    const cc = lunar ? getDayCanChi(jd) : null;
+    const as = (lunar && cc) ? assessDay(lunar.day, lunar.month, cc.canIndex, cc.chiIndex, jd, m) : null;
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell' + (isToday ? ' today' : '');
+    cell.innerHTML = `<div class="cal-solar">${d}</div>`;
+    if (lunar && (d === 1 || d === 15 || d === last.getDate() || isToday)) {
+      const ln = ['','Giêng','Hai','Ba','Tư','Năm','Sáu','Bảy','Tám','Chín','Mười','Một','Chạp'];
+      cell.innerHTML += `<div class="cal-lunar">${d === 1 ? ln[lunar.month] : lunar.day}</div>`;
+    }
+    if (as) {
+      cell.innerHTML += `<div class="cal-dot ${as.score > 0 ? 'good' : as.score < 0 ? 'bad' : 'neutral'}"></div>`;
+    }
+    grid.appendChild(cell);
+  }
+  const total = sd + last.getDate();
+  const rem = total % 7;
+  if (rem > 0) for (let i = 0; i < 7 - rem; i++) { const c = document.createElement('div'); c.className = 'cal-cell empty'; grid.appendChild(c); }
+}
+
+document.getElementById('calPrev').addEventListener('click', () => { calYM.m--; if (calYM.m < 1) { calYM.m = 12; calYM.y--; } renderCal(calYM.y, calYM.m); });
+document.getElementById('calNext').addEventListener('click', () => { calYM.m++; if (calYM.m > 12) { calYM.m = 1; calYM.y++; } renderCal(calYM.y, calYM.m); });
+document.getElementById('calToday').addEventListener('click', () => { renderCal(today.getFullYear(), today.getMonth()+1); });
+
+// ============================================================
+// GOOD DAY TAB
+// ============================================================
+function renderGoodDays() {
+  const mn = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+  const y = today.getFullYear(), m = today.getMonth() + 1;
+  document.getElementById('gdTitle').textContent = `${mn[m-1]} ${y}`;
+  const ld = new Date(y, m, 0).getDate();
+  const list = document.getElementById('gdList');
+  list.innerHTML = '';
+  for (let d = 1; d <= ld; d++) {
+    const lunar = solar2lunar(d, m, y);
+    const jd = jdFromDate(d, m, y);
+    const cc = lunar ? getDayCanChi(jd) : null;
+    const as = (lunar && cc) ? assessDay(lunar.day, lunar.month, cc.canIndex, cc.chiIndex, jd, m) : null;
+    if (!as) continue;
+    const cls = as.score > 0 ? 'good' : as.score < 0 ? 'bad' : 'neutral';
+    const icon = as.score > 0 ? '⭐' : as.score < 0 ? '❌' : '➖';
+    const isT = d === today.getDate() && m === today.getMonth()+1 && y === today.getFullYear();
+    const item = document.createElement('div');
+    item.className = `good-item ${cls}`;
+    item.innerHTML =
+      `<div class="gi-icon">${icon}</div>` +
+      `<div class="gi-info"><div class="gi-day">Ngày ${d}${isT ? ' (Hôm nay)' : ''}</div>` +
+      `<div class="gi-lunar">${lunar ? lunar.day + ' tháng ' + lunar.month + ' âm lịch' : ''}</div></div>` +
+      `<div class="gi-score" style="color:${as.score > 0 ? '#2E7D32' : as.score < 0 ? '#D32F2F' : '#B8860B'}">${as.label}</div>`;
+    list.appendChild(item);
   }
 }
 
-function goToToday() {
-  viewingDate = new Date(today);
-  renderDay(viewingDate);
+// ============================================================
+// VĂN KHẤN TAB
+// ============================================================
+function renderVanKhan() {
+  const list = document.getElementById('vkList');
+  const detail = document.getElementById('vkDetail');
+  list.innerHTML = '';
+  list.style.display = 'block';
+  detail.style.display = 'none';
+  VK.forEach((vk, i) => {
+    const el = document.createElement('div');
+    el.className = 'vk-item';
+    el.textContent = vk.t;
+    el.addEventListener('click', () => {
+      list.style.display = 'none';
+      detail.style.display = 'block';
+      detail.innerHTML = `<button class="vk-back" id="vkBack">← Danh sách</button>` +
+        `<div style="font-size:20px;font-weight:700;margin-bottom:12px">${vk.t}</div>` +
+        `<div style="background:#FAFAFA;border-radius:18px;padding:18px"><div class="vk-body">${vk.b}</div></div>`;
+      document.getElementById('vkBack').addEventListener('click', renderVanKhan);
+    });
+    list.appendChild(el);
+  });
 }
 
-function prevDay() {
-  viewingDate.setDate(viewingDate.getDate() - 1);
-  renderDay(viewingDate);
-}
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('prevDay').addEventListener('click', () => { viewDate.setDate(viewDate.getDate() - 1); renderHome(viewDate); });
+document.getElementById('nextDay').addEventListener('click', () => { viewDate.setDate(viewDate.getDate() + 1); renderHome(viewDate); });
+document.getElementById('gotoToday').addEventListener('click', () => { viewDate = new Date(today); renderHome(viewDate); });
 
-function nextDay() {
-  viewingDate.setDate(viewingDate.getDate() + 1);
-  renderDay(viewingDate);
-}
-
-document.getElementById("prevDay").addEventListener("click", prevDay);
-document.getElementById("nextDay").addEventListener("click", nextDay);
-document.getElementById("gotoToday").addEventListener("click", goToToday);
-
-renderDay(today);
+renderHome(today);
 </script>
 </body>
 </html>
