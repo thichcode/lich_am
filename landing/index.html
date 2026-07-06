@@ -191,12 +191,6 @@ body {
   font-weight:900;
   line-height:.92;
 }
-.lunar-weekday {
-  color:#08680E;
-  font-size:28px;
-  font-weight:900;
-  text-align:center;
-}
 .quote-card {
   position:relative;
   background:#fff;
@@ -560,7 +554,6 @@ body {
   <div class="hero-block">
     <div class="weekday" id="weekdayTop"></div>
     <div class="day-number" id="dayNum"></div>
-    <div class="lunar-weekday" id="lunarWeekday"></div>
   </div>
 
   <div class="quote-card">
@@ -914,7 +907,6 @@ function renderHome(date) {
   document.getElementById('headerDayCircle').textContent = d;
   document.getElementById('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
   document.getElementById('dayNum').textContent = d;
-  document.getElementById('lunarWeekday').textContent = wd[date.getDay()].toUpperCase();
 
   document.getElementById('quoteText').textContent = q;
 

@@ -112,8 +112,7 @@ fun DayDetailContent(date: LocalDate) {
         ActionShortcutRow()
         SolarWeekdayBlock(
             weekday = weekday.uppercase(),
-            day = date.dayOfMonth,
-            lunarWeekday = weekday.uppercase()
+            day = date.dayOfMonth
         )
         QuoteCard(quote)
 
@@ -232,7 +231,7 @@ private fun ShortcutAction(icon: ImageVector, label: String, color: Color, strok
 }
 
 @Composable
-private fun SolarWeekdayBlock(weekday: String, day: Int, lunarWeekday: String) {
+private fun SolarWeekdayBlock(weekday: String, day: Int) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = Spacing6),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -246,7 +245,6 @@ private fun SolarWeekdayBlock(weekday: String, day: Int, lunarWeekday: String) {
             fontWeight = FontWeight.ExtraBold,
             letterSpacing = (-3).sp
         )
-        Text(lunarWeekday, color = BlocGreen, fontSize = 28.sp, fontWeight = FontWeight.ExtraBold)
     }
 }
 
