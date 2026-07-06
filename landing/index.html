@@ -2,239 +2,1196 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lịch Âm - Xem lịch âm Việt Nam offline</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lịch Âm - Lịch âm dương Việt Nam</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #FFF8E1;
-  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Noto Sans, sans-serif;
+  background: #FFFFFF;
+  color: #202124;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px 100px;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #EAEAEA; border-radius: 4px; }
+
+/* ========== TODAY HERO ========== */
+.today-hero {
+  text-align: center;
+  padding: 24px 0 20px;
+  border-bottom: 1px solid #EAEAEA;
+  margin-bottom: 20px;
+}
+.weekday {
+  font-size: 34px;
+  font-weight: 700;
+  color: #5F6368;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+.day-number {
+  font-size: 80px;
+  font-weight: 700;
+  color: #C62828;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 4px 0;
+}
+.lunar-main {
+  font-size: 24px;
+  color: #202124;
+  font-weight: 600;
+  margin: 4px 0;
+}
+.lunar-sub {
+  font-size: 18px;
+  color: #5F6368;
+  margin: 2px 0;
+}
+.day-canchi {
+  font-size: 16px;
+  color: #5F6368;
+  margin: 2px 0;
+}
+.assessment-pill {
+  display: inline-block;
+  padding: 6px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+.assessment-pill.good { background: #E8F5E9; color: #2E7D32; }
+.assessment-pill.neutral { background: #FFF8E1; color: #F9A825; }
+.assessment-pill.bad { background: #FFEBEE; color: #D32F2F; }
+
+/* ========== CALENDAR ========== */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 12px;
+}
+.calendar-nav .month-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #202124;
+  text-align: center;
+  flex: 1;
+}
+.calendar-nav .month-lunar {
+  font-size: 16px;
+  color: #5F6368;
+  text-align: center;
+  width: 100%;
+}
+.calendar-nav button {
+  background: none;
+  border: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #202124;
+  font-size: 22px;
+  border-radius: 50%;
+  transition: background 0.2s;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+.calendar-nav button:hover { background: #FAFAFA; }
+.calendar-nav button:active { background: #EAEAEA; }
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.calendar-header span {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5F6368;
+  padding: 6px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  touch-action: manipulation;
+  position: relative;
+  min-height: 52px;
+}
+.cal-cell:hover { background: #FAFAFA; }
+.cal-cell:active { background: #EAEAEA; }
+.cal-cell.empty { cursor: default; }
+.cal-cell.empty:hover { background: transparent; }
+.cal-cell.today { background: #FFEBEE; }
+.cal-cell.today:hover { background: #FFCDD2; }
+
+.cal-cell .solar-day {
+  font-size: 18px;
+  font-weight: 600;
+  color: #202124;
+  line-height: 1.2;
+}
+.cal-cell.today .solar-day { color: #C62828; }
+.cal-cell .lunar-day {
+  font-size: 11px;
+  color: #5F6368;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+.cal-cell .good-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.cal-cell .good-dot.good { background: #2E7D32; }
+.cal-cell .good-dot.neutral { background: #F9A825; }
+.cal-cell .good-dot.bad { background: #D32F2F; }
+
+/* ========== SECTION TITLE ========== */
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #202124;
+  margin: 28px 0 12px;
+}
+
+/* ========== CARDS ========== */
+.card {
+  background: #FAFAFA;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5F6368;
+  margin-bottom: 10px;
+}
+.card-row {
+  display: flex;
+  gap: 10px;
+}
+.card-row .card { flex: 1; }
+
+/* ========== HOURS ========== */
+.hour-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 16px;
+}
+.hour-item .hour-label { color: #202124; font-weight: 500; }
+.hour-item .hour-time { color: #5F6368; font-size: 14px; }
+
+/* ========== INFO GRID ========== */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+.info-item .info-label {
+  font-size: 14px;
+  color: #5F6368;
+}
+.info-item .info-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #202124;
+}
+
+/* ========== ACTIONS ========== */
+.action-group { margin-bottom: 8px; }
+.action-group:last-child { margin-bottom: 0; }
+.action-group .action-label {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.action-group .action-list {
+  list-style: none;
+  padding: 0;
+}
+.action-group .action-list li {
+  font-size: 16px;
+  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.action-group .action-list li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.action-group.good .action-label { color: #2E7D32; }
+.action-group.good .action-list li::before { background: #2E7D32; }
+.action-group.bad .action-label { color: #D32F2F; }
+.action-group.bad .action-list li::before { background: #D32F2F; }
+
+/* ========== TERM ========== */
+.term-item {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding: 2px 0;
+  gap: 4px;
+}
+.term-item .term-name { font-weight: 600; color: #202124; }
+.term-item .term-date { color: #5F6368; }
+
+/* ========== EVENT ========== */
+.event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 16px;
+  padding: 4px 0;
+}
+.event-item .event-star { color: #F9A825; font-size: 18px; flex-shrink: 0; }
+.event-item .event-text { color: #202124; font-weight: 500; }
+
+/* ========== QUOTE ========== */
+.quote-text {
+  font-size: 16px;
+  color: #5F6368;
+  text-align: center;
+  font-style: italic;
   line-height: 1.6;
 }
-.hero {
-  background: linear-gradient(135deg, #B71C1C 0%, #7F0000 100%);
-  color: white;
-  text-align: center;
-  padding: 60px 20px 50px;
+
+/* ========== SCORE BAR ========== */
+.score-bar-wrapper {
+  margin-bottom: 8px;
 }
-.hero h1 { font-size: 2.8em; margin-bottom: 8px; }
-.hero p { font-size: 1.2em; opacity: 0.9; margin-bottom: 24px; }
-.badge {
-  display: inline-block;
-  background: #F9A825;
-  color: #333;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 0.9em;
-  font-weight: 600;
+.score-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #EAEAEA;
+  overflow: hidden;
+  position: relative;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.score-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin-top: 4px;
+}
+.score-label-row .score-title { font-weight: 700; }
+.score-label-row .score-value { color: #5F6368; }
+
+/* ========== DAY DETAIL ========== */
+#day-detail {
+  display: none;
+  margin-top: 20px;
+  animation: fadeIn 0.2s;
+}
+#day-detail.visible { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.detail-header button {
+  background: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 50%;
+  color: #202124;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+.detail-header button:hover { background: #FAFAFA; }
+.detail-header .detail-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #202124;
+  flex: 1;
+}
+
+/* ========== TODAY BUTTON ========== */
+.today-btn {
+  display: block;
+  width: 100%;
+  background: #C62828;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 16px 0;
+  touch-action: manipulation;
+}
+.today-btn:hover { background: #B71C1C; }
+.today-btn:active { background: #A31515; }
+
+/* ========== DOWNLOAD SECTION ========== */
+.download-section {
+  text-align: center;
+  margin-top: 40px;
+  padding: 32px 16px;
+  border-top: 1px solid #EAEAEA;
+}
+.download-section h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.download-section p {
+  font-size: 16px;
+  color: #5F6368;
+  margin-bottom: 20px;
 }
 .download-btn {
   display: inline-block;
-  background: #F9A825;
-  color: #333;
-  padding: 14px 36px;
-  border-radius: 30px;
-  font-size: 1.1em;
-  font-weight: 700;
+  background: #C62828;
+  color: #FFFFFF;
   text-decoration: none;
-  margin-top: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.download-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
-.container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
-section { padding: 50px 0; }
-section:nth-child(even) { background: #FFF; }
-h2 {
-  text-align: center;
-  font-size: 1.8em;
-  color: #B71C1C;
-  margin-bottom: 40px;
-}
-.features { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.feature {
-  background: #FFF8E1;
+  padding: 14px 40px;
   border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-  border: 1px solid #FFE0B2;
+  font-size: 18px;
+  font-weight: 700;
+  transition: background 0.2s;
 }
-.feature .icon { font-size: 2.5em; margin-bottom: 12px; }
-.feature h3 { color: #B71C1C; margin-bottom: 8px; font-size: 1.1em; }
-.feature p { font-size: 0.92em; color: #666; }
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: #FFF8E1;
-  border-radius: 8px;
-}
-.info-item .icon { font-size: 1.5em; }
-.screenshots {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-.screenshot-placeholder {
-  width: 220px;
-  height: 400px;
-  background: linear-gradient(180deg, #B71C1C 0%, #7F0000 100%);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 2em;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-.ci-status {
-  text-align: center;
-  margin-top: 16px;
-}
-.ci-status img { height: 24px; }
-.footer {
-  text-align: center;
-  padding: 30px;
-  color: #999;
-  font-size: 0.85em;
-  border-top: 1px solid #eee;
-}
-@media (max-width: 600px) {
-  .hero h1 { font-size: 2em; }
-  .features, .info-grid { grid-template-columns: 1fr; }
-  .screenshot-placeholder { width: 160px; height: 300px; font-size: 1.5em; }
+.download-btn:hover { background: #B71C1C; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 400px) {
+  .day-number { font-size: 64px; }
+  .weekday { font-size: 28px; }
+  .cal-cell { min-height: 44px; }
+  .cal-cell .solar-day { font-size: 16px; }
+  .cal-cell .lunar-day { font-size: 10px; }
 }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="badge">📱 Android 6.0+</div>
-  <h1>Lịch Âm</h1>
-  <p>Xem lịch âm Việt Nam offline, miễn phí, không quảng cáo</p>
-  <a class="download-btn" href="#download" id="apkLink">⬇ Tải APK</a>
-  <p style="margin-top:12px;font-size:0.85em;opacity:0.7">Bản dựng mới nhất từ GitHub Actions</p>
+<!-- TODAY HERO -->
+<div class="today-hero" id="todayHero">
+  <div class="weekday" id="todayWeekday"></div>
+  <div class="day-number" id="todayDay"></div>
+  <div class="lunar-main" id="todayLunar"></div>
+  <div class="lunar-sub" id="todayLunarSub"></div>
+  <div class="day-canchi" id="todayCanChi"></div>
+  <div class="assessment-pill" id="todayPill"></div>
 </div>
 
-<div class="container">
-<section>
-  <h2>Tính năng chính</h2>
-  <div class="features">
-    <div class="feature">
-      <div class="icon">📅</div>
-      <h3>Lịch tháng</h3>
-      <p>Xem lịch dương và âm theo tháng, đánh dấu hôm nay, ngày rằm và mùng một</p>
-    </div>
-    <div class="feature">
-      <div class="icon">🌙</div>
-      <h3>Can Chi</h3>
-      <p>Tra cứu Thiên Can, Địa Chi cho ngày, tháng, năm và giờ</p>
-    </div>
-    <div class="feature">
-      <div class="icon">✅</div>
-      <h3>Ngày tốt / xấu</h3>
-      <p>Đánh giá ngày tốt xấu, giờ Hoàng Đạo và Hắc Đạo</p>
-    </div>
-    <div class="feature">
-      <div class="icon">📖</div>
-      <h3>Danh ngôn</h3>
-      <p>Hiển thị câu ca dao, tục ngữ Việt Nam mỗi ngày</p>
-    </div>
-    <div class="feature">
-      <div class="icon">📡</div>
-      <h3>Offline 100%</h3>
-      <p>Không cần internet, không backend, không theo dõi người dùng</p>
-    </div>
-    <div class="feature">
-      <div class="icon">⚡</div>
-      <h3>Nhẹ & Nhanh</h3>
-      <p>Dung lượng nhỏ, khởi động nhanh, không quảng cáo</p>
-    </div>
+<!-- CALENDAR NAV -->
+<div class="calendar-nav">
+  <button id="prevMonth" aria-label="Tháng trước">&#8249;</button>
+  <div style="flex:1;text-align:center">
+    <div class="month-title" id="monthTitle"></div>
+    <div class="month-lunar" id="monthLunarSub"></div>
   </div>
-</section>
+  <button id="nextMonth" aria-label="Tháng sau">&#8250;</button>
 </div>
 
-<section>
-  <div class="container">
-  <h2>Ảnh chụp màn hình</h2>
-  <div class="screenshots">
-    <div class="screenshot-placeholder">📅 Lịch</div>
-    <div class="screenshot-placeholder">📋 Chi tiết</div>
-    <div class="screenshot-placeholder">🌙 Rằm</div>
-  </div>
-  </div>
-</section>
-
-<div class="container">
-<section>
-  <h2>Thông tin ứng dụng</h2>
-  <div class="info-grid">
-    <div class="info-item"><span class="icon">📱</span> <span>Android 6.0 trở lên</span></div>
-    <div class="info-item"><span class="icon">📦</span> <span>Dung lượng &lt; 5MB</span></div>
-    <div class="info-item"><span class="icon">🔒</span> <span>Không cần quyền đặc biệt</span></div>
-    <div class="info-item"><span class="icon">🌐</span> <span>Hoàn toàn ngoại tuyến</span></div>
-    <div class="info-item"><span class="icon">💰</span> <span>Miễn phí</span></div>
-    <div class="info-item"><span class="icon">📄</span> <span>Mã nguồn mở (MIT)</span></div>
-  </div>
-</section>
+<!-- CALENDAR HEADER -->
+<div class="calendar-header">
+  <span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span><span>CN</span>
 </div>
 
-<section id="download">
-  <div class="container">
-  <h2>Tải xuống</h2>
-  <p style="text-align:center;max-width:500px;margin:0 auto 24px">
-    APK bản debug được build tự động từ GitHub Actions mỗi khi có thay đổi.
-    Bạn có thể tải file APK từ GitHub Actions artifacts.
-  </p>
-  <div style="text-align:center">
-    <a class="download-btn" href="https://github.com/thichcode/lich_am/releases" target="_blank" style="background:#B71C1C;color:#fff">⬇ Tải APK từ GitHub Releases</a>
-  </div>
-  <p style="text-align:center;margin-top:12px;font-size:0.85em;color:#999">
-    Hoặc vào <a href="https://github.com/thichcode/lich_am/actions" target="_blank">GitHub Actions</a>, chọn workflow, tải artifact
-  </p>
-  <div class="ci-status">
-    <a href="https://github.com/thichcode/lich_am/actions">
-      <img src="https://github.com/thichcode/lich_am/actions/workflows/android-build.yml/badge.svg" alt="Build status">
-    </a>
-  </div>
-  </div>
-</section>
+<!-- CALENDAR GRID -->
+<div class="calendar-grid" id="calendarGrid"></div>
 
-<div class="container">
-<section>
-  <h2>Mã nguồn mở</h2>
-  <p style="text-align:center;max-width:500px;margin:0 auto">
-    Ứng dụng được phát triển bằng Kotlin và Jetpack Compose.
-    Mã nguồn được công khai trên GitHub.
-  </p>
-  <div style="text-align:center;margin-top:16px">
-    <a href="https://github.com/thichcode/lich_am" target="_blank" style="color:#B71C1C;font-weight:600;font-size:1.1em">📂 GitHub: thichcode/lich_am</a>
+<button class="today-btn" id="todayBtn">&#9678; Hôm nay</button>
+
+<!-- DAY DETAIL -->
+<div id="day-detail">
+  <div class="detail-header">
+    <button id="closeDetail" aria-label="Đóng">&#10005;</button>
+    <div class="detail-title" id="detailTitle"></div>
   </div>
-</section>
+
+  <div class="card">
+    <div class="info-grid" id="detailInfoGrid"></div>
+  </div>
+
+  <div class="card">
+    <div class="score-bar-wrapper" id="detailScoreBar"></div>
+  </div>
+
+  <div class="card-row">
+    <div class="card" id="detailGoodHours">
+      <div class="card-title" style="color:#2E7D32">Giờ tốt</div>
+      <div id="detailGoodHoursList"></div>
+    </div>
+    <div class="card" id="detailBadHours">
+      <div class="card-title" style="color:#D32F2F">Giờ xấu</div>
+      <div id="detailBadHoursList"></div>
+    </div>
+  </div>
+
+  <div class="card" id="detailActivities" style="display:none">
+    <div id="detailGoodActs"></div>
+    <div id="detailBadActs"></div>
+  </div>
+
+  <div class="card" id="detailTermCard">
+    <div class="card-title">Tiết khí</div>
+    <div id="detailTermInfo"></div>
+  </div>
+
+  <div class="card" id="detailEventCard" style="display:none">
+    <div id="detailEventList"></div>
+  </div>
+
+  <div class="card">
+    <div class="quote-text" id="detailQuote"></div>
+  </div>
 </div>
 
-<div class="footer">
-  Lịch Âm &copy; 2026 — Ứng dụng lịch âm Việt Nam mã nguồn mở
+<!-- DOWNLOAD -->
+<div class="download-section">
+  <h3>Tải ứng dụng Android</h3>
+  <p>Trải nghiệm đầy đủ trên điện thoại. Offline, miễn phí, không quảng cáo.</p>
+  <a class="download-btn" href="https://github.com/thichcode/lich_am/releases" target="_blank">&#11015; Tải APK</a>
 </div>
 
 <script>
-fetch('https://api.github.com/repos/thichcode/lich_am/releases/latest')
-  .then(r => r.json())
-  .then(data => {
-    if (data.assets && data.assets.length > 0) {
-      const apk = data.assets.find(a => a.name.endsWith('.apk'));
-      if (apk) {
-        document.getElementById('apkLink').href = apk.browser_download_url;
-      }
-    }
-  })
-  .catch(() => {});
-</script>
+// ============================================================
+// LUNAR CALENDAR ALGORITHM — HỒ NGỌC ĐỨC
+// ============================================================
 
+function jdFromDate(dd, mm, yy) {
+  const a = Math.floor((14 - mm) / 12);
+  const y = yy + 4800 - a;
+  const m = mm + 12 * a - 3;
+  return dd + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+}
+
+function jdToDate(jd) {
+  const a = jd + 32044;
+  const b = Math.floor((4 * a + 3) / 146097);
+  const c = a - Math.floor(146097 * b / 4);
+  const d = Math.floor((4 * c + 3) / 1461);
+  const e = c - Math.floor(1461 * d / 4);
+  const m = Math.floor((5 * e + 2) / 153);
+  const day = e - Math.floor((153 * m + 2) / 5) + 1;
+  const month = m + 3 - 12 * Math.floor(m / 10);
+  const year = b * 100 + d - 4800 + Math.floor(m / 10);
+  return { day, month, year };
+}
+
+function sunLongitude(jd) {
+  const T = (jd - 2451545.0) / 36525.0;
+  const T2 = T * T;
+  const m = 357.5291 + 35999.0503 * T - 0.0001559 * T2;
+  const l0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+  let dl = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(m * Math.PI / 180);
+  dl += (0.019993 - 0.000101 * T) * Math.sin(2 * m * Math.PI / 180);
+  dl += 0.00029 * Math.sin(3 * m * Math.PI / 180);
+  let l = l0 + dl;
+  l = l - 360 * Math.floor(l / 360);
+  if (l < 0) l += 360;
+  return l;
+}
+
+function newMoonDay(k) {
+  const T = k / 1236.85;
+  const T2 = T * T;
+  const T3 = T2 * T;
+  let jd = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+  jd += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * Math.PI / 180);
+  const m = 2.5534 + 29.10535669 * k - 0.0000218 * T2 - 0.00000011 * T3;
+  const mp = 160.7108 + 390.67050274 * k - 0.0016341 * T2 - 0.00000227 * T3;
+  const f = 201.5643 + 385.81693528 * k + 0.0107438 * T2 + 0.00001239 * T3;
+  jd += 1.122 * Math.sin(m * Math.PI / 180);
+  jd -= 0.406 * Math.sin((mp - m) * Math.PI / 180);
+  jd += 0.541 * Math.sin(2 * f * Math.PI / 180);
+  jd -= 0.166 * Math.sin(2 * m * Math.PI / 180);
+  jd += 0.207 * Math.sin(2 * mp * Math.PI / 180);
+  jd += 0.136 * Math.sin(2 * (mp - m) * Math.PI / 180);
+  jd -= 0.049 * Math.sin(2 * (mp + m) * Math.PI / 180);
+  return Math.round(jd);
+}
+
+function getLunarMonth11(yy) {
+  const off = jdFromDate(31, 12, yy) - 2415021;
+  let k = Math.floor(off / 29.530588853);
+  while (sunLongitude(newMoonDay(k)) <= 270) k++;
+  while (sunLongitude(newMoonDay(k - 1)) > 270) k--;
+  return k;
+}
+
+function getLeapMonthOffset(a11) {
+  for (let i = 1; i < 15; i++) {
+    const sl1 = sunLongitude(newMoonDay(a11 + i));
+    const sl2 = sunLongitude(newMoonDay(a11 + i + 1));
+    if (Math.floor(sl1 / 30) === Math.floor(sl2 / 30)) return i;
+  }
+  return -1;
+}
+
+function solar2lunar(dd, mm, yy) {
+  const jd = jdFromDate(dd, mm, yy);
+  let k = Math.floor((jd - 2415021) / 29.530588853);
+  let nm = newMoonDay(k);
+  if (nm > jd) {
+    k = k - 1;
+    nm = newMoonDay(k);
+  }
+  const lunarDay = jd - nm + 1;
+
+  const k11 = getLunarMonth11(yy);
+  const k11Prev = getLunarMonth11(yy - 1);
+
+  let lunarYear, monthOffset;
+  if (k >= k11) {
+    lunarYear = yy;
+    monthOffset = k - k11;
+  } else if (k >= k11Prev) {
+    lunarYear = yy - 1;
+    monthOffset = k - k11Prev;
+  } else {
+    const k11Prev2 = getLunarMonth11(yy - 2);
+    lunarYear = yy - 2;
+    monthOffset = k - k11Prev2;
+  }
+  if (monthOffset < 0) return null;
+
+  const leapOffset = getLeapMonthOffset(k >= k11 ? k11 : k11Prev);
+  let lunarMonth = monthOffset + 11;
+  let isLeap = false;
+
+  if (leapOffset > 0 && monthOffset >= leapOffset) {
+    if (monthOffset === leapOffset) {
+      isLeap = true;
+      lunarMonth = leapOffset + 10;
+    } else {
+      lunarMonth = monthOffset + 10;
+    }
+  }
+  if (lunarMonth > 12) lunarMonth -= 12;
+
+  return { day: lunarDay, month: lunarMonth, year: lunarYear, isLeap };
+}
+
+// ============================================================
+// CAN CHI
+// ============================================================
+
+const CAN = ["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"];
+const CHI = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+
+function getDayCanChi(jd) {
+  const canIndex = ((jd + 9) % 10 + 10) % 10;
+  const chiIndex = ((jd - 1) % 12 + 12) % 12;
+  return { can: CAN[canIndex], chi: CHI[chiIndex], canIndex, chiIndex };
+}
+
+function getYearCanChi(year) {
+  const canIndex = ((year - 4) % 10 + 10) % 10;
+  const chiIndex = ((year - 4) % 12 + 12) % 12;
+  return { can: CAN[canIndex], chi: CHI[chiIndex] };
+}
+
+function getYearCanIndex(year) {
+  return ((year - 4) % 10 + 10) % 10;
+}
+
+function getMonthCanChi(lunarMonth, yearCanIndex) {
+  const monthCan = (lunarMonth + yearCanIndex * 2 + 1) % 10;
+  const monthChi = (lunarMonth + 1) % 12;
+  return { can: CAN[monthCan], chi: CHI[monthChi] };
+}
+
+// ============================================================
+// GOOD / BAD ENGINE
+// ============================================================
+
+const TRUC_NAMES = ["Kiến","Trừ","Mãn","Bình","Định","Chấp","Phá","Nguy","Thành","Thu","Khai","Bế"];
+const TU_NAMES = [
+  "Giác","Cang","Đê","Phòng","Tâm","Vĩ","Cơ",
+  "Đẩu","Ngưu","Nữ","Hư","Nguy","Thất","Bích",
+  "Khuê","Lâu","Vị","Mão","Tất","Chủy","Sâm",
+  "Tỉnh","Quỷ","Liễu","Tinh","Trương","Dực","Chẩn"
+];
+const GOOD_TU = new Set([3,4,5,7,10,12,14,15,16,17,18,19,21,22,25,26]);
+const BAD_TU = new Set([0,1,2,6,8,9,11,13,20,23,24,27]);
+
+const HOUR_TIME_RANGES = [
+  "23:00–00:59","01:00–02:59","03:00–04:59","05:00–06:59",
+  "07:00–08:59","09:00–10:59","11:00–12:59","13:00–14:59",
+  "15:00–16:59","17:00–18:59","19:00–20:59","21:00–22:59"
+];
+
+const HOANG_DAO = [
+  [1,3,5,7,9,11],[2,4,6,8,10,0],[3,5,7,9,11,1],[4,6,8,10,0,2],
+  [5,7,9,11,1,3],[6,8,10,0,2,4],[7,9,11,1,3,5],[8,10,0,2,4,6],
+  [9,11,1,3,5,7],[10,0,2,4,6,8],[11,1,3,5,7,9],[0,2,4,6,8,10]
+];
+
+const TAM_NUONG = new Set([3,7,13,18,22,27]);
+const NGUYET_KY = new Set([5,14,23]);
+const DUONG_CONG_KY = new Set([
+  "13-1","11-2","9-3","7-4","5-5","3-6","1-7","29-7","27-8","25-9","23-10","21-11","19-12"
+]);
+
+const GOOD_DEFAULT = ["Cúng lễ","Gặp gỡ","Xuất hành"];
+const BAD_DEFAULT = ["Động thổ","Tranh cãi","Đi xa"];
+
+function isSatChu(dayChi, solarMonth) {
+  let season;
+  if (solarMonth >= 2 && solarMonth <= 4) season = new Set([5,9,1]);
+  else if (solarMonth >= 5 && solarMonth <= 7) season = new Set([2,6,10]);
+  else if (solarMonth >= 8 && solarMonth <= 10) season = new Set([11,4,7]);
+  else season = new Set([8,0,4]);
+  return season.has(dayChi);
+}
+
+function assessDay(lunarDay, lunarMonth, dayCanIndex, dayChiIndex, jd, solarMonth) {
+  const monthBranch = solarMonth % 12;
+  const trucIdx = ((dayChiIndex - monthBranch + 12) % 12);
+  const trucName = TRUC_NAMES[trucIdx];
+  const hoangDaoDay = [2,3,4,5,8,10].includes(trucIdx);
+
+  const tuIdx = (((jd - 2449747) % 28) + 28) % 28;
+  const tuName = TU_NAMES[tuIdx];
+
+  const satChu = isSatChu(dayChiIndex, solarMonth);
+  const tamNuong = TAM_NUONG.has(lunarDay);
+  const nguyetKy = NGUYET_KY.has(lunarDay);
+  const duongCong = DUONG_CONG_KY.has(`${lunarDay}-${lunarMonth}`);
+
+  const R = { hoang_dao: 20, hac_dao: -20, truc_tot: 10, truc_xau: -10, tu_tot: 5, tu_xau: -5, tam_nuong: -30, nguyet_ky: -25, sat_chu: -40, duong_cong_ky: -35 };
+
+  let score = 0;
+  score += hoangDaoDay ? R.hoang_dao : R.hac_dao;
+  if ([2,3,4,5,8,10].includes(trucIdx)) score += R.truc_tot;
+  if ([0,1,6,7,9,11].includes(trucIdx)) score += R.truc_xau;
+  if (GOOD_TU.has(tuIdx)) score += R.tu_tot;
+  if (BAD_TU.has(tuIdx)) score += R.tu_xau;
+  score += (dayCanIndex % 2 === 0) ? 3 : -2;
+  if (tamNuong) score += R.tam_nuong;
+  if (nguyetKy) score += R.nguyet_ky;
+  if (satChu) score += R.sat_chu;
+  if (duongCong) score += R.duong_cong_ky;
+
+  const fullMoonBonus = lunarDay === 15 ? 10 : 0;
+  const firstDayBonus = lunarDay === 1 ? 8 : 0;
+  score += fullMoonBonus + firstDayBonus;
+
+  const isTet = lunarDay === 1 && lunarMonth === 1;
+  const isGood = score > 0 || isTet;
+
+  const label = isTet ? "Tết Nguyên Đán" :
+    score >= 30 ? "Đại Cát" :
+    score > 0 ? "Ngày Tốt" :
+    score === 0 ? "Ngày Bình Thường" :
+    score >= -30 ? "Ngày Xấu" : "Đại Hung";
+
+  const goodActs = score > 0 ? GOOD_DEFAULT : [];
+  const badActs = score < 0 ? BAD_DEFAULT : [];
+
+  const gh = HOANG_DAO[dayChiIndex];
+  const goodHours = gh.map(h => ({ chi: CHI[h], time: HOUR_TIME_RANGES[h] }));
+  const allHours = new Set([0,1,2,3,4,5,6,7,8,9,10,11]);
+  const badHoursSet = new Set([...allHours].filter(x => !gh.includes(x)));
+  const badHours = [...badHoursSet].sort().map(h => ({ chi: CHI[h], time: HOUR_TIME_RANGES[h] }));
+
+  return { isGood, score, label, goodActs, badActs, goodHours, badHours, truc: trucName, tu: tuName, hoangDao: hoangDaoDay };
+}
+
+// ============================================================
+// SOLAR TERMS
+// ============================================================
+
+const TERM_NAMES = [
+  "Lập Xuân","Vũ Thủy","Kinh Trập","Xuân Phân",
+  "Thanh Minh","Cốc Vũ","Lập Hạ","Tiểu Mãn",
+  "Mang Chủng","Hạ Chí","Tiểu Thử","Đại Thử",
+  "Lập Thu","Xử Thử","Bạch Lộ","Thu Phân",
+  "Hàn Lộ","Sương Giáng","Lập Đông","Tiểu Tuyết",
+  "Đại Tuyết","Đông Chí","Tiểu Hàn","Đại Hàn"
+];
+const TERM_LON = [315,330,345,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300];
+const TERM_OFFSET = [33,48,63,79,94,110,125,141,156,172,187,203,219,235,250,265,281,296,311,326,340,355,4,19];
+
+function getSunLongitudeForTerm(jd) {
+  const T = (jd - 2451545.0) / 36525.0;
+  const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+  const M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * Math.PI / 180;
+  const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M)
+    + (0.019993 - 0.000101 * T) * Math.sin(2 * M)
+    + 0.000289 * Math.sin(3 * M);
+  let lambda = L0 + C;
+  lambda = ((lambda % 360) + 360) % 360;
+  return lambda;
+}
+
+function findTermJD(cycleYear, termIndex) {
+  const targetLon = TERM_LON[termIndex];
+  const termYear = termIndex >= 22 ? cycleYear + 1 : cycleYear;
+  const jan1JD = jdFromDate(1, 1, termYear);
+  let jd = jan1JD + TERM_OFFSET[termIndex];
+  for (let i = 0; i < 40; i++) {
+    const lon = getSunLongitudeForTerm(jd);
+    let diff = ((targetLon - lon + 540) % 360) - 180;
+    if (Math.abs(diff) < 0.001) break;
+    jd += diff;
+  }
+  return jd;
+}
+
+function getCurrentAndNext(date) {
+  const jd = jdFromDate(date.day, date.month, date.year);
+  const lon = getSunLongitudeForTerm(jd);
+  const norm = ((lon - 315) % 360 + 360) % 360;
+  const idx = Math.floor(norm / 15) % 24;
+  const nextIdx = (idx + 1) % 24;
+  const cycleYear = idx >= 22 ? date.year - 1 : date.year;
+
+  const currentJD = findTermJD(cycleYear, idx);
+  const cd = jdToDate(Math.round(currentJD));
+  const current = { name: TERM_NAMES[idx], date: cd };
+
+  let nextCycleYear;
+  if (nextIdx === 0) nextCycleYear = cycleYear + 1;
+  else if (nextIdx >= 22 && idx < 22) nextCycleYear = cycleYear;
+  else if (nextIdx <= idx) nextCycleYear = cycleYear + 1;
+  else nextCycleYear = cycleYear;
+
+  const nextJD = findTermJD(nextCycleYear, nextIdx);
+  const nd = jdToDate(Math.round(nextJD));
+  const next = { name: TERM_NAMES[nextIdx], date: nd };
+
+  return { current, next };
+}
+
+// ============================================================
+// QUOTES
+// ============================================================
+
+const QUOTES = [
+  "Ăn quả nhớ kẻ trồng cây",
+  "Uống nước nhớ nguồn",
+  "Có công mài sắt, có ngày nên kim",
+  "Tốt gỗ hơn tốt nước sơn",
+  "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao",
+  "Đi một ngày đàng, học một sàng khôn",
+  "Cái khó bó cái khôn",
+  "Gần mực thì đen, gần đèn thì sáng",
+  "Chim khôn kêu tiếng rảnh rang, người khôn nói tiếng dịu dàng dễ nghe",
+  "Lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau",
+  "Thương người như thể thương thân",
+  "Lá lành đùm lá rách",
+  "Một miếng khi đói bằng một gói khi no",
+  "Chị ngã em nâng",
+  "Môi hở răng lạnh",
+  "Máu chảy ruột mềm",
+  "Anh em như thể tay chân",
+  "Công cha như núi Thái Sơn, nghĩa mẹ như nước trong nguồn chảy ra",
+  "Không thầy đố mày làm nên",
+  "Muốn sang thì bắc cầu Kiều, muốn con hay chữ thì yêu lấy thầy",
+  "Học thầy không tày học bạn",
+  "Đi hỏi già, về nhà hỏi trẻ",
+  "Của bền tại người",
+  "Ở hiền gặp lành",
+  "Gieo gió gặt bão",
+  "Có chí thì nên",
+  "Thất bại là mẹ thành công",
+  "Chớ thấy sóng cả mà ngã tay chèo",
+  "Kiến tha lâu cũng đầy tổ",
+  "Nước chảy đá mòn",
+  "Chín bỏ làm mười",
+  "Đánh kẻ chạy đi, không ai đánh người chạy lại",
+  "Của phi nghĩa có giàu đâu, ở cho ngay thẳng giàu sau mới bền",
+  "Làm lành để phúc, làm dữ chịu tai",
+  "Ở đâu có phúc ở đó, ở đâu có tội ở đó",
+  "Phúc bất trùng lai, họa vô đơn chí",
+  "Trời sinh voi, trời sinh cỏ",
+  "Sống trên đời mới là một lần, hãy sống sao cho khỏi phải ân hận",
+  "Đời người ngắn lắm, đừng ngủ quá lâu",
+  "Cười là liều thuốc bổ",
+  "Một nụ cười bằng mười thang thuốc bổ",
+  "Còn nước còn tát",
+  "Còn da lông mọc, còn chồi nảy cây",
+  "Tre già măng mọc",
+  "Cha mẹ sinh con, trời sinh tính",
+  "Mỗi cây mỗi hoa, mỗi nhà mỗi cảnh"
+];
+
+function getRandomQuote() {
+  return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+
+const EVENTS = [
+  { solar: null, lunar: { day: 1, month: 1 }, text: "Tết Nguyên Đán" },
+  { solar: null, lunar: { day: 15, month: 1 }, text: "Tết Nguyên Tiêu (Rằm tháng Giêng)" },
+  { solar: null, lunar: { day: 10, month: 3 }, text: "Giỗ Tổ Hùng Vương" },
+  { solar: null, lunar: { day: 15, month: 4 }, text: "Phật Đản (Rằm tháng Tư)" },
+  { solar: null, lunar: { day: 5, month: 5 }, text: "Tết Đoan Ngọ" },
+  { solar: null, lunar: { day: 15, month: 7 }, text: "Lễ Vu Lan (Rằm tháng Bảy)" },
+  { solar: null, lunar: { day: 15, month: 8 }, text: "Tết Trung Thu" },
+  { solar: null, lunar: { day: 23, month: 12 }, text: "Ông Táo chầu trời" },
+  { solar: null, lunar: { day: 30, month: 12 }, text: "Giao thừa" },
+  { solar: null, lunar: { day: 1, month: 1, last: true }, text: "Mùng 1 Tết" },
+  { solar: { day: 1, month: 1 }, text: "Tết Dương lịch" },
+  { solar: { day: 30, month: 4 }, text: "Ngày Giải phóng Miền Nam" },
+  { solar: { day: 1, month: 5 }, text: "Quốc tế Lao động" },
+  { solar: { day: 2, month: 9 }, text: "Quốc khánh Việt Nam" },
+  { solar: { day: 20, month: 10 }, text: "Ngày Phụ nữ Việt Nam" },
+  { solar: { day: 20, month: 11 }, text: "Ngày Nhà giáo Việt Nam" },
+  { solar: { day: 22, month: 12 }, text: "Ngày Quân đội Nhân dân" },
+];
+
+function getEventsForDay(solarDay, solarMonth, lunarDay, lunarMonth) {
+  const result = [];
+  for (const e of EVENTS) {
+    if (e.solar && e.solar.day === solarDay && e.solar.month === solarMonth) {
+      result.push(e.text);
+      continue;
+    }
+    if (e.lunar && e.lunar.day === lunarDay && e.lunar.month === lunarMonth) {
+      if (!e.lunar.last || lunarDay >= 29) result.push(e.text);
+      continue;
+    }
+  }
+  return result;
+}
+
+// ============================================================
+// STATE
+// ============================================================
+
+let currentYear;
+let currentMonth;
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function renderToday() {
+  const d = today.getDate();
+  const m = today.getMonth() + 1;
+  const y = today.getFullYear();
+  const jd = jdFromDate(d, m, y);
+  const lunar = solar2lunar(d, m, y);
+  const canchi = getDayCanChi(jd);
+  const yearCan = getYearCanChi(lunar ? lunar.year : y);
+  const yearIdx = getYearCanIndex(lunar ? lunar.year : y);
+  const monthCan = lunar ? getMonthCanChi(lunar.month, yearIdx) : null;
+  const assessment = lunar ? assessDay(lunar.day, lunar.month, canchi.canIndex, canchi.chiIndex, jd, m) : null;
+
+  const weekdayNames = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
+  const dow = today.getDay();
+
+  document.getElementById("todayWeekday").textContent = weekdayNames[dow];
+  document.getElementById("todayDay").textContent = d;
+  document.getElementById("todayLunar").textContent = lunar
+    ? `Ngày ${lunar.day} tháng ${lunar.month}`
+    : "";
+  document.getElementById("todayLunarSub").textContent = lunar && monthCan
+    ? `Tháng ${monthCan.can} ${monthCan.chi} · Năm ${yearCan.can} ${yearCan.chi}`
+    : "";
+  document.getElementById("todayCanChi").textContent = `Ngày ${canchi.can} ${canchi.chi}` + (assessment ? ` · Trực ${assessment.truc} · Tú ${assessment.tu}` : "");
+
+  const pill = document.getElementById("todayPill");
+  if (assessment) {
+    pill.textContent = assessment.label;
+    pill.className = "assessment-pill";
+    if (assessment.score > 0) pill.classList.add("good");
+    else if (assessment.score < 0) pill.classList.add("bad");
+    else pill.classList.add("neutral");
+    pill.style.display = "inline-block";
+  } else {
+    pill.style.display = "none";
+  }
+}
+
+function renderCalendar(year, month) {
+  currentYear = year;
+  currentMonth = month;
+
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const totalDays = lastDay.getDate();
+  let startDow = firstDay.getDay(); // 0=Sun
+  // Convert to Mon=0 ... Sun=6
+  startDow = (startDow + 6) % 7;
+
+  // Month title
+  const monthNames = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+  document.getElementById("monthTitle").textContent = `${monthNames[month - 1]} ${year}`;
+
+  // Lunar sub for month
+  const lunarRef = solar2lunar(1, month, year);
+  if (lunarRef) {
+    const yc = getYearCanChi(lunarRef.year);
+    document.getElementById("monthLunarSub").textContent = `Tháng ${lunarRef.month} âm lịch, năm ${yc.can} ${yc.chi}`;
+  }
+
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
+
+  const td = today.getDate();
+  const tm = today.getMonth() + 1;
+  const ty = today.getFullYear();
+
+  // Empty cells
+  for (let i = 0; i < startDow; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cal-cell empty";
+    grid.appendChild(cell);
+  }
+
+  // Day cells
+  for (let d = 1; d <= totalDays; d++) {
+    const isToday = d === td && month === tm && year === ty;
+    const jd = jdFromDate(d, month, year);
+    const lunar = solar2lunar(d, month, year);
+    const canchi = lunar ? getDayCanChi(jd) : null;
+    const assessment = (lunar && canchi) ? assessDay(lunar.day, lunar.month, canchi.canIndex, canchi.chiIndex, jd, month) : null;
+
+    const cell = document.createElement("div");
+    cell.className = "cal-cell" + (isToday ? " today" : "");
+    cell.dataset.day = d;
+
+    const solarSpan = document.createElement("div");
+    solarSpan.className = "solar-day";
+    solarSpan.textContent = d;
+    cell.appendChild(solarSpan);
+
+    if (lunar && (d === 1 || d === 15 || d === totalDays || isToday)) {
+      const lunarSpan = document.createElement("div");
+      lunarSpan.className = "lunar-day";
+      const lunarNames = ["","Giêng","Hai","Ba","Tư","Năm","Sáu","Bảy","Tám","Chín","Mười","Một","Chạp"];
+      lunarSpan.textContent = d === 1 ? lunarNames[lunar.month] || String(lunar.day) : String(lunar.day);
+      cell.appendChild(lunarSpan);
+    }
+
+    if (assessment) {
+      const dot = document.createElement("div");
+      dot.className = "good-dot";
+      if (assessment.score > 0) dot.classList.add("good");
+      else if (assessment.score < 0) dot.classList.add("bad");
+      else dot.classList.add("neutral");
+      cell.appendChild(dot);
+    }
+
+    cell.addEventListener("click", () => showDayDetail(d, month, year));
+    grid.appendChild(cell);
+  }
+
+  // Fill remaining
+  const totalCells = startDow + totalDays;
+  const remainder = totalCells % 7;
+  if (remainder > 0) {
+    for (let i = 0; i < 7 - remainder; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cal-cell empty";
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function showDayDetail(day, month, year) {
+  const date = { day, month, year };
+  const jd = jdFromDate(day, month, year);
+  const lunar = solar2lunar(day, month, year);
+  const canchi = lunar ? getDayCanChi(jd) : null;
+  const assessment = (lunar && canchi) ? assessDay(lunar.day, lunar.month, canchi.canIndex, canchi.chiIndex, jd, month) : null;
+  const terms = getCurrentAndNext(date);
+  const quote = getRandomQuote();
+  const events = lunar ? getEventsForDay(day, month, lunar.day, lunar.month) : [];
+
+  const weekdayNames = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
+  const dow = new Date(year, month - 1, day).getDay();
+
+  document.getElementById("detailTitle").textContent = `${weekdayNames[dow]}, ${day}/${month}/${year}`;
+
+  // Info grid
+  const canChiStr = canchi ? `${canchi.can} ${canchi.chi}` : "—";
+  const yearCan = lunar ? getYearCanChi(lunar.year) : null;
+  const yearIdx = lunar ? getYearCanIndex(lunar.year) : 0;
+  const monthCan = (lunar && yearCan) ? getMonthCanChi(lunar.month, yearIdx) : null;
+  const lunarStr = lunar ? `${lunar.day} tháng ${lunar.month}` : "—";
+  const lunarCanChi = monthCan ? `${monthCan.can} ${monthCan.chi}` : "—";
+  const yearCanChi = yearCan ? `${yearCan.can} ${yearCan.chi}` : "—";
+
+  const ngayThang = `${lunarStr}, năm ${yearCanChi}`;
+
+  document.getElementById("detailInfoGrid").innerHTML = `
+    <div class="info-item"><span class="info-label">Ngày âm</span><span class="info-value">${ngayThang}</span></div>
+    <div class="info-item"><span class="info-label">Can Chi</span><span class="info-value">${canChiStr}</span></div>
+    ${assessment ? `
+    <div class="info-item"><span class="info-label">Trực</span><span class="info-value">${assessment.truc}</span></div>
+    <div class="info-item"><span class="info-label">Nhị thập bát tú</span><span class="info-value">${assessment.tu}</span></div>` : ''}
+    <div class="info-item"><span class="info-label">Tháng Âm</span><span class="info-value">${lunarCanChi}</span></div>
+  `;
+
+  // Score bar
+  const scoreBar = document.getElementById("detailScoreBar");
+  if (assessment) {
+    const normalizedScore = Math.min(100, Math.max(0, assessment.score + 50));
+    const scorePct = Math.round((normalizedScore / 100) * 100);
+    const barColor = assessment.score > 0 ? "#2E7D32" : assessment.score < 0 ? "#D32F2F" : "#F9A825";
+    scoreBar.innerHTML = `
+      <div class="score-label-row">
+        <span class="score-title" style="color:${barColor}">${assessment.label}</span>
+        <span class="score-value">${assessment.score}/100</span>
+      </div>
+      <div class="score-bar" style="margin-top:6px">
+        <div class="score-bar-fill" style="width:${scorePct}%;background:${barColor}"></div>
+      </div>
+    `;
+  }
+
+  // Hours
+  const goodList = document.getElementById("detailGoodHoursList");
+  const badList = document.getElementById("detailBadHoursList");
+  if (assessment) {
+    goodList.innerHTML = assessment.goodHours.slice(0, 6).map(h =>
+      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    ).join("");
+    badList.innerHTML = assessment.badHours.slice(0, 6).map(h =>
+      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    ).join("");
+  }
+
+  // Activities
+  const actsEl = document.getElementById("detailActivities");
+  if (assessment && (assessment.goodActs.length > 0 || assessment.badActs.length > 0)) {
+    actsEl.style.display = "block";
+    document.getElementById("detailGoodActs").innerHTML = assessment.goodActs.length > 0 ? `
+      <div class="action-group good">
+        <div class="action-label">Nên làm</div>
+        <ul class="action-list">${assessment.goodActs.map(a => `<li>${a}</li>`).join("")}</ul>
+      </div>` : "";
+    document.getElementById("detailBadActs").innerHTML = assessment.badActs.length > 0 ? `
+      <div class="action-group bad">
+        <div class="action-label">Nên tránh</div>
+        <ul class="action-list">${assessment.badActs.map(a => `<li>${a}</li>`).join("")}</ul>
+      </div>` : "";
+  } else {
+    actsEl.style.display = "none";
+  }
+
+  // Solar term
+  const termEl = document.getElementById("detailTermInfo");
+  if (terms) {
+    termEl.innerHTML = `
+      <div class="term-item"><span class="term-name">${terms.current.name}</span><span class="term-date">từ ${terms.current.date.day}/${terms.current.date.month}</span></div>
+      <div class="term-item"><span class="term-name">${terms.next.name}</span><span class="term-date">${terms.next.date.day}/${terms.next.date.month}</span></div>
+    `;
+  }
+
+  // Events
+  const evtEl = document.getElementById("detailEventCard");
+  if (events.length > 0) {
+    evtEl.style.display = "block";
+    document.getElementById("detailEventList").innerHTML = events.map(e =>
+      `<div class="event-item"><span class="event-star">✦</span><span class="event-text">${e}</span></div>`
+    ).join("");
+  } else {
+    evtEl.style.display = "none";
+  }
+
+  // Quote
+  document.getElementById("detailQuote").textContent = `"${quote}"`;
+
+  // Show detail
+  const detail = document.getElementById("day-detail");
+  detail.classList.add("visible");
+  detail.scrollIntoView({ behavior: "smooth" });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+function initCalendar() {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth() + 1;
+  renderToday();
+  renderCalendar(currentYear, currentMonth);
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  currentMonth--;
+  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+  renderCalendar(currentYear, currentMonth);
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  currentMonth++;
+  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+  renderCalendar(currentYear, currentMonth);
+});
+
+document.getElementById("todayBtn").addEventListener("click", () => {
+  const now = new Date();
+  currentYear = now.getFullYear();
+  currentMonth = now.getMonth() + 1;
+  renderCalendar(currentYear, currentMonth);
+  // Close detail
+  document.getElementById("day-detail").classList.remove("visible");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("closeDetail").addEventListener("click", () => {
+  document.getElementById("day-detail").classList.remove("visible");
+});
+
+initCalendar();
+</script>
 </body>
 </html>

@@ -4,17 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.automirrored.outlined.Article
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import java.time.YearMonth
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +41,7 @@ enum class AppTab(val label: String, val icon: ImageVector) {
     Home("Hôm nay", Icons.Outlined.Home),
     Calendar("Lịch", Icons.Outlined.CalendarMonth),
     GoodDays("Ngày đẹp", Icons.Outlined.AutoAwesome),
-    News("Tin tức", Icons.AutoMirrored.Outlined.Article),
+    Prayers("Văn khấn", Icons.AutoMirrored.Outlined.MenuBook),
     Settings("Khác", Icons.Outlined.MoreHoriz)
 }
 
@@ -53,8 +53,8 @@ fun AppMain() {
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = Spacing2,
+                containerColor = MaterialTheme.colorScheme.background,
+                tonalElevation = 0.dp,
                 modifier = Modifier.height(72.dp)
             ) {
                 AppTab.entries.forEach { tab ->
@@ -70,7 +70,7 @@ fun AppMain() {
                         label = {
                             Text(
                                 text = tab.label,
-                                style = MaterialTheme.typography.labelMedium
+                                style = MaterialTheme.typography.labelLarge
                             )
                         }
                     )
@@ -79,9 +79,7 @@ fun AppMain() {
         }
     ) { padding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+            modifier = Modifier.fillMaxSize().padding(padding)
         ) {
             when (selectedTab) {
                 AppTab.Home -> HomeScreen()
@@ -90,7 +88,7 @@ fun AppMain() {
                     onYearMonthChange = { calendarYearMonth = it }
                 )
                 AppTab.GoodDays -> GoodDayScreen()
-                AppTab.News -> NewsScreen()
+                AppTab.Prayers -> VanKhanScreen()
                 AppTab.Settings -> SettingsScreen()
             }
         }

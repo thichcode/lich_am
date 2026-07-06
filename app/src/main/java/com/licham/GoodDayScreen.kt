@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.YearMonth
@@ -32,14 +33,10 @@ fun GoodDayScreen() {
 
     if (selectedDate != null) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing4, vertical = Spacing4),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing4, vertical = Spacing4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { selectedDate = null }) {
@@ -63,10 +60,7 @@ fun GoodDayScreen() {
 }
 
 @Composable
-private fun GoodDayGrid(
-    currentMonth: YearMonth,
-    onDayClick: (LocalDate) -> Unit
-) {
+private fun GoodDayGrid(currentMonth: YearMonth, onDayClick: (LocalDate) -> Unit) {
     val daysInMonth = remember(currentMonth) {
         val daysInMonth = currentMonth.lengthOfMonth()
         (1..daysInMonth).map { day ->
@@ -92,64 +86,46 @@ private fun GoodDayGrid(
     }
 
     val monthNames = remember {
-        arrayOf(
-            "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
-            "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-        )
+        arrayOf("Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6",
+            "Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12")
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
-        Surface(
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp,
-            shadowElevation = Spacing1
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing16, vertical = Spacing12),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Spacing16, vertical = Spacing12),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.AutoAwesome,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(Spacing12))
-                Text(
-                    text = "${monthNames[currentMonth.monthValue - 1]} ${currentMonth.year}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            Icon(
+                imageVector = Icons.Outlined.AutoAwesome,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(Spacing12))
+            Text(
+                text = "${monthNames[currentMonth.monthValue - 1]} ${currentMonth.year}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(Spacing16),
+            contentPadding = PaddingValues(horizontal = Spacing16, vertical = Spacing8),
             verticalArrangement = Arrangement.spacedBy(Spacing8)
         ) {
             items(daysInMonth) { dayInfo ->
-                GoodBadDayCard(
-                    dayInfo = dayInfo,
-                    onClick = { onDayClick(dayInfo.date) }
-                )
+                GoodBadDayCard(dayInfo = dayInfo, onClick = { onDayClick(dayInfo.date) })
             }
         }
     }
 }
 
 @Composable
-private fun GoodBadDayCard(
-    dayInfo: DayInfo,
-    onClick: () -> Unit
-) {
+private fun GoodBadDayCard(dayInfo: DayInfo, onClick: () -> Unit) {
     val score = dayInfo.assessment?.score ?: 0
     val isToday = dayInfo.date == LocalDate.now()
 
@@ -172,29 +148,19 @@ private fun GoodBadDayCard(
     }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
+        modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = cardColor),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isToday) Spacing2 else 0.dp
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isToday) Spacing2 else 0.dp),
+        onClick = onClick
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Spacing16),
+            modifier = Modifier.fillMaxWidth().padding(Spacing16),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val contentDesc = when {
-                score > 0 -> "Ngày tốt"
-                score < 0 -> "Ngày xấu"
-                else -> "Ngày trung bình"
-            }
             Icon(
                 imageVector = icon,
-                contentDescription = contentDesc,
+                contentDescription = null,
                 tint = onCardColor,
                 modifier = Modifier.size(Spacing24)
             )
@@ -240,7 +206,7 @@ private fun GoodBadDayCard(
                     )
                     Text(
                         text = "${dayInfo.assessment.score}",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = onCardColor.copy(alpha = 0.7f)
                     )
                 }

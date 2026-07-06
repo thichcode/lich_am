@@ -41,9 +41,7 @@ fun SettingsScreen() {
             .background(MaterialTheme.colorScheme.background)
     ) {
         Surface(
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp,
-            shadowElevation = Spacing1
+            color = MaterialTheme.colorScheme.background
         ) {
             Row(
                 modifier = Modifier
