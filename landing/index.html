@@ -816,8 +816,35 @@ const HD = [[1,3,5,7,9,11],[2,4,6,8,10,0],[3,5,7,9,11,1],[4,6,8,10,0,2],[5,7,9,1
 const TN = new Set([3,7,13,18,22,27]);
 const NK = new Set([5,14,23]);
 const DCK = new Set(["13-1","11-2","9-3","7-4","5-5","3-6","1-7","29-7","27-8","25-9","23-10","21-11","19-12"]);
-const GD = ["Cúng lễ","Gặp gỡ","Xuất hành"];
-const BD = ["Động thổ","Tranh cãi","Đi xa"];
+const TRUC_GOOD = [
+  ["Khởi công","Nhập học","Mua nhà"],
+  ["Tẩy uế","Cúng bái","Sửa kho"],
+  ["Cầu tài","Mua bán","Ký kết"],
+  ["Xuất hành","Kết hôn","Nhập trạch"],
+  ["Sửa nhà","Kết hôn","Nhập học"],
+  ["Khai trương","Ký gửi","Đặt cọc"],
+  ["Phá dỡ","Giải trừ","Tháo dỡ"],
+  ["Phòng bệnh","Giữ gìn","Trùng tu"],
+  ["Khai trương","Kết hôn","Nhập trạch"],
+  ["Cầu tài","Học hành","Mua sắm"],
+  ["Xuất hành","Khai trương","Cưới hỏi"],
+  ["Cúng tế","An táng","Chôn cất"]
+];
+const TRUC_BAD = [
+  ["Động thổ","Phá dỡ","Tranh cãi"],
+  ["Khai trương","Xuất hành","Cưới hỏi"],
+  ["Tranh cãi","Kiện tụng","Động thổ"],
+  ["Động thổ","Phá nhà","Kiện tụng"],
+  ["Xuất hành","Tranh cãi","Đi xa"],
+  ["Động thổ","Cưới hỏi","Xuất hành"],
+  ["Khai trương","Kết hôn","Nhập trạch","Cưới hỏi"],
+  ["Xuất hành","Cưới hỏi","Khai trương","Động thổ"],
+  ["Tranh cãi","Kiện tụng","Động thổ"],
+  ["Động thổ","Xuất hành","Phá dỡ"],
+  ["Phá dỡ","Động thổ","Tế lễ"],
+  ["Xuất hành","Khai trương","Cưới hỏi","Động thổ"]
+];
+
 
 function isSatChu(dc, sm) {
   let s;
@@ -846,11 +873,14 @@ function assessDay(ld, lm, dci, dchi, jd, sm) {
   sc += (ld === 15 ? 10 : 0) + (ld === 1 ? 8 : 0);
   const tet = ld === 1 && lm === 1;
   const label = tet ? "Tết Nguyên Đán" : sc >= 30 ? "Đại Cát" : sc > 0 ? "Ngày Tốt" : sc === 0 ? "Ngày Bình Thường" : sc >= -30 ? "Ngày Xấu" : "Đại Hung";
-  const ga = sc > 0 ? GD : [], ba = sc < 0 ? BD : [];
+  const tg = TRUC_GOOD[ti] || ["Cúng lễ","Gặp gỡ","Xuất hành"];
+  const tb = TRUC_BAD[ti] || ["Động thổ","Tranh cãi","Đi xa"];
+  const ga = sc > 0 ? tg.slice(0,3) : [];
+  const ba = sc < 0 ? tb.slice(0,3) : [];
   const gh = HD[dchi];
   const ghL = gh.map(h => ({ chi: CHI[h], time: HR[h] }));
   const bhL = [...new Set([0,1,2,3,4,5,6,7,8,9,10,11])].filter(x => !gh.includes(x)).sort().map(h => ({ chi: CHI[h], time: HR[h] }));
-  return { score: sc, label, goodActs: ga, badActs: ba, goodHours: ghL, badHours: bhL, truc: tn, tu: TU[tui], hdd: hdd };
+  return { score: sc, label, goodActs: ga, badActs: ba, goodHours: ghL, badHours: bhL, truc: tn, trucIdx: ti, tu: TU[tui], hdd: hdd };
 }
 
 const TN_NAMES = ["Lập Xuân","Vũ Thủy","Kinh Trập","Xuân Phân","Thanh Minh","Cốc Vũ","Lập Hạ","Tiểu Mãn","Mang Chủng","Hạ Chí","Tiểu Thử","Đại Thử","Lập Thu","Xử Thử","Bạch Lộ","Thu Phân","Hàn Lộ","Sương Giáng","Lập Đông","Tiểu Tuyết","Đại Tuyết","Đông Chí","Tiểu Hàn","Đại Hàn"];
@@ -981,10 +1011,13 @@ function renderHome(date, root = document.getElementById('tabHome')) {
   const actsEl = get('activitiesCard');
   if (as) {
     actsEl.style.display = 'block';
+    const tgi = (as.trucIdx != null) ? as.trucIdx : TRUC.indexOf(as.truc);
+    const gFallback = (tgi >= 0 && TRUC_GOOD[tgi]) ? TRUC_GOOD[tgi].slice(0,3) : ['Cúng tế','Gặp gỡ','Xuất hành'];
+    const bFallback = (tgi >= 0 && TRUC_BAD[tgi]) ? TRUC_BAD[tgi].slice(0,3) : ['Động thổ','Cưới hỏi','Tranh cãi'];
     get('goodActs').innerHTML =
-      `<div class="activity-line"><div class="activity-icon" style="color:#08680E">✓</div><div><div class="activity-title" style="color:#08680E">VIỆC NÊN LÀM</div><div class="activity-text">${(as.goodActs.length ? as.goodActs : ['Cúng tế','Gặp gỡ','Xuất hành']).join(', ')}</div></div></div>`;
+      `<div class="activity-line"><div class="activity-icon" style="color:#08680E">✓</div><div><div class="activity-title" style="color:#08680E">VIỆC NÊN LÀM</div><div class="activity-text">${(as.goodActs.length ? as.goodActs : gFallback).join(', ')}</div></div></div>`;
     get('badActs').innerHTML =
-      `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC NÊN TRÁNH</div><div class="activity-text">${(as.badActs.length ? as.badActs : ['Động thổ','Cưới hỏi','Tranh cãi']).join(', ')}</div></div></div>`;
+      `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC NÊN TRÁNH</div><div class="activity-text">${(as.badActs.length ? as.badActs : bFallback).join(', ')}</div></div></div>`;
   } else {
     actsEl.style.display = 'none';
   }

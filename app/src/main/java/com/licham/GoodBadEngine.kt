@@ -18,6 +18,7 @@ data class DayAssessment(
     val goodHours: List<HourInfo>,
     val badHours: List<HourInfo>,
     val truc: String,
+    val trucIdx: Int,
     val tu: String,
     val isHoangDao: Boolean
 )
@@ -61,6 +62,42 @@ object GoodBadEngine {
         13 to 1, 11 to 2, 9 to 3, 7 to 4, 5 to 5, 3 to 6,
         1 to 7, 29 to 7, 27 to 8, 25 to 9, 23 to 10, 21 to 11, 19 to 12
     )
+
+    private val trucGoodActivities = mapOf(
+        0 to listOf("Khởi công", "Nhập học", "Mua nhà"),
+        1 to listOf("Tẩy uế", "Cúng bái", "Sửa kho"),
+        2 to listOf("Cầu tài", "Mua bán", "Ký kết"),
+        3 to listOf("Xuất hành", "Kết hôn", "Nhập trạch"),
+        4 to listOf("Sửa nhà", "Kết hôn", "Nhập học"),
+        5 to listOf("Khai trương", "Ký gửi", "Đặt cọc"),
+        6 to listOf("Phá dỡ", "Giải trừ", "Tháo dỡ"),
+        7 to listOf("Phòng bệnh", "Giữ gìn", "Trùng tu"),
+        8 to listOf("Khai trương", "Kết hôn", "Nhập trạch"),
+        9 to listOf("Cầu tài", "Học hành", "Mua sắm"),
+        10 to listOf("Xuất hành", "Khai trương", "Cưới hỏi"),
+        11 to listOf("Cúng tế", "An táng", "Chôn cất")
+    )
+
+    private val trucBadActivities = mapOf(
+        0 to listOf("Động thổ", "Phá dỡ", "Tranh cãi"),
+        1 to listOf("Khai trương", "Xuất hành", "Cưới hỏi"),
+        2 to listOf("Tranh cãi", "Kiện tụng", "Động thổ"),
+        3 to listOf("Động thổ", "Phá nhà", "Kiện tụng"),
+        4 to listOf("Xuất hành", "Tranh cãi", "Đi xa"),
+        5 to listOf("Động thổ", "Cưới hỏi", "Xuất hành"),
+        6 to listOf("Khai trương", "Kết hôn", "Nhập trạch", "Cưới hỏi"),
+        7 to listOf("Xuất hành", "Cưới hỏi", "Khai trương", "Động thổ"),
+        8 to listOf("Tranh cãi", "Kiện tụng", "Động thổ"),
+        9 to listOf("Động thổ", "Xuất hành", "Phá dỡ"),
+        10 to listOf("Phá dỡ", "Động thổ", "Tế lễ"),
+        11 to listOf("Xuất hành", "Khai trương", "Cưới hỏi", "Động thổ")
+    )
+
+    fun getTrucGoodActivities(trucIdx: Int): List<String> =
+        trucGoodActivities[trucIdx] ?: listOf("Cúng tế", "Gặp gỡ", "Xuất hành")
+
+    fun getTrucBadActivities(trucIdx: Int): List<String> =
+        trucBadActivities[trucIdx] ?: listOf("Động thổ", "Cưới hỏi", "Tranh cãi")
 
     private var rules = mutableMapOf<String, Int>()
     private var goodDefault = listOf("Cúng lễ", "Gặp gỡ", "Xuất hành")
@@ -133,8 +170,10 @@ object GoodBadEngine {
             else -> "Đại Hung"
         }
 
-        val goodActs = if (score > 0) goodDefault.take(3) else emptyList()
-        val badActs = if (score < 0) badDefault.take(3) else emptyList()
+        val trucGoods = trucGoodActivities[trucIdx] ?: goodDefault.take(3)
+        val trucBads = trucBadActivities[trucIdx] ?: badDefault.take(3)
+        val goodActs = if (score > 0) trucGoods.take(3) else emptyList()
+        val badActs = if (score < 0) trucBads.take(3) else emptyList()
 
         val gh = hoangDaoHours[dayChiIndex]
         val goodHoursList = gh.map { h ->
@@ -155,6 +194,7 @@ object GoodBadEngine {
             goodHours = goodHoursList,
             badHours = badHoursList,
             truc = trucName,
+            trucIdx = trucIdx,
             tu = tuName,
             isHoangDao = hoangDaoDay
         )

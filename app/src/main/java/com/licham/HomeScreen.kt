@@ -397,17 +397,19 @@ private fun ActivitiesCard(assessment: DayAssessment) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Text("🎋", fontSize = 92.sp, modifier = Modifier.align(Alignment.BottomEnd).padding(end = 10.dp).alpha(0.35f))
             Column(modifier = Modifier.padding(18.dp)) {
+                val gFallback = GoodBadEngine.getTrucGoodActivities(assessment.trucIdx).joinToString(", ")
+                val bFallback = GoodBadEngine.getTrucBadActivities(assessment.trucIdx).joinToString(", ")
                 ActivityLine(
                     icon = Icons.Outlined.CheckCircle,
                     title = "VIỆC NÊN LÀM",
-                    text = assessment.goodActivities.joinToString(", ").ifBlank { "Cúng tế, Gặp gỡ, Xuất hành" },
+                    text = assessment.goodActivities.joinToString(", ").ifBlank { gFallback },
                     color = BlocGreen
                 )
                 Spacer(modifier = Modifier.height(Spacing16))
                 ActivityLine(
                     icon = Icons.Outlined.Cancel,
                     title = "VIỆC NÊN TRÁNH",
-                    text = assessment.badActivities.joinToString(", ").ifBlank { "Động thổ, Cưới hỏi, Tranh cãi" },
+                    text = assessment.badActivities.joinToString(", ").ifBlank { bFallback },
                     color = MaterialTheme.colorScheme.error
                 )
             }
