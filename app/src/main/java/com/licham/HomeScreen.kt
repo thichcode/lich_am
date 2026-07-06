@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,16 +18,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 
-private val nguHanhNames = arrayOf("Mộc", "Mộc", "Hỏa", "Hỏa", "Thổ", "Thổ", "Kim", "Kim", "Thủy", "Thủy")
-
-fun getNguHanh(canIndex: Int): String = nguHanhNames[canIndex % 10]
-
-fun normalizeScore(score: Int): Int = (score + 50).coerceIn(0, 100)
-
 @Composable
 fun HomeScreen() {
     val today = remember { LocalDate.now() }
-    DayDetailContent(date = today)
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        TopBar()
+        Box(modifier = Modifier.weight(1f)) {
+            DayDetailContent(date = today)
+        }
+    }
 }
 
 @Composable
@@ -79,22 +81,31 @@ fun DayDetailContent(date: LocalDate) {
     }
     val quote = remember(date) { QuoteProvider.getRandomQuote().text }
 
+    val solarDateStr = remember(date) {
+        "Ngày ${date.dayOfMonth} tháng ${date.monthValue} năm ${date.year}"
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(Spacing8))
-
-        HeroSection(
-            day = date.dayOfMonth,
+        MainDateBlock(
             weekday = weekdayNames[date.dayOfWeek.value % 7],
-            quote = quote
+            day = date.dayOfMonth,
+            solarDateStr = solarDateStr,
+            lunarDate = if (lunar != null) "${lunar.day} tháng ${lunar.month} âm lịch" else null,
+            canChiText = if (dayCanChi != null && monthCanChi != null) {
+                "Ngày ${CanChiCalculator.formatCanChi(dayCanChi)} · Tháng ${CanChiCalculator.formatCanChi(monthCanChi)} · Năm ${CanChiCalculator.formatCanChi(yearCanChi)}"
+            } else null,
+            assessment = assessment
         )
 
+        Spacer(modifier = Modifier.height(Spacing12))
+        QuoteCard(quote)
+
         if (lunar != null && assessment != null) {
-            Spacer(modifier = Modifier.height(Spacing16))
+            Spacer(modifier = Modifier.height(Spacing12))
             ThreeInfoCards(
                 assessment = assessment,
                 lunarDay = lunar.day,
@@ -119,29 +130,65 @@ fun DayDetailContent(date: LocalDate) {
             EventCard(events)
         }
 
-        if (assessment != null) {
-            Spacer(modifier = Modifier.height(Spacing12))
-            InfoCard(
-                canChi = dayCanChi,
-                assessment = assessment,
-                nguHanh = getNguHanh(canIndex),
-                lunar = lunar
-            )
-        }
-
         Spacer(modifier = Modifier.height(Spacing24))
     }
 }
 
 @Composable
-private fun HeroSection(day: Int, weekday: String, quote: String) {
+private fun TopBar() {
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Spacing8, vertical = Spacing8),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = "Menu",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "Lịch Âm",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Outlined.VolumeUp,
+                    contentDescription = "Đọc",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainDateBlock(
+    weekday: String,
+    day: Int,
+    solarDateStr: String,
+    lunarDate: String?,
+    canChiText: String?,
+    assessment: DayAssessment?
+) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing16),
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing8),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = weekday,
             style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -149,18 +196,79 @@ private fun HeroSection(day: Int, weekday: String, quote: String) {
         Text(
             text = "$day",
             style = MaterialTheme.typography.displayLarge,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            letterSpacing = (-2).sp
+        )
+        Spacer(modifier = Modifier.height(Spacing8))
+        Text(
+            text = solarDateStr,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(Spacing8))
+        if (lunarDate != null) {
+            Spacer(modifier = Modifier.height(Spacing4))
+            Text(
+                text = lunarDate,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        if (canChiText != null) {
+            Spacer(modifier = Modifier.height(Spacing4))
+            Text(
+                text = canChiText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        if (assessment != null) {
+            Spacer(modifier = Modifier.height(Spacing12))
+            val pillColors = when {
+                assessment.score > 0 -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
+                assessment.score < 0 -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
+                else -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+            }
+            Surface(
+                shape = RoundedCornerShape(Spacing12),
+                color = pillColors.first
+            ) {
+                Text(
+                    text = assessment.label,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = pillColors.second,
+                    modifier = Modifier.padding(horizontal = Spacing20, vertical = Spacing8)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuoteCard(quote: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing16),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = Spacing1)
+    ) {
         Text(
             text = "\u201C$quote\u201D",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            lineHeight = 22.sp,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing8)
+            modifier = Modifier.padding(Spacing16)
         )
     }
 }
@@ -250,12 +358,6 @@ private fun LunarDateCard(
     label: String,
     modifier: Modifier = Modifier
 ) {
-    val nhomColors = when {
-        score > 0 -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-        score < 0 -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-        else -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-    }
-
     Card(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
@@ -286,19 +388,6 @@ private fun LunarDateCard(
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(Spacing6))
-            Surface(
-                shape = RoundedCornerShape(Spacing8),
-                color = nhomColors.first
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = nhomColors.second,
-                    modifier = Modifier.padding(horizontal = Spacing10, vertical = Spacing4)
-                )
-            }
         }
     }
 }
@@ -314,7 +403,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
         Column(modifier = Modifier.padding(Spacing16)) {
             if (assessment.goodActivities.isNotEmpty()) {
                 Text(
-                    text = "Nên làm",
+                    text = "Việc nên làm",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary
@@ -343,7 +432,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
             if (assessment.badActivities.isNotEmpty()) {
                 if (assessment.goodActivities.isNotEmpty()) Spacer(modifier = Modifier.height(Spacing8))
                 Text(
-                    text = "Nên tránh",
+                    text = "Việc nên tránh",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.error
@@ -389,34 +478,18 @@ private fun TermCard(current: TermInfo, next: TermInfo) {
                 color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(Spacing6))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "\u2022 ${current.name}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(Spacing8))
-                Text(
-                    text = "từ ${current.date.dayOfMonth}/${current.date.monthValue}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = "\u2022 ${current.name} (từ ${current.date.dayOfMonth}/${current.date.monthValue})",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.height(Spacing4))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "\u2022 ${next.name}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.width(Spacing8))
-                Text(
-                    text = "${next.date.dayOfMonth}/${next.date.monthValue}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Text(
+                text = "\u2022 ${next.name} (${next.date.dayOfMonth}/${next.date.monthValue})",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -452,90 +525,3 @@ private fun EventCard(events: List<String>) {
         }
     }
 }
-
-@Composable
-private fun InfoCard(
-    canChi: Pair<String, String>,
-    assessment: DayAssessment,
-    nguHanh: String,
-    lunar: LunarDate?
-) {
-    val nScore = normalizeScore(assessment.score)
-    val scorePct = nScore.toFloat() / 100f
-    val scoreColor = when {
-        assessment.score > 0 -> MaterialTheme.colorScheme.secondary
-        assessment.score < 0 -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.tertiary
-    }
-    val hoangDaoTruc = setOf("Mãn", "Bình", "Định", "Chấp", "Thành", "Khai")
-    val isHoangDao = assessment.truc in hoangDaoTruc
-    val hoangDaoText = if (isHoangDao) "Hoàng Đạo" else "Hắc Đạo"
-
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing16),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = Spacing1)
-    ) {
-        Column(modifier = Modifier.padding(Spacing16)) {
-            Text(
-                text = "Chi tiết",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(Spacing10))
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                InfoLabel("Can Chi", "Ngày ${CanChiCalculator.formatCanChi(canChi)}", Modifier.weight(1f))
-                InfoLabel("Ngũ hành", nguHanh, Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(Spacing8))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                InfoLabel("Trực", assessment.truc, Modifier.weight(1f))
-                InfoLabel("Nhị thập bát tú", assessment.tu, Modifier.weight(1f))
-            }
-            Spacer(modifier = Modifier.height(Spacing8))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                InfoLabel("Hoàng đạo", hoangDaoText, Modifier.weight(1f))
-                InfoLabel("Điểm", "${nScore}/100", Modifier.weight(1f))
-            }
-
-            Spacer(modifier = Modifier.height(Spacing10))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(10.dp)
-                    .background(
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                        RoundedCornerShape(5.dp)
-                    )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(scorePct)
-                        .height(10.dp)
-                        .background(scoreColor, RoundedCornerShape(5.dp))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun InfoLabel(label: String, value: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
-

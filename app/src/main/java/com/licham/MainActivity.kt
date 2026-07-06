@@ -39,10 +39,10 @@ class MainActivity : ComponentActivity() {
 
 enum class AppTab(val label: String, val icon: ImageVector) {
     Home("Hôm nay", Icons.Outlined.Home),
-    Calendar("Lịch", Icons.Outlined.CalendarMonth),
-    GoodDays("Ngày đẹp", Icons.Outlined.AutoAwesome),
+    Calendar("Lịch tháng", Icons.Outlined.CalendarMonth),
+    GoodDays("Ngày tốt", Icons.Outlined.AutoAwesome),
     Prayers("Văn khấn", Icons.AutoMirrored.Outlined.MenuBook),
-    Settings("Khác", Icons.Outlined.MoreHoriz)
+    Settings("Thêm", Icons.Outlined.MoreHoriz)
 }
 
 @Composable
