@@ -67,59 +67,10 @@ body {
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* ========== DATE NAV (subtle) ========== */
-.date-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 2px 16px 10px;
-  border-bottom: 1px solid #EAEAEA;
-  margin-bottom: 12px;
-}
-.date-nav button {
-  background: none;
-  border: none;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  color: #5F6368;
-  border-radius: 50%;
-  touch-action: manipulation;
-  flex-shrink: 0;
-}
-.date-nav button:hover { background: #F5F5F5; }
-.date-nav .nav-date-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #202124;
-  min-width: 100px;
+/* ========== HERO BLOCK ========== */
+.hero-block {
   text-align: center;
-}
-.date-nav .nav-today {
-  font-size: 14px;
-  font-weight: 700;
-  color: #C62828;
-  background: none;
-  border: 2px solid #C62828;
-  border-radius: 20px;
-  padding: 2px 14px;
-  cursor: pointer;
-  touch-action: manipulation;
-  height: auto;
-  width: auto;
-  line-height: 28px;
-}
-.date-nav .nav-today:hover { background: #FFF0F0; }
-
-/* ========== MAIN DATE BLOCK ========== */
-.date-block {
-  text-align: center;
-  padding: 0 16px;
+  padding: 16px 16px 0;
 }
 .weekday {
   font-size: 36px;
@@ -136,34 +87,17 @@ body {
   line-height: 1;
   margin: 2px 0;
 }
-.solar-date {
-  font-size: 20px;
-  font-weight: 500;
-  color: #202124;
-  margin: 6px 0 4px;
+.badge-row {
+  text-align: center;
+  padding: 4px 0 0;
 }
-.lunar-date {
-  font-size: 26px;
-  font-weight: 700;
-  color: #C62828;
-  margin: 4px 0;
-}
-.canchi-line {
-  font-size: 18px;
-  color: #5F6368;
-  margin: 4px 0;
-}
-.assessment-pill {
+.hoangdao-badge {
   display: inline-block;
-  padding: 10px 24px;
-  border-radius: 14px;
   font-size: 18px;
   font-weight: 700;
-  margin: 14px 0 0;
 }
-.assessment-pill.good { background: #E8F5E9; color: #2E7D32; }
-.assessment-pill.neutral { background: #FFF8E1; color: #B8860B; }
-.assessment-pill.bad { background: #FFEBEE; color: #D32F2F; }
+.hoangdao-badge.green { color: #2E7D32; }
+.hoangdao-badge.red { color: #D32F2F; }
 
 /* ========== CARDS ========== */
 .card {
@@ -392,7 +326,6 @@ body {
 @media (max-width: 380px) {
   .day-number { font-size: 72px; }
   .weekday { font-size: 30px; }
-  .lunar-date { font-size: 22px; }
   .card { padding: 14px; }
 }
 </style>
@@ -411,20 +344,12 @@ body {
 
 <!-- TAB: HÔM NAY -->
 <div class="tab-content active" id="tabHome">
-  <div class="date-nav">
-    <button id="prevDay">‹</button>
-    <div class="nav-date-label" id="navDateLabel"></div>
-    <button id="nextDay">›</button>
-    <button class="nav-today" id="gotoToday">Hôm nay</button>
-  </div>
-
-  <div class="date-block">
+  <div class="hero-block">
     <div class="weekday" id="weekday"></div>
     <div class="day-number" id="dayNum"></div>
-    <div class="solar-date" id="solarDate"></div>
-    <div class="lunar-date" id="lunarDate"></div>
-    <div class="canchi-line" id="canchiLine"></div>
-    <div class="assessment-pill" id="pill"></div>
+  </div>
+  <div class="badge-row">
+    <span class="hoangdao-badge" id="hdBadge"></span>
   </div>
 
   <div class="card" style="margin-top:14px">
@@ -670,7 +595,7 @@ function assessDay(ld, lm, dci, dchi, jd, sm) {
   const gh = HD[dchi];
   const ghL = gh.map(h => ({ chi: CHI[h], time: HR[h] }));
   const bhL = [...new Set([0,1,2,3,4,5,6,7,8,9,10,11])].filter(x => !gh.includes(x)).sort().map(h => ({ chi: CHI[h], time: HR[h] }));
-  return { score: sc, label, goodActs: ga, badActs: ba, goodHours: ghL, badHours: bhL, truc: tn, tu: TU[tui] };
+  return { score: sc, label, goodActs: ga, badActs: ba, goodHours: ghL, badHours: bhL, truc: tn, tu: TU[tui], hdd: hdd };
 }
 
 const TN_NAMES = ["Lập Xuân","Vũ Thủy","Kinh Trập","Xuân Phân","Thanh Minh","Cốc Vũ","Lập Hạ","Tiểu Mãn","Mang Chủng","Hạ Chí","Tiểu Thử","Đại Thử","Lập Thu","Xử Thử","Bạch Lộ","Thu Phân","Hàn Lộ","Sương Giáng","Lập Đông","Tiểu Tuyết","Đại Tuyết","Đông Chí","Tiểu Hàn","Đại Hàn"];
@@ -731,7 +656,6 @@ const VK = [
 // ============================================================
 // STATE
 // ============================================================
-let viewDate = new Date(); viewDate.setHours(0,0,0,0);
 const today = new Date(); today.setHours(0,0,0,0);
 let calYM = { y: today.getFullYear(), m: today.getMonth() + 1 };
 
@@ -772,29 +696,18 @@ function renderHome(date) {
   })() : [];
   const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   const wd = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
-  const isT = date.getTime() === today.getTime();
 
-  document.getElementById('navDateLabel').textContent = isT ? 'Hôm nay' : `${d}/${m}/${y}`;
   document.getElementById('weekday').textContent = wd[date.getDay()];
   document.getElementById('dayNum').textContent = d;
-  document.getElementById('solarDate').textContent = `Ngày ${d} tháng ${m} năm ${y}`;
-  document.getElementById('lunarDate').textContent = lunar ? `Ngày ${lunar.day} tháng ${lunar.month} âm lịch` : '';
 
-  if (cc && mc && yc) {
-    document.getElementById('canchiLine').textContent = `Ngày ${cc.can} ${cc.chi} · Tháng ${mc.can} ${mc.chi} · Năm ${yc.can} ${yc.chi}`;
-  } else {
-    document.getElementById('canchiLine').textContent = '';
-  }
-
-  const pill = document.getElementById('pill');
+  const hdEl = document.getElementById('hdBadge');
   if (as) {
-    pill.textContent = as.label;
-    pill.className = 'assessment-pill';
-    if (as.score > 0) pill.classList.add('good');
-    else if (as.score < 0) pill.classList.add('bad');
-    else pill.classList.add('neutral');
-    pill.style.display = 'inline-block';
-  } else { pill.style.display = 'none'; }
+    hdEl.textContent = as.hdd ? '🟢 Hoàng đạo' : '🔴 Hắc đạo';
+    hdEl.className = 'hoangdao-badge' + (as.hdd ? ' green' : ' red');
+  } else {
+    hdEl.textContent = '';
+    hdEl.className = 'hoangdao-badge';
+  }
 
   document.getElementById('quoteText').textContent = `"${q}"`;
 
@@ -938,10 +851,6 @@ function renderVanKhan() {
 // ============================================================
 // INIT
 // ============================================================
-document.getElementById('prevDay').addEventListener('click', () => { viewDate.setDate(viewDate.getDate() - 1); renderHome(viewDate); });
-document.getElementById('nextDay').addEventListener('click', () => { viewDate.setDate(viewDate.getDate() + 1); renderHome(viewDate); });
-document.getElementById('gotoToday').addEventListener('click', () => { viewDate = new Date(today); renderHome(viewDate); });
-
 renderHome(today);
 </script>
 </body>

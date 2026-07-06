@@ -18,7 +18,8 @@ data class DayAssessment(
     val goodHours: List<HourInfo>,
     val badHours: List<HourInfo>,
     val truc: String,
-    val tu: String
+    val tu: String,
+    val isHoangDao: Boolean
 )
 
 object GoodBadEngine {
@@ -154,7 +155,8 @@ object GoodBadEngine {
             goodHours = goodHoursList,
             badHours = badHoursList,
             truc = trucName,
-            tu = tuName
+            tu = tuName,
+            isHoangDao = hoangDaoDay
         )
     }
 

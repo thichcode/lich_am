@@ -3,8 +3,9 @@ package com.licham
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.VolumeUp
@@ -81,10 +82,6 @@ fun DayDetailContent(date: LocalDate) {
     }
     val quote = remember(date) { QuoteProvider.getRandomQuote().text }
 
-    val solarDateStr = remember(date) {
-        "Ngày ${date.dayOfMonth} tháng ${date.monthValue} năm ${date.year}"
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,12 +90,7 @@ fun DayDetailContent(date: LocalDate) {
         MainDateBlock(
             weekday = weekdayNames[date.dayOfWeek.value % 7],
             day = date.dayOfMonth,
-            solarDateStr = solarDateStr,
-            lunarDate = if (lunar != null) "${lunar.day} tháng ${lunar.month} âm lịch" else null,
-            canChiText = if (dayCanChi != null && monthCanChi != null) {
-                "Ngày ${CanChiCalculator.formatCanChi(dayCanChi)} · Tháng ${CanChiCalculator.formatCanChi(monthCanChi)} · Năm ${CanChiCalculator.formatCanChi(yearCanChi)}"
-            } else null,
-            assessment = assessment
+            isHoangDao = assessment?.isHoangDao ?: true
         )
 
         Spacer(modifier = Modifier.height(Spacing12))
@@ -176,10 +168,7 @@ private fun TopBar() {
 private fun MainDateBlock(
     weekday: String,
     day: Int,
-    solarDateStr: String,
-    lunarDate: String?,
-    canChiText: String?,
-    assessment: DayAssessment?
+    isHoangDao: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = Spacing8),
@@ -202,55 +191,27 @@ private fun MainDateBlock(
             modifier = Modifier.fillMaxWidth(),
             letterSpacing = (-2).sp
         )
-        Spacer(modifier = Modifier.height(Spacing8))
-        Text(
-            text = solarDateStr,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
+        Spacer(modifier = Modifier.height(Spacing6))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
-        )
-        if (lunarDate != null) {
-            Spacer(modifier = Modifier.height(Spacing4))
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(
+                        color = if (isHoangDao) Color(0xFF2E7D32) else Color(0xFFD32F2F),
+                        shape = CircleShape
+                    )
+            )
+            Spacer(modifier = Modifier.width(Spacing8))
             Text(
-                text = lunarDate,
-                style = MaterialTheme.typography.titleLarge,
+                text = if (isHoangDao) "Hoàng đạo" else "Hắc đạo",
+                style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                color = MaterialTheme.colorScheme.onSurface
             )
-        }
-        if (canChiText != null) {
-            Spacer(modifier = Modifier.height(Spacing4))
-            Text(
-                text = canChiText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        if (assessment != null) {
-            Spacer(modifier = Modifier.height(Spacing12))
-            val pillColors = when {
-                assessment.score > 0 -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
-                assessment.score < 0 -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-                else -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-            }
-            Surface(
-                shape = RoundedCornerShape(Spacing12),
-                color = pillColors.first
-            ) {
-                Text(
-                    text = assessment.label,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = pillColors.second,
-                    modifier = Modifier.padding(horizontal = Spacing20, vertical = Spacing8)
-                )
-            }
         }
     }
 }
