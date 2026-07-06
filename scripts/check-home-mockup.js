@@ -23,6 +23,8 @@ const duplicates = [
   [home, 'lunarWeekday:', 'Android Home still accepts a lower weekday parameter'],
   [landing, 'id="lunarWeekday"', 'Landing Home repeats weekday below the solar day'],
   [landing, "getElementById('lunarWeekday')", 'Landing renderer still writes lower duplicate weekday'],
+  [landing, 'class="status-bar"', 'Landing Home still renders a fake phone status bar'],
+  [landing, 'class="status-icons"', 'Landing Home still renders fake phone status icons'],
 ].filter(([text, needle]) => text.includes(needle));
 
 if (missing.length > 0 || duplicates.length > 0) {
