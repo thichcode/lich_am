@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Cancel
@@ -47,6 +48,16 @@ fun HomeScreen() {
         HomeHeader(date = today)
         Box(modifier = Modifier.weight(1f)) {
             DayDetailContent(date = today)
+        }
+    }
+}
+
+@Composable
+fun SelectedDateDetailScreen(date: LocalDate, onBack: () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        HomeHeader(date = date, onBack = onBack)
+        Box(modifier = Modifier.weight(1f)) {
+            DayDetailContent(date = date)
         }
     }
 }
@@ -146,7 +157,7 @@ fun DayDetailContent(date: LocalDate) {
 }
 
 @Composable
-private fun HomeHeader(date: LocalDate) {
+private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -154,8 +165,13 @@ private fun HomeHeader(date: LocalDate) {
             .padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { }, modifier = Modifier.size(48.dp)) {
-            Icon(Icons.Outlined.Menu, contentDescription = "Menu", tint = Color.Black, modifier = Modifier.size(34.dp))
+        IconButton(onClick = { onBack?.invoke() }, modifier = Modifier.size(48.dp)) {
+            Icon(
+                imageVector = if (onBack != null) Icons.AutoMirrored.Outlined.ArrowBack else Icons.Outlined.Menu,
+                contentDescription = if (onBack != null) "Trở lại" else "Menu",
+                tint = Color.Black,
+                modifier = Modifier.size(34.dp)
+            )
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(86.dp)) {
             Text("♛", color = BlocGreen, fontSize = 32.sp, fontWeight = FontWeight.Bold, lineHeight = 28.sp)

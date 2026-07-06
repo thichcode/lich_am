@@ -437,6 +437,15 @@ body {
   display: grid; grid-template-columns: repeat(7, 1fr);
   padding: 0 8px; gap: 2px;
 }
+.cal-detail-back {
+  background: none;
+  border: none;
+  color: #08680E;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  padding: 12px 18px 4px;
+}
 .cal-header {
   display: grid; grid-template-columns: repeat(7, 1fr);
   padding: 0 8px; gap: 2px; margin-bottom: 2px;
@@ -576,19 +585,25 @@ body {
 
 <!-- TAB: LỊCH THÁNG -->
 <div class="tab-content" id="tabCalendar">
-  <div class="cal-nav">
-    <button id="calPrev">‹</button>
-    <div>
-      <div class="cal-title" id="calTitle"></div>
-      <div class="cal-sub" id="calSub"></div>
+  <div id="calMonthView">
+    <div class="cal-nav">
+      <button id="calPrev">‹</button>
+      <div>
+        <div class="cal-title" id="calTitle"></div>
+        <div class="cal-sub" id="calSub"></div>
+      </div>
+      <button id="calNext">›</button>
+      <button style="background:none;border:none;width:44px;height:44px;cursor:pointer;font-size:20px;color:#5F6368;border-radius:50%" id="calToday">●</button>
     </div>
-    <button id="calNext">›</button>
-    <button style="background:none;border:none;width:44px;height:44px;cursor:pointer;font-size:20px;color:#5F6368;border-radius:50%" id="calToday">●</button>
+    <div class="cal-header">
+      <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
   </div>
-  <div class="cal-header">
-    <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+  <div id="calendarDetailView" style="display:none">
+    <button class="cal-detail-back" id="calendarDetailBack">← Lịch tháng</button>
+    <div id="calendarDetailContent"></div>
   </div>
-  <div class="cal-grid" id="calGrid"></div>
 </div>
 
 <!-- TAB: NGÀY TỐT -->
@@ -859,7 +874,8 @@ document.querySelectorAll('.nav-item').forEach(btn => {
     const id = btn.dataset.tab;
     document.getElementById(id).classList.add('active');
     document.getElementById('scrollArea').scrollTop = 0;
-    if (id === 'tabCalendar') renderCal(calYM.y, calYM.m);
+    if (id === 'tabHome') renderHome(today);
+    if (id === 'tabCalendar') { showCalendarGrid(); renderCal(calYM.y, calYM.m); }
     if (id === 'tabGoodDay') renderGoodDays();
     if (id === 'tabVanKhan') renderVanKhan();
   });
@@ -868,7 +884,8 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 // ============================================================
 // HOME TAB RENDER
 // ============================================================
-function renderHome(date) {
+function renderHome(date, root = document.getElementById('tabHome')) {
+  const get = (id) => root.querySelector(`#${id}`);
   const d = date.getDate(), m = date.getMonth() + 1, y = date.getFullYear();
   const jd = jdFromDate(d, m, y);
   const lunar = solar2lunar(d, m, y);
@@ -888,50 +905,50 @@ function renderHome(date) {
 
   document.getElementById('headerMonthLabel').textContent = `Tháng ${m} - ${y}`;
   document.getElementById('headerDayCircle').textContent = d;
-  document.getElementById('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
-  document.getElementById('dayNum').textContent = d;
+  get('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
+  get('dayNum').textContent = d;
 
-  document.getElementById('quoteText').textContent = q;
+  get('quoteText').textContent = q;
 
   if (as) {
-    document.getElementById('goodHoursList').innerHTML = as.goodHours.slice(0,5).map(h =>
+    get('goodHoursList').innerHTML = as.goodHours.slice(0,5).map(h =>
       `<div class="mock-hour-row"><span class="time" style="color:#08680E">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
     ).join('');
-    document.getElementById('badHoursList').innerHTML = as.badHours.slice(0,5).map(h =>
+    get('badHoursList').innerHTML = as.badHours.slice(0,5).map(h =>
       `<div class="mock-hour-row"><span class="time" style="color:#C91414">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
     ).join('');
   }
 
   if (lunar && mc && yc) {
-    document.getElementById('lunarMiniContent').innerHTML =
+    get('lunarMiniContent').innerHTML =
       `<div class="mock-lunar-day">${lunar.day}</div>` +
       `<div class="mock-lunar-rule"></div>` +
       `<div class="mock-lunar-month">THÁNG ${String(lunar.month).padStart(2,'0')}</div>` +
       `<div class="mock-lunar-text">Âm lịch<br>Năm ${yc.can} ${yc.chi}<br>Tháng ${mc.can} ${mc.chi}<br>Ngày ${cc.can} ${cc.chi}</div>`;
   }
 
-  const actsEl = document.getElementById('activitiesCard');
+  const actsEl = get('activitiesCard');
   if (as) {
     actsEl.style.display = 'block';
-    document.getElementById('goodActs').innerHTML =
+    get('goodActs').innerHTML =
       `<div class="activity-line"><div class="activity-icon" style="color:#08680E">✓</div><div><div class="activity-title" style="color:#08680E">VIỆC NÊN LÀM</div><div class="activity-text">${(as.goodActs.length ? as.goodActs : ['Cúng tế','Gặp gỡ','Xuất hành']).join(', ')}</div></div></div>`;
-    document.getElementById('badActs').innerHTML =
+    get('badActs').innerHTML =
       `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC NÊN TRÁNH</div><div class="activity-text">${(as.badActs.length ? as.badActs : ['Động thổ','Cưới hỏi','Tranh cãi']).join(', ')}</div></div></div>`;
   } else {
     actsEl.style.display = 'none';
   }
 
   if (terms) {
-    document.getElementById('termContent').innerHTML =
+    get('termContent').innerHTML =
       `<div class="term-col"><div class="term-leaf">☘</div><div><div class="term-title">TIẾT KHÍ</div><div class="term-name">${terms.cur.n}</div><div class="term-date">Bắt đầu: ${String(terms.cur.d.day).padStart(2,'0')}/${String(terms.cur.d.month).padStart(2,'0')}/${terms.cur.d.year}</div></div></div>` +
       `<div class="term-divider"></div>` +
       `<div class="term-col"><div class="term-leaf">☘</div><div><div class="term-title">TIẾT KHÍ TIẾP THEO</div><div class="term-name">${terms.nxt.n}</div><div class="term-date">Bắt đầu: ${String(terms.nxt.d.day).padStart(2,'0')}/${String(terms.nxt.d.month).padStart(2,'0')}/${terms.nxt.d.year}</div></div></div>`;
   }
 
-  const evtEl = document.getElementById('eventCard');
+  const evtEl = get('eventCard');
   if (evs.length > 0) {
     evtEl.style.display = 'flex';
-    document.getElementById('eventContent').innerHTML =
+    get('eventContent').innerHTML =
       `<div class="events-title">SỰ KIỆN - NGÀY LỄ</div>` + evs.map((e, i) =>
       `<div class="event-row"><span>• ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}${i > 0 && lunar ? ` (${String(lunar.day).padStart(2,'0')}/${String(lunar.month).padStart(2,'0')} ÂL)` : ''}</span><span class="event-name">${e}</span></div>`
     ).join('');
@@ -969,6 +986,7 @@ function renderCal(y, m) {
     if (as) {
       cell.innerHTML += `<div class="cal-dot ${as.score > 0 ? 'good' : as.score < 0 ? 'bad' : 'neutral'}"></div>`;
     }
+    cell.addEventListener('click', () => showCalendarDayDetail(d, m, y));
     grid.appendChild(cell);
   }
   const total = sd + last.getDate();
@@ -976,9 +994,26 @@ function renderCal(y, m) {
   if (rem > 0) for (let i = 0; i < 7 - rem; i++) { const c = document.createElement('div'); c.className = 'cal-cell empty'; grid.appendChild(c); }
 }
 
+function showCalendarDayDetail(d, m, y) {
+  const detailContent = document.getElementById('calendarDetailContent');
+  detailContent.innerHTML = document.getElementById('tabHome').innerHTML;
+  document.getElementById('calMonthView').style.display = 'none';
+  document.getElementById('calendarDetailView').style.display = 'block';
+  renderHome(new Date(y, m - 1, d), detailContent);
+  document.getElementById('scrollArea').scrollTop = 0;
+}
+
+function showCalendarGrid() {
+  document.getElementById('calMonthView').style.display = 'block';
+  document.getElementById('calendarDetailView').style.display = 'none';
+  document.getElementById('calendarDetailContent').innerHTML = '';
+  renderHome(today);
+}
+
 document.getElementById('calPrev').addEventListener('click', () => { calYM.m--; if (calYM.m < 1) { calYM.m = 12; calYM.y--; } renderCal(calYM.y, calYM.m); });
 document.getElementById('calNext').addEventListener('click', () => { calYM.m++; if (calYM.m > 12) { calYM.m = 1; calYM.y++; } renderCal(calYM.y, calYM.m); });
 document.getElementById('calToday').addEventListener('click', () => { renderCal(today.getFullYear(), today.getMonth()+1); });
+document.getElementById('calendarDetailBack').addEventListener('click', showCalendarGrid);
 
 // ============================================================
 // GOOD DAY TAB

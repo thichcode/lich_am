@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
@@ -49,11 +48,7 @@ fun CalendarMonthScreen(
             year = yearMonth.year,
             month = yearMonth.monthValue,
             dayValue = day.day,
-            onBack = { selectedDay = null },
-            onToday = {
-                selectedDay = null
-                onYearMonthChange(YearMonth.now())
-            }
+            onBack = { selectedDay = null }
         )
     } else {
         CalendarGrid(
@@ -236,35 +231,8 @@ private fun CalendarDayCell(day: CalendarDay, onClick: () -> Unit) {
 @Composable
 private fun CalendarDayDetail(
     year: Int, month: Int, dayValue: Int,
-    onBack: () -> Unit, onToday: () -> Unit
+    onBack: () -> Unit
 ) {
     val date = remember { LocalDate.of(year, month, dayValue) }
-    val weekdayNames = remember {
-        arrayOf("Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy")
-    }
-
-    Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing4, vertical = Spacing4),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Trở lại")
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "${date.dayOfMonth} ${weekdayNames[date.dayOfWeek.value % 7]}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = onToday) {
-                Text("Hôm nay", style = MaterialTheme.typography.labelLarge)
-            }
-        }
-        DayDetailContent(date = date)
-    }
+    SelectedDateDetailScreen(date = date, onBack = onBack)
 }

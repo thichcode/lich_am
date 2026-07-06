@@ -15,6 +15,11 @@ const checks = [
   [landing, 'class="shortcut-row"', 'Landing Home has action shortcut row'],
   [landing, 'class="term-split-card"', 'Landing Home has split solar-term card'],
   [landing, 'class="events-card"', 'Landing Home has styled event card'],
+  [home, 'fun SelectedDateDetailScreen(', 'Android calendar has reusable Home-style selected-day detail'],
+  [home, 'HomeHeader(date = date, onBack = onBack)', 'Android selected-day detail uses Home header with back'],
+  [landing, 'id="calendarDetailView"', 'Landing calendar has selected-day detail view'],
+  [landing, 'function showCalendarDayDetail(', 'Landing calendar can show selected-day detail'],
+  [landing, 'showCalendarDayDetail(d, m, y)', 'Landing calendar cells open selected-day detail'],
 ];
 
 const missing = checks.filter(([text, needle]) => !text.includes(needle));
