@@ -38,13 +38,11 @@ import java.time.LocalDate
 private val BlocGreen = Color(0xFF08680E)
 private val BlocLightGreen = Color(0xFF4A9D18)
 private val BlocRed = Color(0xFFD90000)
-private val BlocCardBorder = Color(0xFFE0E0E0)
-private val BlocSoftCard = Color(0xFFFEFEFE)
 
 @Composable
 fun HomeScreen() {
     val today = remember { LocalDate.now() }
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         HomeHeader(date = today)
         Box(modifier = Modifier.weight(1f)) {
             DayDetailContent(date = today)
@@ -54,7 +52,7 @@ fun HomeScreen() {
 
 @Composable
 fun SelectedDateDetailScreen(date: LocalDate, onBack: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         HomeHeader(date = date, onBack = onBack)
         Box(modifier = Modifier.weight(1f)) {
             DayDetailContent(date = date)
@@ -161,7 +159,7 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -169,7 +167,7 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
             Icon(
                 imageVector = if (onBack != null) Icons.AutoMirrored.Outlined.ArrowBack else Icons.Outlined.Menu,
                 contentDescription = if (onBack != null) "Trở lại" else "Menu",
-                tint = Color.Black,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(34.dp)
             )
         }
@@ -180,7 +178,7 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
         Surface(
             modifier = Modifier.weight(1f).height(52.dp),
             shape = RoundedCornerShape(14.dp),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.surface,
             border = BorderStroke(1.dp, BlocGreen)
         ) {
             Row(
@@ -242,7 +240,7 @@ private fun ShortcutAction(icon: ImageVector, label: String, color: Color, strok
             Icon(icon, contentDescription = label, tint = color, modifier = Modifier.size(32.dp))
         }
         Spacer(modifier = Modifier.height(Spacing6))
-        Text(label, fontSize = 16.sp, color = Color.Black, textAlign = TextAlign.Center)
+        Text(label, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
     }
 }
 
@@ -269,16 +267,16 @@ private fun QuoteCard(quote: String) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp)) {
-            Text("“", color = Color(0xFFD4D4D4), fontSize = 42.sp, modifier = Modifier.align(Alignment.TopStart))
-            Text("”", color = Color(0xFFD4D4D4), fontSize = 42.sp, modifier = Modifier.align(Alignment.TopEnd))
+            Text("“", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), fontSize = 42.sp, modifier = Modifier.align(Alignment.TopStart))
+            Text("”", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), fontSize = 42.sp, modifier = Modifier.align(Alignment.TopEnd))
             Text(
                 text = quote,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 18.sp,
                 lineHeight = 28.sp,
                 textAlign = TextAlign.Center,
@@ -331,8 +329,8 @@ private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon:
     Card(
         modifier = modifier.heightIn(min = 210.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = BlocSoftCard),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
@@ -344,7 +342,7 @@ private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon:
             hours.forEach { hour ->
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(hour.timeRange.replace("–", " - "), color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                    Text(hour.chiName, color = Color.Black, fontSize = 16.sp)
+                    Text(hour.chiName, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -367,8 +365,8 @@ private fun LunarPanel(
     Card(
         modifier = modifier.heightIn(min = 210.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = BlocSoftCard),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(
@@ -379,10 +377,10 @@ private fun LunarPanel(
             Box(modifier = Modifier.width(72.dp).height(1.dp).background(BlocGreen))
             Text("THÁNG ${lunarMonth.toString().padStart(2, '0')}", color = BlocGreen, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(Spacing12))
-            Text("Âm lịch", color = Color.Black, fontSize = 16.sp)
-            Text("Năm $yearCanChi", color = Color.Black, fontSize = 15.sp, textAlign = TextAlign.Center)
-            Text("Tháng $monthCanChi", color = Color.Black, fontSize = 15.sp, textAlign = TextAlign.Center)
-            Text("Ngày $dayCanChi", color = Color.Black, fontSize = 15.sp, textAlign = TextAlign.Center)
+            Text("Âm lịch", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
+            Text("Năm $yearCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
+            Text("Tháng $monthCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
+            Text("Ngày $dayCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
         }
     }
 }
@@ -392,8 +390,8 @@ private fun ActivitiesCard(assessment: DayAssessment) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -410,7 +408,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                     icon = Icons.Outlined.Cancel,
                     title = "VIỆC NÊN TRÁNH",
                     text = assessment.badActivities.joinToString(", ").ifBlank { "Động thổ, Cưới hỏi, Tranh cãi" },
-                    color = Color(0xFFC91414)
+                    color = MaterialTheme.colorScheme.error
                 )
             }
         }
@@ -425,7 +423,7 @@ private fun ActivityLine(icon: ImageVector, title: String, text: String, color: 
         Column(modifier = Modifier.weight(1f)) {
             Text(title, color = color, fontSize = 19.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(Spacing6))
-            Text(text, color = Color.Black, fontSize = 16.sp, lineHeight = 24.sp)
+            Text(text, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp, lineHeight = 24.sp)
         }
     }
 }
@@ -435,13 +433,13 @@ private fun TermSplitCard(current: TermInfo, next: TermInfo) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 18.dp)) {
             TermColumn("TIẾT KHÍ", current, Modifier.weight(1f))
-            Box(modifier = Modifier.width(1.dp).height(96.dp).background(BlocCardBorder))
+            Box(modifier = Modifier.width(1.dp).height(96.dp).background(MaterialTheme.colorScheme.outline))
             TermColumn("TIẾT KHÍ TIẾP THEO", next, Modifier.weight(1f))
         }
     }
@@ -455,9 +453,9 @@ private fun TermColumn(title: String, term: TermInfo, modifier: Modifier = Modif
         Column {
             Text(title, color = BlocGreen, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(Spacing10))
-            Text(term.name, color = Color.Black, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+            Text(term.name, color = MaterialTheme.colorScheme.onSurface, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(Spacing6))
-            Text("Bắt đầu: ${term.date.dayOfMonth.toString().padStart(2, '0')}/${term.date.monthValue.toString().padStart(2, '0')}/${term.date.year}", color = Color.Black, fontSize = 14.sp)
+            Text("Bắt đầu: ${term.date.dayOfMonth.toString().padStart(2, '0')}/${term.date.monthValue.toString().padStart(2, '0')}/${term.date.year}", color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
         }
     }
 }
@@ -467,8 +465,8 @@ private fun MockupEventsCard(date: LocalDate, lunar: LunarDate?, events: List<St
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BlocCardBorder),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.Top) {
@@ -485,7 +483,7 @@ private fun MockupEventsCard(date: LocalDate, lunar: LunarDate?, events: List<St
                             val lunarText = lunar?.let { " (${it.day.toString().padStart(2, '0')}/${it.month.toString().padStart(2, '0')} ÂL)" } ?: ""
                             "• ${date.dayOfMonth.toString().padStart(2, '0')}/${date.monthValue.toString().padStart(2, '0')}/${date.year}$lunarText"
                         }
-                        Text(dateText, color = Color.Black, fontSize = 14.sp, modifier = Modifier.width(134.dp))
+                        Text(dateText, color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp, modifier = Modifier.width(134.dp))
                         Text(event, color = BlocGreen, fontSize = 14.sp, modifier = Modifier.weight(1f))
                     }
                 }

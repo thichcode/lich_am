@@ -13,6 +13,29 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
+import java.time.LocalDate
+import java.time.LocalTime
+
+enum class ThemeMode { LIGHT, DARK, SYSTEM, SUNRISE_SUNSET }
+
+object SunriseSunset {
+    private const val LATITUDE = 21.0285
+    private const val LONGITUDE = 105.8542
+
+    fun isDarkAt(time: LocalTime, date: LocalDate = LocalDate.now()): Boolean {
+        val dayOfYear = date.dayOfYear
+        val declination = 23.45 * Math.sin(Math.toRadians(360.0 / 365.0 * (284.0 + dayOfYear)))
+        val cosHourAngle = -Math.tan(Math.toRadians(LATITUDE)) * Math.tan(Math.toRadians(declination))
+        if (cosHourAngle > 1.0 || cosHourAngle < -1.0) return false
+        val hourAngle = Math.toDegrees(Math.acos(cosHourAngle))
+        val sunriseHour = 12.0 - hourAngle / 15.0
+        val sunsetHour = 12.0 + hourAngle / 15.0
+        val currentMinutes = time.hour * 60 + time.minute
+        val sunriseMinutes = (sunriseHour * 60).toInt()
+        val sunsetMinutes = (sunsetHour * 60).toInt()
+        return currentMinutes < sunriseMinutes || currentMinutes >= sunsetMinutes
+    }
+}
 
 val DeepRed = Color(0xFFC62828)
 val JadeGreen = Color(0xFF2E7D32)
@@ -112,10 +135,9 @@ val Spacing32 = 32.dp
 val Spacing40 = 40.dp
 
 @Composable
-fun LichAmTheme(content: @Composable () -> Unit) {
+fun LichAmTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val config = LocalConfiguration.current
     val baseDensity = LocalDensity.current
-    val isDarkMode = isSystemInDarkTheme()
 
     val screenScale = when {
         config.screenWidthDp < 360 -> 0.78f
@@ -131,7 +153,7 @@ fun LichAmTheme(content: @Composable () -> Unit) {
 
     CompositionLocalProvider(LocalDensity provides scaledDensity) {
         MaterialTheme(
-            colorScheme = if (isDarkMode) DarkColorScheme else LightColorScheme,
+            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
             typography = SeniorTypography,
             shapes = SeniorShapes,
             content = content

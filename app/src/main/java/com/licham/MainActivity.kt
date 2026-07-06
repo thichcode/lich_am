@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
@@ -18,7 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.delay
+import java.time.LocalTime
 import java.time.YearMonth
+
+val LocalThemeMode = staticCompositionLocalOf { mutableStateOf(ThemeMode.SYSTEM) }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +40,40 @@ class MainActivity : ComponentActivity() {
         EventProvider.load(eventsJson)
 
         setContent {
-            LichAmTheme {
-                AppMain()
+            val prefs = remember { getSharedPreferences("licham_prefs", MODE_PRIVATE) }
+            val themeMode = remember {
+                mutableStateOf(ThemeMode.entries[prefs.getInt("theme_mode", ThemeMode.SYSTEM.ordinal)])
+            }
+
+            LaunchedEffect(themeMode.value) {
+                prefs.edit().putInt("theme_mode", themeMode.value.ordinal).apply()
+            }
+
+            val systemDark = isSystemInDarkTheme()
+            var refreshKey by remember { mutableIntStateOf(0) }
+
+            LaunchedEffect(themeMode.value) {
+                if (themeMode.value == ThemeMode.SUNRISE_SUNSET) {
+                    while (true) {
+                        delay(60_000)
+                        refreshKey++
+                    }
+                }
+            }
+
+            val isDark = remember(themeMode.value, systemDark, refreshKey) {
+                when (themeMode.value) {
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.DARK -> true
+                    ThemeMode.SYSTEM -> systemDark
+                    ThemeMode.SUNRISE_SUNSET -> SunriseSunset.isDarkAt(LocalTime.now())
+                }
+            }
+
+            CompositionLocalProvider(LocalThemeMode provides themeMode) {
+                LichAmTheme(darkTheme = isDark) {
+                    AppMain()
+                }
             }
         }
     }
@@ -88,8 +125,8 @@ fun AppMain() {
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Color.White,
                             selectedTextColor = Color.White,
-                            unselectedIconColor = Color(0xFF424242),
-                            unselectedTextColor = Color(0xFF202124),
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurface,
                             indicatorColor = Color.Transparent
                         )
                     )

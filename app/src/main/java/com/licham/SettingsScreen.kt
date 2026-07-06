@@ -9,9 +9,11 @@ import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.SystemUpdateAlt
 import androidx.compose.material3.*
@@ -64,6 +66,66 @@ fun SettingsScreen() {
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(Spacing8))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(horizontal = Spacing16))
+        Spacer(modifier = Modifier.height(Spacing12))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Spacing16),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.DarkMode,
+                contentDescription = "Giao diện",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(Spacing12))
+            Text(
+                text = "Giao diện",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Spacing8))
+        val themeModeState = LocalThemeMode.current
+        Column(modifier = Modifier.padding(horizontal = Spacing16)) {
+            ThemeMode.entries.forEach { mode ->
+                val label = when (mode) {
+                    ThemeMode.LIGHT -> "Sáng"
+                    ThemeMode.DARK -> "Tối"
+                    ThemeMode.SYSTEM -> "Theo hệ thống"
+                    ThemeMode.SUNRISE_SUNSET -> "Theo mặt trời"
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .clickable { themeModeState.value = mode },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = themeModeState.value == mode,
+                        onClick = { themeModeState.value = mode }
+                    )
+                    Spacer(modifier = Modifier.width(Spacing8))
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Spacing12))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(horizontal = Spacing16))
+        Spacer(modifier = Modifier.height(Spacing16))
 
         Column(
             modifier = Modifier
