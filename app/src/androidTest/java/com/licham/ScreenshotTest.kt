@@ -39,16 +39,16 @@ class ScreenshotTest {
         takeScreenshot(device, screenshotDir, "home_screen")
         
         // Open calendar tab
-        onView(withText("Lịch")).perform(androidx.test.espresso.action.ViewActions.click())
+        onView(withText("Lịch tháng")).perform(androidx.test.espresso.action.ViewActions.click())
         takeScreenshot(device, screenshotDir, "calendar_screen")
         
         // Open good days tab
-        onView(withText("Ngày đẹp")).perform(androidx.test.espresso.action.ViewActions.click())
+        onView(withText("Ngày tốt")).perform(androidx.test.espresso.action.ViewActions.click())
         takeScreenshot(device, screenshotDir, "good_days_screen")
         
-        // Open news tab
-        onView(withText("Tin tức")).perform(androidx.test.espresso.action.ViewActions.click())
-        takeScreenshot(device, screenshotDir, "news_screen")
+        // Open prayer tab
+        onView(withText("Văn khấn")).perform(androidx.test.espresso.action.ViewActions.click())
+        takeScreenshot(device, screenshotDir, "prayers_screen")
     }
 
     private fun takeScreenshot(device: UiDevice, directory: File, name: String) {

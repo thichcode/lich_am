@@ -12,12 +12,14 @@ body {
   color: #202124;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
-  max-width: 500px;
-  margin: 0 auto;
+  max-width: 430px;
+  width: 100%;
+  margin: 0;
   overflow: hidden;
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: #EAEAEA; border-radius: 4px; }
@@ -54,6 +56,60 @@ body {
   font-size: 20px;
   font-weight: 700;
   color: #202124;
+}
+
+/* ========== MOCKUP HOME HEADER ========== */
+.status-bar {
+  height: 34px;
+  padding: 0 28px;
+  background: #08730c;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.status-icons { letter-spacing: 2px; font-size: 16px; }
+.mock-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 10px;
+  background: #fff;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mock-menu { border:0; background:transparent; font-size:32px; width:38px; height:44px; cursor:pointer; flex:0 0 38px; }
+.mock-logo { width:58px; flex:0 0 58px; text-align:center; color:#08680E; font-weight:800; line-height:1.05; }
+.mock-logo .crown { font-size:30px; line-height:24px; }
+.mock-logo .name { font-size:13px; }
+.month-select {
+  flex: 1 1 0;
+  height: 52px;
+  border: 1px solid #08680E;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color:#08680E;
+  min-width: 0;
+  font-size: 19px;
+  font-weight: 800;
+  gap: 8px;
+}
+.day-circle {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  border: 3px solid #08680E;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#08680E;
+  font-size:22px;
+  font-weight:800;
 }
 
 /* ========== SCROLLABLE CONTENT ========== */
@@ -98,6 +154,142 @@ body {
 }
 .hoangdao-badge.green { color: #2E7D32; }
 .hoangdao-badge.red { color: #D32F2F; }
+
+.shortcut-row {
+  display:flex;
+  align-items:flex-start;
+  padding: 12px 14px 6px;
+  gap: 8px;
+}
+.shortcut-row .spacer { flex:1; }
+.shortcut {
+  width: 54px;
+  text-align:center;
+  font-size:14px;
+  color:#111;
+}
+.shortcut .circle {
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  border:1px solid currentColor;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  margin-bottom:8px;
+}
+.hero-block { padding-top: 8px; }
+.weekday {
+  color:#08680E;
+  font-size:30px;
+  font-weight:900;
+}
+.day-number {
+  color:#D90000;
+  font-size:112px;
+  font-weight:900;
+  line-height:.92;
+}
+.lunar-weekday {
+  color:#08680E;
+  font-size:28px;
+  font-weight:900;
+  text-align:center;
+}
+.quote-card {
+  position:relative;
+  background:#fff;
+  border:1px solid #E0E0E0;
+  border-radius:12px;
+  margin: 14px 18px 10px;
+  padding: 16px 44px;
+  text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.quote-card:before,
+.quote-card:after {
+  position:absolute;
+  top:4px;
+  color:#D4D4D4;
+  font-size:44px;
+  font-weight:800;
+}
+.quote-card:before { content:'“'; left:14px; }
+.quote-card:after { content:'”'; right:14px; }
+.quote-text { color:#111; font-style:normal; font-size:18px; line-height:1.55; }
+.three-panel-row {
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:6px;
+  padding: 0 8px;
+}
+.mock-panel {
+  min-height:214px;
+  background:#fff;
+  border:1px solid #E0E0E0;
+  border-radius:10px;
+  padding:14px 8px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.mock-panel-title { font-size:16px; font-weight:900; margin-bottom:12px; }
+.mock-hour-row { display:flex; justify-content:space-between; width:100%; gap:4px; padding:2px 0; font-size:12px; }
+.mock-hour-row .time { font-weight:800; white-space: nowrap; }
+.thumb-circle { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; margin-top:auto; }
+.mock-lunar-day { color:#08680E; font-size:68px; line-height:.95; font-weight:900; }
+.mock-lunar-rule { width:70px; height:1px; background:#08680E; margin:2px 0 6px; }
+.mock-lunar-month { color:#08680E; font-size:18px; font-weight:900; margin-bottom:12px; }
+.mock-lunar-text { font-size:16px; line-height:1.45; text-align:center; color:#111; }
+.activity-card {
+  margin: 12px 18px 0;
+  border:1px solid #E0E0E0;
+  border-radius:10px;
+  background:#fff;
+  padding:18px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.activity-card:after { content:'🎋'; position:absolute; right:14px; bottom:-12px; font-size:92px; opacity:.32; }
+.activity-line { display:flex; gap:16px; align-items:flex-start; margin-bottom:18px; position:relative; z-index:1; }
+.activity-line:last-child { margin-bottom:0; }
+.activity-icon { font-size:34px; line-height:1; }
+.activity-title { font-size:19px; font-weight:900; margin-bottom:6px; }
+.activity-text { font-size:16px; line-height:1.5; color:#111; padding-right:80px; }
+.term-split-card {
+  margin:12px 18px 0;
+  border:1px solid #E0E0E0;
+  border-radius:10px;
+  background:#fff;
+  display:grid;
+  grid-template-columns:1fr 1px 1fr;
+  padding:18px 0;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.term-divider { background:#E0E0E0; }
+.term-col { display:flex; gap:10px; padding:0 16px; }
+.term-leaf { color:#08680E; font-size:24px; }
+.term-title { color:#08680E; font-size:16px; font-weight:900; margin-bottom:10px; }
+.term-name { color:#111; font-size:20px; font-weight:900; margin-bottom:6px; }
+.term-date { color:#111; font-size:14px; line-height:1.45; }
+#termContent { display: contents; }
+.events-card {
+  margin:12px 18px 14px;
+  border:1px solid #E0E0E0;
+  border-radius:10px;
+  background:#fff;
+  padding:18px;
+  display:flex;
+  gap:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.events-icon { color:#4A9D18; font-size:32px; }
+.events-title { color:#08680E; font-size:19px; font-weight:900; margin-bottom:12px; }
+.event-row { display:grid; grid-template-columns: 145px 1fr; gap:10px; padding:5px 0; font-size:14px; }
+.event-name { color:#08680E; }
 
 /* ========== CARDS ========== */
 .card {
@@ -239,7 +431,12 @@ body {
 }
 .nav-item .nav-icon { font-size: 22px; line-height: 1; }
 .nav-item .nav-label { font-size: 12px; line-height: 1.2; }
-.nav-item.active { color: #C62828; }
+.nav-item.active {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #09810F, #006A08);
+  border-radius: 8px;
+  margin: 0 2px;
+}
 .nav-item:hover { background: #FAFAFA; }
 
 /* ========== CALENDAR TAB ========== */
@@ -332,11 +529,19 @@ body {
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <button id="menuBtn">☰</button>
-  <div class="app-title">Lịch Âm</div>
-  <button id="speakerBtn">🔊</button>
+<!-- MOCKUP HEADER -->
+<div class="status-bar">
+  <span>15:22</span>
+  <span class="status-icons">▮▮▮ ))) ▭</span>
+</div>
+<div class="mock-header">
+  <button class="mock-menu" id="menuBtn">☰</button>
+  <div class="mock-logo">
+    <div class="crown">♛</div>
+    <div class="name">Lịch Việt</div>
+  </div>
+  <div class="month-select"><span id="headerMonthLabel"></span><span>▼</span></div>
+  <div class="day-circle" id="headerDayCircle"></div>
 </div>
 
 <!-- SCROLL AREA -->
@@ -344,43 +549,51 @@ body {
 
 <!-- TAB: HÔM NAY -->
 <div class="tab-content active" id="tabHome">
-  <div class="hero-block">
-    <div class="weekday" id="weekday"></div>
-    <div class="day-number" id="dayNum"></div>
-  </div>
-  <div class="badge-row">
-    <span class="hoangdao-badge" id="hdBadge"></span>
+  <div class="shortcut-row">
+    <div class="shortcut" style="color:#084C64"><div class="circle">↗</div><div>Chia sẻ</div></div>
+    <div class="shortcut" style="color:#FF2929"><div class="circle">📷</div><div>Chụp ảnh</div></div>
+    <div class="spacer"></div>
+    <div class="shortcut" style="color:#FF9D00"><div class="circle">🗓</div><div>Sự kiện</div></div>
+    <div class="shortcut" style="color:#4A9D18"><div class="circle">📝</div><div>Ghi chú</div></div>
   </div>
 
-  <div class="card" style="margin-top:14px">
+  <div class="hero-block">
+    <div class="weekday" id="weekdayTop"></div>
+    <div class="day-number" id="dayNum"></div>
+    <div class="lunar-weekday" id="lunarWeekday"></div>
+  </div>
+
+  <div class="quote-card">
     <div class="quote-text" id="quoteText"></div>
   </div>
 
-  <div class="card-row">
-    <div class="card">
-      <div class="card-title" style="color:#2E7D32">Giờ tốt</div>
+  <div class="three-panel-row">
+    <div class="mock-panel">
+      <div class="mock-panel-title" style="color:#08680E">GIỜ TỐT</div>
       <div id="goodHoursList"></div>
+      <div class="thumb-circle" style="background:#4A9D18">👍</div>
     </div>
-    <div class="card" id="lunarMiniCard">
+    <div class="mock-panel" id="lunarMiniCard">
       <div class="lunar-mini" id="lunarMiniContent"></div>
     </div>
-    <div class="card">
-      <div class="card-title" style="color:#D32F2F">Giờ xấu</div>
+    <div class="mock-panel">
+      <div class="mock-panel-title" style="color:#C91414">GIỜ XẤU</div>
       <div id="badHoursList"></div>
+      <div class="thumb-circle" style="background:#E92828">👎</div>
     </div>
   </div>
 
-  <div class="card" id="activitiesCard" style="display:none">
+  <div class="activity-card" id="activitiesCard" style="display:none">
     <div id="goodActs"></div>
     <div id="badActs"></div>
   </div>
 
-  <div class="card" id="termCard">
-    <div class="card-title">Tiết khí</div>
+  <div class="term-split-card" id="termCard">
     <div id="termContent"></div>
   </div>
 
-  <div class="card" id="eventCard" style="display:none">
+  <div class="events-card" id="eventCard" style="display:none">
+    <div class="events-icon">▣</div>
     <div id="eventContent"></div>
   </div>
 </div>
@@ -697,56 +910,55 @@ function renderHome(date) {
   const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   const wd = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
 
-  document.getElementById('weekday').textContent = wd[date.getDay()];
+  document.getElementById('headerMonthLabel').textContent = `Tháng ${m} - ${y}`;
+  document.getElementById('headerDayCircle').textContent = d;
+  document.getElementById('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
   document.getElementById('dayNum').textContent = d;
+  document.getElementById('lunarWeekday').textContent = wd[date.getDay()].toUpperCase();
 
-  const hdEl = document.getElementById('hdBadge');
-  if (as) {
-    hdEl.textContent = as.hdd ? '🟢 Hoàng đạo' : '🔴 Hắc đạo';
-    hdEl.className = 'hoangdao-badge' + (as.hdd ? ' green' : ' red');
-  } else {
-    hdEl.textContent = '';
-    hdEl.className = 'hoangdao-badge';
-  }
-
-  document.getElementById('quoteText').textContent = `"${q}"`;
+  document.getElementById('quoteText').textContent = q;
 
   if (as) {
-    document.getElementById('goodHoursList').innerHTML = as.goodHours.slice(0,3).map(h =>
-      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    document.getElementById('goodHoursList').innerHTML = as.goodHours.slice(0,5).map(h =>
+      `<div class="mock-hour-row"><span class="time" style="color:#08680E">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
     ).join('');
-    document.getElementById('badHoursList').innerHTML = as.badHours.slice(0,3).map(h =>
-      `<div class="hour-item"><span class="hour-label">Giờ ${h.chi}</span><span class="hour-time">${h.time}</span></div>`
+    document.getElementById('badHoursList').innerHTML = as.badHours.slice(0,5).map(h =>
+      `<div class="mock-hour-row"><span class="time" style="color:#C91414">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
     ).join('');
   }
 
   if (lunar && mc && yc) {
     document.getElementById('lunarMiniContent').innerHTML =
-      `<div class="lm-day">${lunar.day}</div><div class="lm-month">tháng ${lunar.month}</div><div class="lm-canchi">${mc.can} ${mc.chi} · ${yc.can} ${yc.chi}</div>`;
+      `<div class="mock-lunar-day">${lunar.day}</div>` +
+      `<div class="mock-lunar-rule"></div>` +
+      `<div class="mock-lunar-month">THÁNG ${String(lunar.month).padStart(2,'0')}</div>` +
+      `<div class="mock-lunar-text">Âm lịch<br>Năm ${yc.can} ${yc.chi}<br>Tháng ${mc.can} ${mc.chi}<br>Ngày ${cc.can} ${cc.chi}</div>`;
   }
 
   const actsEl = document.getElementById('activitiesCard');
-  if (as && (as.goodActs.length > 0 || as.badActs.length > 0)) {
+  if (as) {
     actsEl.style.display = 'block';
-    document.getElementById('goodActs').innerHTML = as.goodActs.length > 0 ?
-      `<div class="action-group good"><div class="action-label">Việc nên làm</div><ul class="action-list">${as.goodActs.map(a => `<li>${a}</li>`).join('')}</ul></div>` : '';
-    document.getElementById('badActs').innerHTML = as.badActs.length > 0 ?
-      `<div class="action-group bad"><div class="action-label">Việc nên tránh</div><ul class="action-list">${as.badActs.map(a => `<li>${a}</li>`).join('')}</ul></div>` : '';
+    document.getElementById('goodActs').innerHTML =
+      `<div class="activity-line"><div class="activity-icon" style="color:#08680E">✓</div><div><div class="activity-title" style="color:#08680E">VIỆC NÊN LÀM</div><div class="activity-text">${(as.goodActs.length ? as.goodActs : ['Cúng tế','Gặp gỡ','Xuất hành']).join(', ')}</div></div></div>`;
+    document.getElementById('badActs').innerHTML =
+      `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC NÊN TRÁNH</div><div class="activity-text">${(as.badActs.length ? as.badActs : ['Động thổ','Cưới hỏi','Tranh cãi']).join(', ')}</div></div></div>`;
   } else {
     actsEl.style.display = 'none';
   }
 
   if (terms) {
     document.getElementById('termContent').innerHTML =
-      `<div class="term-line"><span class="term-name">${terms.cur.n}</span> <span class="term-date">(từ ${terms.cur.d.day}/${terms.cur.d.month})</span></div>` +
-      `<div class="term-line"><span class="term-name">${terms.nxt.n}</span> <span class="term-date">(${terms.nxt.d.day}/${terms.nxt.d.month})</span></div>`;
+      `<div class="term-col"><div class="term-leaf">☘</div><div><div class="term-title">TIẾT KHÍ</div><div class="term-name">${terms.cur.n}</div><div class="term-date">Bắt đầu: ${String(terms.cur.d.day).padStart(2,'0')}/${String(terms.cur.d.month).padStart(2,'0')}/${terms.cur.d.year}</div></div></div>` +
+      `<div class="term-divider"></div>` +
+      `<div class="term-col"><div class="term-leaf">☘</div><div><div class="term-title">TIẾT KHÍ TIẾP THEO</div><div class="term-name">${terms.nxt.n}</div><div class="term-date">Bắt đầu: ${String(terms.nxt.d.day).padStart(2,'0')}/${String(terms.nxt.d.month).padStart(2,'0')}/${terms.nxt.d.year}</div></div></div>`;
   }
 
   const evtEl = document.getElementById('eventCard');
   if (evs.length > 0) {
-    evtEl.style.display = 'block';
-    document.getElementById('eventContent').innerHTML = evs.map(e =>
-      `<div class="event-item"><span class="event-star">✦</span><span class="event-text">${e}</span></div>`
+    evtEl.style.display = 'flex';
+    document.getElementById('eventContent').innerHTML =
+      `<div class="events-title">SỰ KIỆN - NGÀY LỄ</div>` + evs.map((e, i) =>
+      `<div class="event-row"><span>• ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}${i > 0 && lunar ? ` (${String(lunar.day).padStart(2,'0')}/${String(lunar.month).padStart(2,'0')} ÂL)` : ''}</span><span class="event-name">${e}</span></div>`
     ).join('');
   } else { evtEl.style.display = 'none'; }
 }
