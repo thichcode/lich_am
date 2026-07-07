@@ -13,7 +13,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Spa
 import androidx.compose.material.icons.outlined.ThumbDown
@@ -170,27 +169,13 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
             Text("♛", color = BlocGreen, fontSize = 32.sp, fontWeight = FontWeight.Bold, lineHeight = 28.sp)
             Text("Lịch Việt", color = BlocGreen, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         }
-        Surface(
-            modifier = Modifier.weight(1f).height(52.dp),
-            shape = RoundedCornerShape(14.dp),
-            color = MaterialTheme.colorScheme.surface,
-            border = BorderStroke(1.dp, BlocGreen)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Tháng ${date.monthValue} - ${date.year}",
-                    color = BlocGreen,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null, tint = BlocGreen)
-            }
-        }
+        Text(
+            text = "Tháng ${date.monthValue} - ${date.year}",
+            color = BlocGreen,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f)
+        )
         Box(
             modifier = Modifier.width(78.dp),
             contentAlignment = Alignment.CenterEnd

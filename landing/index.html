@@ -99,20 +99,6 @@ body {
 .mock-logo { width:58px; flex:0 0 58px; text-align:center; color:#08680E; font-weight:800; line-height:1.05; }
 .mock-logo .crown { font-size:30px; line-height:24px; }
 .mock-logo .name { font-size:13px; }
-.month-select {
-  flex: 1 1 0;
-  height: 52px;
-  border: 1px solid #08680E;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color:#08680E;
-  min-width: 0;
-  font-size: 19px;
-  font-weight: 800;
-  gap: 8px;
-}
 .day-circle {
   width: 50px;
   height: 50px;
@@ -544,7 +530,7 @@ body {
     <div class="crown">♛</div>
     <div class="name">Lịch Việt</div>
   </div>
-  <div class="month-select"><span id="headerMonthLabel"></span><span>▼</span></div>
+  <span id="headerMonthLabel" style="flex:1;font-size:19px;font-weight:800;color:#08680E;text-align:center"></span>
   <div class="day-circle" id="headerDayCircle"></div>
 </div>
 
