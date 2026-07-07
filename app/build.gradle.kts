@@ -14,7 +14,7 @@ android {
         minSdk = 23
         targetSdk = 34
         versionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull() ?: 1
-        versionName = project.findProperty("versionName")?.toString() ?: "1.1"
+        versionName = project.findProperty("versionName")?.toString() ?: "1.2"
     }
 
     buildFeatures {
