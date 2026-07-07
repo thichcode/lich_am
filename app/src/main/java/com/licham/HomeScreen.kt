@@ -13,7 +13,6 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Spa
 import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
@@ -157,13 +156,15 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
             .padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onBack?.invoke() }, modifier = Modifier.size(48.dp)) {
-            Icon(
-                imageVector = if (onBack != null) Icons.AutoMirrored.Outlined.ArrowBack else Icons.Outlined.Menu,
-                contentDescription = if (onBack != null) "Trở lại" else "Menu",
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.size(34.dp)
-            )
+        if (onBack != null) {
+            IconButton(onClick = { onBack.invoke() }, modifier = Modifier.size(48.dp)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = "Trở lại",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(34.dp)
+                )
+            }
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(86.dp)) {
             Text("♛", color = BlocGreen, fontSize = 32.sp, fontWeight = FontWeight.Bold, lineHeight = 28.sp)
