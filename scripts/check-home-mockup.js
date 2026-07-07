@@ -7,12 +7,10 @@ const landing = fs.readFileSync(path.join(root, 'landing/index.html'), 'utf8');
 
 const checks = [
   [home, 'HomeHeader(', 'Android Home has mockup header'],
-  [home, 'ActionShortcutRow(', 'Android Home has action shortcut row'],
   [home, 'SolarWeekdayBlock(', 'Android Home has weekday/day hero'],
   [home, 'TermSplitCard(', 'Android Home has split solar-term card'],
   [home, 'MockupEventsCard(', 'Android Home has styled event card'],
   [landing, 'class="mock-header"', 'Landing Home has mockup header'],
-  [landing, 'class="shortcut-row"', 'Landing Home has action shortcut row'],
   [landing, 'class="term-split-card"', 'Landing Home has split solar-term card'],
   [landing, 'class="events-card"', 'Landing Home has styled event card'],
   [home, 'fun SelectedDateDetailScreen(', 'Android calendar has reusable Home-style selected-day detail'],

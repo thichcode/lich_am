@@ -11,14 +11,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.EditNote
-import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Spa
 import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
@@ -118,7 +114,6 @@ fun DayDetailContent(date: LocalDate) {
             .verticalScroll(rememberScrollState())
             .padding(bottom = Spacing16)
     ) {
-        ActionShortcutRow()
         SolarWeekdayBlock(
             weekday = weekday.uppercase(),
             day = date.dayOfMonth
@@ -209,38 +204,6 @@ private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
                 Text("${date.dayOfMonth}", color = BlocGreen, fontSize = 22.sp, fontWeight = FontWeight.Bold)
             }
         }
-    }
-}
-
-@Composable
-private fun ActionShortcutRow() {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ShortcutAction(Icons.Outlined.Share, "Chia sẻ", Color(0xFF084C64), Color(0xFFB9C9D0))
-        Spacer(modifier = Modifier.width(20.dp))
-        ShortcutAction(Icons.Outlined.CameraAlt, "Chụp ảnh", Color(0xFFFF2929), Color(0xFFFFC8C8))
-        Spacer(modifier = Modifier.weight(1f))
-        ShortcutAction(Icons.Outlined.Event, "Sự kiện", Color(0xFFFF9D00), Color(0xFFE7C37A))
-        Spacer(modifier = Modifier.width(20.dp))
-        ShortcutAction(Icons.Outlined.EditNote, "Ghi chú", BlocLightGreen, Color(0xFFC5D8BE))
-    }
-}
-
-@Composable
-private fun ShortcutAction(icon: ImageVector, label: String, color: Color, stroke: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(70.dp)) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .border(1.dp, stroke, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, contentDescription = label, tint = color, modifier = Modifier.size(32.dp))
-        }
-        Spacer(modifier = Modifier.height(Spacing6))
-        Text(label, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
     }
 }
 
