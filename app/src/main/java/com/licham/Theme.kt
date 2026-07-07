@@ -139,11 +139,14 @@ fun LichAmTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
     val config = LocalConfiguration.current
     val baseDensity = LocalDensity.current
 
+    val diagDp = Math.sqrt(
+        (config.screenWidthDp * config.screenWidthDp + config.screenHeightDp * config.screenHeightDp).toDouble()
+    ).toFloat()
     val screenScale = when {
-        config.screenWidthDp < 360 -> 0.78f
-        config.screenWidthDp < 400 -> 0.88f
-        config.screenWidthDp < 480 -> 0.95f
-        else -> 1.02f
+        diagDp < 580 -> 0.85f
+        diagDp < 700 -> 0.93f
+        diagDp < 860 -> 1.0f
+        else -> 1.06f
     }
 
     val scaledDensity = Density(
