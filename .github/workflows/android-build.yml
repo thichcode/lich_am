@@ -47,15 +47,7 @@ jobs:
       # ---- DEBUG BUILD (push to main) ----
       - name: Build debug APK
         if: ${{ github.event_name == 'push' }}
-        run: ./gradlew assembleDebug --console=plain
-
-      - name: Upload debug APK
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: lich-am-debug
-          path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: warn
+        run: ./gradlew assembleDebug -PversionCode=${{ github.run_number }} -PversionName=1.2 --console=plain
 
       # ---- RELEASE BUILD (workflow_dispatch) ----
       - name: Decode keystore
@@ -106,31 +98,23 @@ jobs:
           fi
           ./gradlew assembleRelease \
             -PversionCode=${{ github.run_number }} \
-            -PversionName=1.1 \
+            -PversionName=1.2 \
             --console=plain
 
-      - name: Upload release APK
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: lich-am-release-v1.1-b${{ github.run_number }}
-          path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: error
-
+      # ---- CREATE GITHUB RELEASE (push or workflow_dispatch) ----
       - name: Create GitHub Release
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.1-b${{ github.run_number }}
-          name: v1.1-b${{ github.run_number }}
+          tag_name: v1.2-b${{ github.run_number }}
+          name: v1.2-b${{ github.run_number }}
           body: |
-            Release build từ workflow_dispatch.
-            - Phiên bản: 1.1 (build ${{ github.run_number }})
+            ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release' && 'Phiên bản chính thức (APK đã ký)' || 'Bản debug tự động' }}
+            - Phiên bản: 1.2 (build ${{ github.run_number }})
             - Yêu cầu: Android 6.0+
-            - APK đã ký (signed)
+            - Kích hoạt bởi: ${{ github.event_name }}${{ github.event_name == 'workflow_dispatch' && format(' ({0})', github.event.inputs.buildType) || '' }}
           files: |
-            app/build/outputs/apk/release/*.apk
+            app/build/outputs/apk/**/*.apk
           draft: false
-          prerelease: false
+          prerelease: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.buildType != 'release' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
