@@ -26,45 +26,64 @@ gradle wrapper --gradle-version 8.5
 ./gradlew clean assembleDebug
 
 # Build release APK
-./gradlew clean assembleRelease
+./gradlew clean assembleRelease -PversionCode=1 -PversionName=1.1
 ```
 
 ### GitHub Actions CI
 
-The project includes a CI workflow at `.github/workflows/android-build.yml`.
+The project includes two CI workflows:
 
-#### Automatic build (every push to main)
+- `Android CI` — builds debug APK on push, or signed release APK manually
+- `Generate Android Keystore` — generates signing keystore (run once only)
 
-1. Push code to the `main` branch.
-2. Go to your repository's **Actions** tab.
-3. Select the **Android CI** workflow.
-4. Download the APK from workflow artifacts.
+## How to create signing key
 
-#### Manual release build
+Follow these steps exactly once to enable signed release builds.
 
-1. On GitHub, go to **Actions** → **Android CI** → **Run workflow**.
-2. Select the branch and choose **release** as build type.
-3. Download the release APK from artifacts.
+### Step 1: Generate keystore
 
-### Release signing (optional)
+1. Go to your GitHub repository → **Actions** tab.
+2. Select **Generate Android Keystore** workflow.
+3. Click **Run workflow** → **Run workflow**.
+4. Wait for the workflow to finish.
+5. Download the `release-keystore` artifact.
+6. Extract `release.keystore` from the downloaded zip.
 
-Add these secrets in your GitHub repository: **Settings** → **Secrets and variables** → **Actions**.
+### Step 2: Convert keystore to Base64
 
-| Secret | Description |
-|--------|-------------|
-| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore file |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-| `ANDROID_KEY_ALIAS` | Key alias |
-| `ANDROID_KEY_PASSWORD` | Key password |
-
-To encode your keystore:
-
+On Linux/macOS:
 ```bash
-base64 -w0 /path/to/keystore.jks > keystore_base64.txt
-# Copy the content of keystore_base64.txt into ANDROID_KEYSTORE_BASE64 secret
+base64 -w0 /path/to/release.keystore > keystore_base64.txt
 ```
 
-If signing secrets are not provided, the release APK will be built unsigned.
+On Windows (PowerShell):
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("release.keystore")) > keystore_base64.txt
+```
+
+### Step 3: Add GitHub Secrets
+
+Go to **Settings** → **Secrets and variables** → **Actions** and add:
+
+| Secret | Value |
+|--------|-------|
+| `ANDROID_KEYSTORE_BASE64` | Content of `keystore_base64.txt` |
+| `ANDROID_KEYSTORE_PASSWORD` | `android` |
+| `ANDROID_KEY_ALIAS` | `lunarcalendar` |
+| `ANDROID_KEY_PASSWORD` | `android` |
+
+### Step 4: Build signed release APK
+
+1. Go to **Actions** → **Android CI** → **Run workflow**.
+2. Select branch `main`, build type `release`.
+3. Click **Run workflow**.
+4. Download the signed APK from artifacts.
+
+> **IMPORTANT:**
+> - Run the keystore generation workflow **ONLY ONCE**.
+> - Keep the `release.keystore` file in a safe place (backup it).
+> - If the keystore is lost or a different keystore is used, existing users **cannot update** the app.
+> - The `com.vietnamese.lunarcalendar` applicationId must never change after the first signed release.
 
 ## Tech Stack
 

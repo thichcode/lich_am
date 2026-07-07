@@ -36,6 +36,8 @@ fun SettingsScreen() {
     var checking by remember { mutableStateOf(false) }
     var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
+    var isLatest by remember { mutableStateOf(false) }
+    var installError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -152,13 +154,15 @@ fun SettingsScreen() {
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(Spacing4))
-                    val currentVersion = remember {
+                    val pkgInfo = remember {
                         try {
-                            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.1"
-                        } catch (_: Exception) { "1.1" }
+                            context.packageManager.getPackageInfo(context.packageName, 0)
+                        } catch (_: Exception) { null }
                     }
+                    val currentVersion = pkgInfo?.versionName ?: "1.1"
+                    val currentCode = pkgInfo?.versionCode ?: 0
                     Text(
-                        text = "Phiên bản $currentVersion",
+                        text = "Phiên bản $currentVersion (build $currentCode)",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -178,14 +182,22 @@ fun SettingsScreen() {
                             checking = true
                             errorMsg = null
                             updateInfo = null
-                            checkUpdate(context, onResult = { info ->
-                                checking = false
-                                if (info != null) updateInfo = info
-                                else errorMsg = "Không có kết nối mạng"
-                            }, onError = { msg ->
-                                checking = false
-                                errorMsg = msg
-                            })
+                            isLatest = false
+                            installError = false
+                            checkUpdate(context,
+                                onUpdateAvailable = { info ->
+                                    checking = false
+                                    updateInfo = info
+                                },
+                                onLatest = {
+                                    checking = false
+                                    isLatest = true
+                                },
+                                onError = { msg ->
+                                    checking = false
+                                    errorMsg = msg
+                                }
+                            )
                         },
                         enabled = !checking,
                         modifier = Modifier
@@ -228,9 +240,32 @@ fun SettingsScreen() {
                         )
                     }
 
+                    if (isLatest) {
+                        Spacer(modifier = Modifier.height(Spacing12))
+                        Text(
+                            text = "Bạn đang dùng bản mới nhất.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
                     if (updateInfo != null) {
                         Spacer(modifier = Modifier.height(Spacing16))
-                        UpdateInfoCard(updateInfo!!, context)
+                        UpdateInfoCard(updateInfo!!, context, onError = {
+                            installError = true
+                        })
+                    }
+
+                    if (installError) {
+                        Spacer(modifier = Modifier.height(Spacing12))
+                        Text(
+                            text = "Không thể cập nhật. Có thể file APK khác chữ ký hoặc không cùng mã ứng dụng.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(Spacing16))
@@ -254,12 +289,14 @@ fun SettingsScreen() {
 
 private data class UpdateInfo(
     val tag: String,
+    val buildNumber: Int,
     val downloadUrl: String
 )
 
 private fun checkUpdate(
     context: Context,
-    onResult: (UpdateInfo?) -> Unit,
+    onUpdateAvailable: (UpdateInfo) -> Unit,
+    onLatest: () -> Unit,
     onError: (String) -> Unit
 ) {
     Thread {
@@ -284,12 +321,15 @@ private fun checkUpdate(
             val json = releases.getJSONObject(0)
             val tag = json.getString("tag_name")
 
-            val currentVer = try {
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: ""
-            } catch (_: Exception) { "" }
+            // Parse tag format: vX.Y-bN
+            val latestBuildNum = tag.substringAfter("-b").toIntOrNull() ?: 0
 
-            if (tag.contains(currentVer, ignoreCase = true) && tag.endsWith(currentVer)) {
-                onResult(null)
+            val installedVersionCode = try {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionCode
+            } catch (_: Exception) { 0 }
+
+            if (latestBuildNum <= installedVersionCode) {
+                onLatest()
                 return@Thread
             }
 
@@ -308,7 +348,7 @@ private fun checkUpdate(
                 return@Thread
             }
 
-            onResult(UpdateInfo(tag, apkUrl))
+            onUpdateAvailable(UpdateInfo(tag, latestBuildNum, apkUrl))
         } catch (e: Exception) {
             onError(e.message ?: "Lỗi không xác định")
         }
@@ -316,7 +356,7 @@ private fun checkUpdate(
 }
 
 @Composable
-private fun UpdateInfoCard(info: UpdateInfo, context: Context) {
+private fun UpdateInfoCard(info: UpdateInfo, context: Context, onError: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -337,7 +377,7 @@ private fun UpdateInfoCard(info: UpdateInfo, context: Context) {
         Spacer(modifier = Modifier.height(Spacing12))
 
         OutlinedButton(
-            onClick = { downloadAndInstall(context, info.downloadUrl) },
+            onClick = { downloadAndInstall(context, info.downloadUrl, onError) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -357,7 +397,7 @@ private fun UpdateInfoCard(info: UpdateInfo, context: Context) {
     }
 }
 
-private fun downloadAndInstall(context: Context, apkUrl: String) {
+private fun downloadAndInstall(context: Context, apkUrl: String, onError: () -> Unit) {
     try {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val uri = Uri.parse(apkUrl)
@@ -372,9 +412,33 @@ private fun downloadAndInstall(context: Context, apkUrl: String) {
             setAllowedOverRoaming(true)
         }
 
-        downloadManager.enqueue(request)
+        val downloadId = downloadManager.enqueue(request)
         Toast.makeText(context, "Đang tải xuống: $fileName", Toast.LENGTH_LONG).show()
+
+        // Register receiver to detect install failure
+        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        context.registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                if (id == downloadId) {
+                    ctx.unregisterReceiver(this)
+                    try {
+                        val query = DownloadManager.Query().setFilterById(downloadId)
+                        val cursor = downloadManager.query(query)
+                        if (cursor.moveToFirst()) {
+                            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                            if (status != DownloadManager.STATUS_SUCCESSFUL) {
+                                onError()
+                            }
+                        }
+                    } catch (_: Exception) {
+                        onError()
+                    }
+                }
+            }
+        }, filter)
     } catch (e: Exception) {
         Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_LONG).show()
+        onError()
     }
 }

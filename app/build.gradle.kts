@@ -6,15 +6,15 @@ plugins {
 import java.util.Properties
 
 android {
-    namespace = "com.licham"
+    namespace = "com.vietnamese.lunarcalendar"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.licham"
+        applicationId = "com.vietnamese.lunarcalendar"
         minSdk = 23
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = project.findProperty("versionCode")?.toString()?.toIntOrNull() ?: 1
+        versionName = project.findProperty("versionName")?.toString() ?: "1.1"
     }
 
     buildFeatures {
@@ -28,9 +28,14 @@ android {
     signingConfigs {
         create("release") {
             val propsFile = rootProject.file("keystore.properties")
+            val propsFileApp = rootProject.file("app/keystore.properties")
+            val props = Properties()
             if (propsFile.exists()) {
-                val props = Properties()
                 props.load(propsFile.inputStream())
+            } else if (propsFileApp.exists()) {
+                props.load(propsFileApp.inputStream())
+            }
+            if (props.containsKey("storeFile")) {
                 storeFile = rootProject.file(props.getProperty("storeFile"))
                 storePassword = props.getProperty("storePassword")
                 keyAlias = props.getProperty("keyAlias")
@@ -46,10 +51,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            val propsFile = rootProject.file("keystore.properties")
-            if (propsFile.exists()) {
-                signingConfig = signingConfigs["release"]
-            }
+            signingConfig = signingConfigs["release"]
         }
     }
 
