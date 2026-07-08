@@ -6,7 +6,7 @@ plugins {
 import java.util.Properties
 
 android {
-    namespace = "com.vietnamese.lunarcalendar"
+    namespace = "com.licham"
     compileSdk = 34
 
     defaultConfig {
