@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -299,6 +300,7 @@ private fun checkUpdate(
     onLatest: () -> Unit,
     onError: (String) -> Unit
 ) {
+    val mainHandler = Handler(Looper.getMainLooper())
     Thread {
         try {
             val url = URL("https://api.github.com/repos/thichcode/lich_am/releases")
@@ -308,20 +310,18 @@ private fun checkUpdate(
             conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
 
             if (conn.responseCode != 200) {
-                onError("Lỗi kết nối: HTTP ${conn.responseCode}")
+                mainHandler.post { onError("Lỗi kết nối: HTTP ${conn.responseCode}") }
                 return@Thread
             }
 
             val body = conn.inputStream.bufferedReader().readText()
             val releases = JSONArray(body)
             if (releases.length() == 0) {
-                onError("Chưa có bản phát hành nào")
+                mainHandler.post { onError("Chưa có bản phát hành nào") }
                 return@Thread
             }
             val json = releases.getJSONObject(0)
             val tag = json.getString("tag_name")
-
-            // Parse tag format: vX.Y-bN
             val latestBuildNum = tag.substringAfter("-b").toIntOrNull() ?: 0
 
             val installedVersionCode = try {
@@ -329,7 +329,7 @@ private fun checkUpdate(
             } catch (_: Exception) { 0 }
 
             if (latestBuildNum <= installedVersionCode) {
-                onLatest()
+                mainHandler.post { onLatest() }
                 return@Thread
             }
 
@@ -344,13 +344,13 @@ private fun checkUpdate(
             }
 
             if (apkUrl.isEmpty()) {
-                onError("Không tìm thấy file APK")
+                mainHandler.post { onError("Không tìm thấy file APK") }
                 return@Thread
             }
 
-            onUpdateAvailable(UpdateInfo(tag, latestBuildNum, apkUrl))
+            mainHandler.post { onUpdateAvailable(UpdateInfo(tag, latestBuildNum, apkUrl)) }
         } catch (e: Exception) {
-            onError(e.message ?: "Lỗi không xác định")
+            mainHandler.post { onError(e.message ?: "Lỗi không xác định") }
         }
     }.start()
 }
