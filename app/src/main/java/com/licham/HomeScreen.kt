@@ -127,7 +127,9 @@ fun DayDetailContent(date: LocalDate) {
     ) {
         SolarWeekdayBlock(
             weekday = weekday.uppercase(),
-            day = date.dayOfMonth
+            day = date.dayOfMonth,
+            month = date.monthValue,
+            year = date.year
         )
         QuoteCard(quote)
 
@@ -162,19 +164,37 @@ fun DayDetailContent(date: LocalDate) {
 
 @Composable
 @Composable
-private fun SolarWeekdayBlock(weekday: String, day: Int) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(top = Spacing6),
-        horizontalAlignment = Alignment.CenterHorizontally
+private fun SolarWeekdayBlock(weekday: String, day: Int, month: Int, year: Int) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Spacing6),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(weekday, color = BlocGreen, fontSize = 30.sp, fontWeight = FontWeight.ExtraBold)
+        Text(
+            text = weekday,
+            color = BlocGreen,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.weight(1f)
+        )
         Text(
             text = "$day",
             color = BlocRed,
             fontSize = 112.sp,
             lineHeight = 112.sp,
             fontWeight = FontWeight.ExtraBold,
-            letterSpacing = (-3).sp
+            letterSpacing = (-3).sp,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = "Tháng $month $year",
+            color = BlocGreen,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End
         )
     }
 }

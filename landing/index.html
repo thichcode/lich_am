@@ -98,24 +98,32 @@ body {
 .tab-content.active { display: block; }
 
 /* ========== HERO BLOCK ========== */
-.hero-block {
-  text-align: center;
-  padding: 16px 16px 0;
+.hero-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 18px 0;
 }
 .weekday {
-  font-size: 36px;
-  font-weight: 700;
-  color: #5F6368;
-  letter-spacing: -0.5px;
-  line-height: 1.15;
+  color:#08680E;
+  font-size:30px;
+  font-weight:900;
+  flex:1;
 }
 .day-number {
-  font-size: 88px;
-  font-weight: 700;
-  color: #C62828;
-  letter-spacing: -2px;
-  line-height: 1;
-  margin: 2px 0;
+  color:#D90000;
+  font-size:112px;
+  font-weight:900;
+  line-height:.92;
+  flex:1;
+  text-align:center;
+}
+.month-label {
+  color:#08680E;
+  font-size:30px;
+  font-weight:900;
+  flex:1;
+  text-align:right;
 }
 .badge-row {
   text-align: center;
@@ -128,19 +136,6 @@ body {
 }
 .hoangdao-badge.green { color: #2E7D32; }
 .hoangdao-badge.red { color: #D32F2F; }
-
-.hero-block { padding-top: 8px; }
-.weekday {
-  color:#08680E;
-  font-size:30px;
-  font-weight:900;
-}
-.day-number {
-  color:#D90000;
-  font-size:112px;
-  font-weight:900;
-  line-height:.92;
-}
 .quote-card {
   position:relative;
   background:var(--surface);
@@ -492,7 +487,8 @@ body {
 /* ========== RESPONSIVE ========== */
 @media (max-width: 380px) {
   .day-number { font-size: 72px; }
-  .weekday { font-size: 30px; }
+  .weekday { font-size: 24px; }
+  .month-label { font-size: 24px; }
   .card { padding: 14px; }
 }
 </style>
@@ -504,9 +500,10 @@ body {
 
 <!-- TAB: HÔM NAY -->
 <div class="tab-content active" id="tabHome">
-  <div class="hero-block">
+  <div class="hero-row">
     <div class="weekday" id="weekdayTop"></div>
     <div class="day-number" id="dayNum"></div>
+    <div class="month-label" id="monthLabel"></div>
   </div>
 
   <div class="quote-card">
@@ -905,6 +902,7 @@ function renderHome(date, root = document.getElementById('tabHome')) {
 
   get('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
   get('dayNum').textContent = d;
+  get('monthLabel').textContent = `Tháng ${m} ${y}`;
 
   get('quoteText').textContent = q;
 
