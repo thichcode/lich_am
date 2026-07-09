@@ -116,7 +116,7 @@
 
                 <!-- KHU VỰC TRỌNG TÂM: LỊCH ÂM CHI TIẾT (Được phóng to) -->
                 <div class="bg-emerald-50/50 p-4 rounded-xl border-2 border-dashed border-elder-green text-center">
-                    <p class="text-xs text-stone-500 uppercase font-bold tracking-wider">Hôm Nay Là Ngày Âm Lịch</p>
+                    <p class="text-sm text-stone-500 font-bold" id="current-hour-label">Hiện tại: Giờ Tý</p>
                     <div class="flex items-center justify-center gap-2 my-1">
                         <span class="text-3xl">🌙</span>
                         <h2 id="lunar-day-large" class="text-5xl font-black text-elder-green">25</h2>
@@ -1098,6 +1098,14 @@
 
         // Gọi tải tin tức trực tuyến đặt dưới đáy trang chủ
         fetchFeaturedNews();
+
+        // Cập nhật giờ hiện tại
+        const now = new Date();
+        const h = now.getHours();
+        const hourChiIdx = Math.floor(h / 2) % 12;
+        const chiNames = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+        const hourLabel = document.getElementById('current-hour-label');
+        if (hourLabel) hourLabel.innerText = `Hiện tại: Giờ ${chiNames[hourChiIdx]}`;
 
         // Cập nhật ngày âm can chi thuần Việt dễ hiểu
         document.getElementById('lunar-day-large').innerText = data.lunar.day;

@@ -250,13 +250,15 @@ private fun ElderCalendarBlock(
                 ) {
                     Text("“", color = Color(0xFFD1D5DB), fontSize = 24.sp, modifier = Modifier.align(Alignment.TopStart))
                     Text("”", color = Color(0xFFD1D5DB), fontSize = 24.sp, modifier = Modifier.align(Alignment.TopEnd))
-                    Text(quote, color = ElderDark, fontSize = 14.sp, lineHeight = 20.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 2.dp))
+                    Text(quote, color = ElderDark, fontSize = 16.sp, lineHeight = 22.sp, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 2.dp))
                 }
 
                 if (lunar != null) {
                     Spacer(Modifier.height(Spacing12))
-                    Text("Hôm Nay Là Ngày Âm Lịch", color = Color(0xFF78716C), fontSize = 10.sp, fontWeight = FontWeight.Black, letterSpacing = 1.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
-                    Spacer(Modifier.height(Spacing4))
+                    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                    val hourChiName = CanChiCalculator.getHourChiName(currentHour)
+                    Text("Hiện tại: Giờ $hourChiName", color = Color(0xFF78716C), fontSize = 15.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Spacer(Modifier.height(Spacing8))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                         Text("🌙", fontSize = 28.sp)
                         Spacer(Modifier.width(Spacing10))
@@ -285,10 +287,10 @@ private fun ElderCalendarBlock(
 @Composable
 private fun CanChiAnimalColumn(label: String, value: String, animal: String, modifier: Modifier = Modifier) {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
-        Text(label, color = Color(0xFF78716C), fontSize = 10.sp, fontWeight = FontWeight.Black)
+        Text(label, color = Color(0xFF78716C), fontSize = 11.sp, fontWeight = FontWeight.ExtraBold)
         Spacer(Modifier.height(Spacing4))
-        Text(value, color = Color(0xFF1F2937), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-        Text("($animal)", color = ElderGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+        Text(value, color = Color(0xFF1F2937), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Text("($animal)", color = ElderGreen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 
