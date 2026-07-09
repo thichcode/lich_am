@@ -14,8 +14,8 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Spa
-import androidx.compose.material.icons.outlined.ThumbDown
-import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -252,7 +252,7 @@ private fun ThreeInfoCards(
             title = "GIỜ TỐT",
             hours = assessment.goodHours.take(5),
             color = BlocGreen,
-            icon = Icons.Outlined.ThumbUp,
+            icon = Icons.Outlined.Star,
             modifier = Modifier.weight(1f)
         )
         LunarPanel(
@@ -267,7 +267,7 @@ private fun ThreeInfoCards(
             title = "GIỜ XẤU",
             hours = assessment.badHours.take(5),
             color = Color(0xFFC91414),
-            icon = Icons.Outlined.ThumbDown,
+            icon = Icons.Outlined.Cancel,
             modifier = Modifier.weight(1f)
         )
     }
