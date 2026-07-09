@@ -37,6 +37,12 @@ object SunriseSunset {
     }
 }
 
+val ElderGreen = Color(0xFF064E3B)
+val ElderRed = Color(0xFF991B1B)
+val ElderGold = Color(0xFFB45309)
+val ElderBg = Color(0xFFFDFBF7)
+val ElderDark = Color(0xFF1F2937)
+
 val DeepRed = Color(0xFFC62828)
 val JadeGreen = Color(0xFF2E7D32)
 val DangerRed = Color(0xFFD32F2F)
