@@ -485,6 +485,51 @@ body {
 .settings-content .download-btn:hover { background: #B71C1C; }
 
 /* ========== RESPONSIVE ========== */
+.lunar-detail-card {
+  margin: 0 18px 12px;
+  background: #FFF8E1;
+  border: 2px solid #D4A843;
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.ld-header { font-size:20px; font-weight:700; color:#8B0000; margin-bottom:6px; }
+.ld-day { font-size:40px; font-weight:700; color:#8B0000; line-height:1.1; }
+.ld-month { font-size:18px; color:#5F6368; margin-bottom:16px; }
+.ld-canchi-grid { display:flex; justify-content:space-between; }
+.ld-item { text-align:center; }
+.ld-label { display:block; font-size:13px; color:#5F6368; margin-bottom:4px; }
+.ld-value { font-size:16px; font-weight:700; color:var(--text-primary); }
+
+.goodbad-row {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:0 18px;
+  margin-bottom:12px;
+}
+.gb-card {
+  background:var(--surface);
+  border:1px solid var(--outline);
+  border-radius:10px;
+  padding:14px 12px;
+}
+.gb-title { font-size:16px; font-weight:900; margin-bottom:12px; }
+.gb-hour-row { display:flex; justify-content:space-between; padding:2px 0; }
+.gb-hour-row .time { font-weight:800; font-size:12px; }
+.gb-hour-row .chi { font-size:14px; color:var(--text-primary); }
+
+.clash-dir-card {
+  margin:12px 18px 0;
+  border:1px solid var(--outline);
+  border-radius:10px;
+  background:var(--surface);
+  padding:18px;
+}
+.clash-dir-card .cd-row { display:flex; justify-content:space-around; }
+.clash-dir-card .cd-col { text-align:center; }
+.clash-dir-card .cd-header { font-size:13px; font-weight:900; margin-bottom:8px; }
+.clash-dir-card .cd-value { font-size:18px; font-weight:700; color:var(--text-primary); }
+
 @media (max-width: 380px) {
   .day-number { font-size: 72px; }
   .weekday { font-size: 24px; }
@@ -510,25 +555,46 @@ body {
     <div class="quote-text" id="quoteText"></div>
   </div>
 
-  <div class="three-panel-row">
-    <div class="mock-panel">
-      <div class="mock-panel-title" style="color:#08680E">GIỜ TỐT</div>
-      <div id="goodHoursList"></div>
-      <div class="thumb-circle">✨</div>
+  <div class="lunar-detail-card">
+    <div class="ld-header">🌙 Âm Lịch</div>
+    <div class="ld-day" id="lunarDayLarge"></div>
+    <div class="ld-month" id="lunarMonthLabel"></div>
+    <div class="ld-canchi-grid">
+      <div class="ld-item"><span class="ld-label">Giờ</span><span class="ld-value" id="hourCanChi"></span></div>
+      <div class="ld-item"><span class="ld-label">Ngày</span><span class="ld-value" id="dayCanChiDisplay"></span></div>
+      <div class="ld-item"><span class="ld-label">Tháng</span><span class="ld-value" id="monthCanChiDisplay"></span></div>
+      <div class="ld-item"><span class="ld-label">Năm</span><span class="ld-value" id="yearCanChiDisplay"></span></div>
     </div>
-    <div class="mock-panel" id="lunarMiniCard">
-      <div class="lunar-mini" id="lunarMiniContent"></div>
+  </div>
+
+  <div class="goodbad-row">
+    <div class="gb-card">
+      <div class="gb-title" style="color:#2E7D32">GIỜ HOÀNG ĐẠO</div>
+      <div id="goodHoursDetail"></div>
     </div>
-    <div class="mock-panel">
-      <div class="mock-panel-title" style="color:#C91414">GIỜ XẤU</div>
-      <div id="badHoursList"></div>
-      <div class="thumb-circle">💥</div>
+    <div class="gb-card">
+      <div class="gb-title" style="color:#D32F2F">GIỜ HẮC ĐẠO</div>
+      <div id="badHoursDetail"></div>
     </div>
   </div>
 
   <div class="activity-card" id="activitiesCard" style="display:none">
     <div id="goodActs"></div>
     <div id="badActs"></div>
+  </div>
+
+  <div class="clash-dir-card" id="clashDirCard" style="display:none">
+    <div class="cd-row">
+      <div class="cd-col">
+        <div class="cd-header" style="color:#D32F2F">TUỔI XUNG KHẮC</div>
+        <div class="cd-value" id="clashValue"></div>
+      </div>
+      <div class="cd-col">
+        <div class="cd-header" style="color:#2E7D32">HƯỚNG TỐT</div>
+        <div class="cd-value" id="hyThanValue"></div>
+        <div class="cd-value" id="taiThanValue"></div>
+      </div>
+    </div>
   </div>
 
   <div class="term-split-card" id="termCard">
@@ -907,21 +973,51 @@ function renderHome(date, root = document.getElementById('tabHome')) {
   get('quoteText').textContent = q;
 
   if (as) {
-    get('goodHoursList').innerHTML = as.goodHours.slice(0,5).map(h =>
-      `<div class="mock-hour-row"><span class="time" style="color:#08680E">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
-    ).join('');
-    get('badHoursList').innerHTML = as.badHours.slice(0,5).map(h =>
-      `<div class="mock-hour-row"><span class="time" style="color:#C91414">${h.time.replace('–',' - ')}</span><span>${h.chi}</span></div>`
-    ).join('');
+    const ghEl = root.querySelector('#goodHoursDetail');
+    if (ghEl) {
+      ghEl.innerHTML = as.goodHours.slice(0,6).map(h =>
+        `<div class="gb-hour-row"><span class="time" style="color:#2E7D32">${h.time.replace('–',' - ')}</span><span class="chi">${h.chi}</span></div>`
+      ).join('');
+    }
+    const bhEl = root.querySelector('#badHoursDetail');
+    if (bhEl) {
+      bhEl.innerHTML = as.badHours.slice(0,6).map(h =>
+        `<div class="gb-hour-row"><span class="time" style="color:#D32F2F">${h.time.replace('–',' - ')}</span><span class="chi">${h.chi}</span></div>`
+      ).join('');
+    }
   }
 
-  if (lunar && mc && yc) {
-    get('lunarMiniContent').innerHTML =
-      `<div class="mock-lunar-day">${lunar.day}</div>` +
-      `<div class="mock-lunar-rule"></div>` +
-      `<div class="mock-lunar-month">THÁNG ${String(lunar.month).padStart(2,'0')}</div>` +
-      `<div class="mock-lunar-text">Năm ${yc.can} ${yc.chi}<br>Tháng ${mc.can} ${mc.chi}<br>Ngày ${cc.can} ${cc.chi}</div>`;
+  const ldEl = root.querySelector('#lunarDayLarge');
+  if (ldEl && lunar) ldEl.textContent = `${lunar.day}`;
+  const lmEl = root.querySelector('#lunarMonthLabel');
+  if (lmEl && lunar) {
+    const mn = ['','Giêng','Hai','Ba','Tư','Năm','Sáu','Bảy','Tám','Chín','Mười','Một','Chạp'];
+    lmEl.textContent = `Tháng ${mn[lunar.month] || lunar.month}`;
   }
+  const dcc = root.querySelector('#dayCanChiDisplay');
+  if (dcc && cc) dcc.textContent = `${cc.can} ${cc.chi}`;
+  const mcc = root.querySelector('#monthCanChiDisplay');
+  if (mcc && mc) mcc.textContent = `${mc.can} ${mc.chi}`;
+  const ycc = root.querySelector('#yearCanChiDisplay');
+  if (ycc && yc) ycc.textContent = `${yc.can} ${yc.chi}`;
+  const hcc = root.querySelector('#hourCanChi');
+  if (hcc && cc) {
+    const h = new Date().getHours();
+    const hc = (cc.canIndex * 2 + Math.floor(h / 2)) % 10;
+    hcc.textContent = `${CAN[hc]} ${CHI[Math.floor(h / 2) % 12]}`;
+  }
+
+  const cdCard = root.querySelector('#clashDirCard');
+  if (cdCard && as && cc) {
+    cdCard.style.display = 'block';
+    const clashChi = (cc.chiIndex + 6) % 12;
+    const clashName = CHI[clashChi];
+    root.querySelector('#clashValue').textContent = `Tuổi ${clashName}`;
+    const hyThan = [0,1].includes(cc.canIndex) ? 'Đông' : [2,3].includes(cc.canIndex) ? 'Nam' : [4,5].includes(cc.canIndex) ? 'Trung cung' : [6,7].includes(cc.canIndex) ? 'Tây' : 'Bắc';
+    const taiThan = [0,1].includes(cc.canIndex) ? 'Đông Bắc' : [2,3].includes(cc.canIndex) ? 'Chính Tây' : [4,5].includes(cc.canIndex) ? 'Chính Đông' : [6,7].includes(cc.canIndex) ? 'Chính Nam' : 'Tây Bắc';
+    root.querySelector('#hyThanValue').textContent = `Hỷ Thần ${hyThan}`;
+    root.querySelector('#taiThanValue').textContent = `Tài Thần ${taiThan}`;
+  } else if (cdCard) { cdCard.style.display = 'none'; }
 
   const actsEl = get('activitiesCard');
   if (as) {
@@ -932,7 +1028,7 @@ function renderHome(date, root = document.getElementById('tabHome')) {
     get('goodActs').innerHTML =
       `<div class="activity-line"><div class="activity-icon" style="color:#08680E">✓</div><div><div class="activity-title" style="color:#08680E">VIỆC NÊN LÀM</div><div class="activity-text">${(as.goodActs.length ? as.goodActs : gFallback).join(', ')}</div></div></div>`;
     get('badActs').innerHTML =
-      `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC NÊN TRÁNH</div><div class="activity-text">${(as.badActs.length ? as.badActs : bFallback).join(', ')}</div></div></div>`;
+      `<div class="activity-line"><div class="activity-icon" style="color:#C91414">✕</div><div><div class="activity-title" style="color:#C91414">VIỆC TRÁNH (KỴ)</div><div class="activity-text">${(as.badActs.length ? as.badActs : bFallback).join(', ')}</div></div></div>`;
   } else {
     actsEl.style.display = 'none';
   }

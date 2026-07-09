@@ -14,8 +14,6 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Spa
-import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
+import java.util.Calendar
 
 private val BlocGreen = Color(0xFF08680E)
 private val BlocLightGreen = Color(0xFF4A9D18)
@@ -135,19 +134,27 @@ fun DayDetailContent(date: LocalDate) {
 
         if (lunar != null && assessment != null) {
             Spacer(modifier = Modifier.height(Spacing10))
-            ThreeInfoCards(
-                assessment = assessment,
+            LunarDetailCard(
                 lunarDay = lunar.day,
                 lunarMonth = lunar.month,
-                dayCanChi = CanChiCalculator.formatCanChi(dayCanChi),
-                monthCanChi = monthCanChi?.let { CanChiCalculator.formatCanChi(it) } ?: "",
-                yearCanChi = CanChiCalculator.formatCanChi(yearCanChi)
+                dayCanChi = dayCanChi,
+                monthCanChi = monthCanChi,
+                yearCanChi = yearCanChi,
+                canIndex = canIndex,
+                chiIndex = chiIndex
             )
+            Spacer(modifier = Modifier.height(Spacing10))
+            GoodBadHoursRow(assessment = assessment)
         }
 
         if (assessment != null) {
             Spacer(modifier = Modifier.height(Spacing12))
             ActivitiesCard(assessment)
+        }
+
+        if (assessment != null) {
+            Spacer(modifier = Modifier.height(Spacing12))
+            ClashAndDirectionsCard(chiIndex = chiIndex, canIndex = canIndex)
         }
 
         if (terms != null) {
@@ -162,7 +169,6 @@ fun DayDetailContent(date: LocalDate) {
     }
 }
 
-@Composable
 @Composable
 private fun SolarWeekdayBlock(weekday: String, day: Int, month: Int, year: Int) {
     Row(
@@ -224,73 +230,104 @@ private fun QuoteCard(quote: String) {
 }
 
 @Composable
-private fun ThreeInfoCards(
-    assessment: DayAssessment,
+private fun LunarDetailCard(
     lunarDay: Int,
     lunarMonth: Int,
-    dayCanChi: String,
-    monthCanChi: String,
-    yearCanChi: String
+    dayCanChi: Pair<String, String>,
+    monthCanChi: Pair<String, String>?,
+    yearCanChi: Pair<String, String>,
+    canIndex: Int,
+    chiIndex: Int
 ) {
+    val lunarMonthNames = remember {
+        arrayOf("", "Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Một", "Chạp")
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = LightGoldBg),
+        border = BorderStroke(2.dp, Color(0xFFD4A843))
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("🌙", fontSize = 28.sp)
+                Spacer(Modifier.width(Spacing10))
+                Text("Âm lịch", color = Color(0xFF8B0000), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(Modifier.height(Spacing6))
+            Text("$lunarDay", color = Color(0xFF8B0000), fontSize = 40.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold)
+            Text("Tháng ${lunarMonthNames.getOrElse(lunarMonth) { lunarMonth.toString() }}", color = TextSecondary, fontSize = 18.sp)
+            Spacer(Modifier.height(Spacing16))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                CanChiLabel("Giờ", run {
+                    val h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                    val hc = CanChiCalculator.getCanChiHour(h, canIndex)
+                    "${hc.first} ${hc.second}"
+                })
+                CanChiLabel("Ngày", "${dayCanChi.first} ${dayCanChi.second}")
+                CanChiLabel("Tháng", monthCanChi?.let { "${it.first} ${it.second}" } ?: "")
+                CanChiLabel("Năm", "${yearCanChi.first} ${yearCanChi.second}")
+            }
+        }
+    }
+}
+
+@Composable
+private fun CanChiLabel(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label, color = TextSecondary, fontSize = 13.sp)
+        Spacer(Modifier.height(Spacing4))
+        Text(value, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Composable
+private fun GoodBadHoursRow(assessment: DayAssessment) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
         horizontalArrangement = Arrangement.spacedBy(Spacing8)
     ) {
-        HoursPanel(
-            title = "GIỜ TỐT",
-            hours = assessment.goodHours.take(5),
-            color = BlocGreen,
-            icon = Icons.Outlined.Star,
+        GoodBadColumn(
+            title = "GIỜ HOÀNG ĐẠO",
+            hours = assessment.goodHours.take(6),
+            accentColor = JadeGreen,
             modifier = Modifier.weight(1f)
         )
-        LunarPanel(
-            lunarDay = lunarDay,
-            lunarMonth = lunarMonth,
-            dayCanChi = dayCanChi,
-            monthCanChi = monthCanChi,
-            yearCanChi = yearCanChi,
-            modifier = Modifier.weight(1f)
-        )
-        HoursPanel(
-            title = "GIỜ XẤU",
-            hours = assessment.badHours.take(5),
-            color = Color(0xFFC91414),
-            icon = Icons.Outlined.Cancel,
+        GoodBadColumn(
+            title = "GIỜ HẮC ĐẠO",
+            hours = assessment.badHours.take(6),
+            accentColor = DangerRed,
             modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon: ImageVector, modifier: Modifier = Modifier) {
+private fun GoodBadColumn(title: String, hours: List<HourInfo>, accentColor: Color, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.heightIn(min = 210.dp, max = 228.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = color.copy(alpha = 0.12f),
-                modifier = Modifier
-                    .size(80.dp)
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 8.dp, bottom = 6.dp)
-            )
-            Column(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(title, color = color, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-                Spacer(modifier = Modifier.height(Spacing12))
-                hours.forEach { hour ->
-                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(hour.timeRange.replace("–", " - "), color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                        Text(hour.chiName, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
-                    }
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 14.dp)
+        ) {
+            Text(title, color = accentColor, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+            Spacer(Modifier.height(Spacing12))
+            hours.forEach { h ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        h.timeRange.replace("–", " - "),
+                        color = accentColor,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(h.chiName, color = TextPrimary, fontSize = 16.sp)
                 }
             }
         }
@@ -298,32 +335,43 @@ private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon:
 }
 
 @Composable
-private fun LunarPanel(
-    lunarDay: Int,
-    lunarMonth: Int,
-    dayCanChi: String,
-    monthCanChi: String,
-    yearCanChi: String,
-    modifier: Modifier = Modifier
-) {
+private fun ClashAndDirectionsCard(chiIndex: Int, canIndex: Int) {
+    val chiNames = remember { arrayOf("Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi") }
+    val clashChi = (chiIndex + 6) % 12
+    val clashName = chiNames[clashChi]
+    val hyThan = remember(canIndex) {
+        when (canIndex) {
+            0, 1 -> "Đông"; 2, 3 -> "Nam"; 4, 5 -> "Trung cung"; 6, 7 -> "Tây"; else -> "Bắc"
+        }
+    }
+    val taiThan = remember(canIndex) {
+        when (canIndex) {
+            0, 1 -> "Đông Bắc"; 2, 3 -> "Chính Tây"; 4, 5 -> "Chính Đông"; 6, 7 -> "Chính Nam"; else -> "Tây Bắc"
+        }
+    }
     Card(
-        modifier = modifier.heightIn(min = 210.dp, max = 228.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("$lunarDay", color = BlocGreen, fontSize = 68.sp, lineHeight = 72.sp, fontWeight = FontWeight.ExtraBold)
-            Box(modifier = Modifier.width(72.dp).height(1.dp).background(BlocGreen))
-            Text("THÁNG ${lunarMonth.toString().padStart(2, '0')}", color = BlocGreen, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-            Spacer(modifier = Modifier.height(Spacing12))
-            Text("Năm $yearCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
-            Text("Tháng $monthCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
-            Text("Ngày $dayCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
+        Column(modifier = Modifier.padding(18.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("TUỔI XUNG KHẮC", color = DangerRed, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold)
+                    Spacer(Modifier.height(Spacing8))
+                    Text("Tuổi $clashName", color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("HƯỚNG TỐT", color = JadeGreen, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold)
+                    Spacer(Modifier.height(Spacing8))
+                    Text("Hỷ Thần $hyThan", color = TextPrimary, fontSize = 16.sp)
+                    Text("Tài Thần $taiThan", color = TextPrimary, fontSize = 16.sp)
+                }
+            }
         }
     }
 }
@@ -351,7 +399,7 @@ private fun ActivitiesCard(assessment: DayAssessment) {
                 Spacer(modifier = Modifier.height(Spacing16))
                 ActivityLine(
                     icon = Icons.Outlined.Cancel,
-                    title = "VIỆC NÊN TRÁNH",
+                    title = "VIỆC TRÁNH (KỴ)",
                     text = assessment.badActivities.joinToString(", ").ifBlank { bFallback },
                     color = MaterialTheme.colorScheme.error
                 )
