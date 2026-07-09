@@ -86,32 +86,6 @@ body {
   color: var(--text-primary);
 }
 
-/* ========== MOCKUP HOME HEADER ========== */
-.mock-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 10px;
-  background: var(--surface);
-  gap: 8px;
-  flex-shrink: 0;
-}
-.mock-logo { width:58px; flex:0 0 58px; text-align:center; color:#08680E; font-weight:800; line-height:1.05; }
-.mock-logo .crown { font-size:30px; line-height:24px; }
-.mock-logo .name { font-size:13px; }
-.day-circle {
-  width: 50px;
-  height: 50px;
-  flex: 0 0 50px;
-  border: 3px solid #08680E;
-  border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#08680E;
-  font-size:22px;
-  font-weight:800;
-}
-
 /* ========== SCROLLABLE CONTENT ========== */
 .scroll-area {
   flex: 1;
@@ -525,16 +499,6 @@ body {
 </head>
 <body>
 
-<!-- MOCKUP HEADER -->
-<div class="mock-header">
-  <div class="mock-logo">
-    <div class="crown">♛</div>
-    <div class="name">Lịch Việt</div>
-  </div>
-  <span id="headerMonthLabel" style="flex:1;font-size:19px;font-weight:800;color:#08680E;text-align:center"></span>
-  <div class="day-circle" id="headerDayCircle"></div>
-</div>
-
 <!-- SCROLL AREA -->
 <div class="scroll-area" id="scrollArea">
 
@@ -939,8 +903,6 @@ function renderHome(date, root = document.getElementById('tabHome')) {
   const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
   const wd = ["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"];
 
-  document.getElementById('headerMonthLabel').textContent = `Tháng ${m} - ${y}`;
-  document.getElementById('headerDayCircle').textContent = d;
   get('weekdayTop').textContent = wd[date.getDay()].toUpperCase();
   get('dayNum').textContent = d;
 

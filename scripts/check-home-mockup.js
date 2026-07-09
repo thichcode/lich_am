@@ -6,15 +6,13 @@ const home = fs.readFileSync(path.join(root, 'app/src/main/java/com/licham/HomeS
 const landing = fs.readFileSync(path.join(root, 'landing/index.html'), 'utf8');
 
 const checks = [
-  [home, 'HomeHeader(', 'Android Home has mockup header'],
   [home, 'SolarWeekdayBlock(', 'Android Home has weekday/day hero'],
   [home, 'TermSplitCard(', 'Android Home has split solar-term card'],
   [home, 'MockupEventsCard(', 'Android Home has styled event card'],
-  [landing, 'class="mock-header"', 'Landing Home has mockup header'],
   [landing, 'class="term-split-card"', 'Landing Home has split solar-term card'],
   [landing, 'class="events-card"', 'Landing Home has styled event card'],
   [home, 'fun SelectedDateDetailScreen(', 'Android calendar has reusable Home-style selected-day detail'],
-  [home, 'HomeHeader(date = date, onBack = onBack)', 'Android selected-day detail uses Home header with back'],
+  [home, 'ArrowBack', 'Android selected-day detail has back button'],
   [landing, 'id="calendarDetailView"', 'Landing calendar has selected-day detail view'],
   [landing, 'function showCalendarDayDetail(', 'Landing calendar can show selected-day detail'],
   [landing, 'showCalendarDayDetail(d, m, y)', 'Landing calendar cells open selected-day detail'],

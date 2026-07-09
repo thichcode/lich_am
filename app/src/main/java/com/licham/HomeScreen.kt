@@ -37,7 +37,6 @@ private val BlocRed = Color(0xFFD90000)
 fun HomeScreen() {
     val today = remember { LocalDate.now() }
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        HomeHeader(date = today)
         Box(modifier = Modifier.weight(1f)) {
             DayDetailContent(date = today)
         }
@@ -47,7 +46,21 @@ fun HomeScreen() {
 @Composable
 fun SelectedDateDetailScreen(date: LocalDate, onBack: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        HomeHeader(date = date, onBack = onBack)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            IconButton(onClick = onBack, modifier = Modifier.size(48.dp)) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = "Trở lại",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.size(34.dp)
+                )
+            }
+        }
         Box(modifier = Modifier.weight(1f)) {
             DayDetailContent(date = date)
         }
@@ -148,51 +161,6 @@ fun DayDetailContent(date: LocalDate) {
 }
 
 @Composable
-private fun HomeHeader(date: LocalDate, onBack: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 18.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (onBack != null) {
-            IconButton(onClick = { onBack.invoke() }, modifier = Modifier.size(48.dp)) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                    contentDescription = "Trở lại",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.size(34.dp)
-                )
-            }
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(86.dp)) {
-            Text("♛", color = BlocGreen, fontSize = 32.sp, fontWeight = FontWeight.Bold, lineHeight = 28.sp)
-            Text("Lịch Việt", color = BlocGreen, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-        }
-        Text(
-            text = "Tháng ${date.monthValue} - ${date.year}",
-            color = BlocGreen,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(1f)
-        )
-        Box(
-            modifier = Modifier.width(78.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(54.dp)
-                    .border(2.dp, BlocGreen, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("${date.dayOfMonth}", color = BlocGreen, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-
 @Composable
 private fun SolarWeekdayBlock(weekday: String, day: Int) {
     Column(
