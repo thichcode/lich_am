@@ -276,7 +276,7 @@ private fun ThreeInfoCards(
 @Composable
 private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon: ImageVector, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier.heightIn(min = 210.dp),
+        modifier = modifier.heightIn(min = 210.dp, max = 228.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -312,7 +312,7 @@ private fun LunarPanel(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.heightIn(min = 210.dp),
+        modifier = modifier.heightIn(min = 210.dp, max = 228.dp),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
