@@ -282,21 +282,28 @@ private fun HoursPanel(title: String, hours: List<HourInfo>, color: Color, icon:
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(title, color = color, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
-            Spacer(modifier = Modifier.height(Spacing12))
-            hours.forEach { hour ->
-                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(hour.timeRange.replace("–", " - "), color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-                    Text(hour.chiName, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color.copy(alpha = 0.12f),
+                modifier = Modifier
+                    .size(80.dp)
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 8.dp, bottom = 6.dp)
+            )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(title, color = color, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+                Spacer(modifier = Modifier.height(Spacing12))
+                hours.forEach { hour ->
+                    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(hour.timeRange.replace("–", " - "), color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+                        Text(hour.chiName, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.size(46.dp).background(color, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
             }
         }
     }
