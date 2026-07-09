@@ -326,7 +326,6 @@ private fun LunarPanel(
             Box(modifier = Modifier.width(72.dp).height(1.dp).background(BlocGreen))
             Text("THÁNG ${lunarMonth.toString().padStart(2, '0')}", color = BlocGreen, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
             Spacer(modifier = Modifier.height(Spacing12))
-            Text("Âm lịch", color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp)
             Text("Năm $yearCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
             Text("Tháng $monthCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
             Text("Ngày $dayCanChi", color = MaterialTheme.colorScheme.onSurface, fontSize = 15.sp, textAlign = TextAlign.Center)
