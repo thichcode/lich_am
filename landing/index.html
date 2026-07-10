@@ -496,15 +496,18 @@ body{
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- TAB NEWS -->
-    <section id="tab-news" class="tab-section hidden">
-      <div class="welcome-banner" style="background:#991B1B"><p>📰 Tin tức nổi bật trong ngày</p><span>📰</span></div>
-      <div id="news-list" style="display:flex;flex-direction:column;gap:8px">
-        <div style="text-align:center;padding:24px;color:#9CA3AF;font-weight:700;font-size:14px">Đang tải tin tức...</div>
+      <!-- News section inside month tab -->
+      <div class="news-box" style="border-color:#991B1B">
+        <div class="news-header" style="background:#991B1B;color:#fff;border-radius:12px 12px 0 0;padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:2px solid #E5E7EB">
+          <span style="font-size:16px">📰</span>
+          <span style="font-size:clamp(11px,3.2vw,13px);font-weight:900">TIN TỨC NỔI BẬT</span>
+          <span style="margin-left:auto;font-size:clamp(8px,2.2vw,9px);font-weight:700;opacity:0.8">Kinh tế • Chính trị • Thể thao</span>
+        </div>
+        <div id="news-list" style="display:flex;flex-direction:column;padding:8px">
+          <div style="text-align:center;padding:16px;color:#9CA3AF;font-weight:700;font-size:clamp(12px,3.5vw,14px)">Đang tải tin tức...</div>
+        </div>
+        <div style="text-align:center;padding:6px;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;border-top:2px solid #E5E7EB">Nguồn: VnExpress, Tuổi Trẻ, Thanh Niên — Dữ liệu mô phỏng</div>
       </div>
-      <div style="text-align:center;font-size:clamp(9px,2.5vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">Nguồn: VnExpress, Tuổi Trẻ, Thanh Niên — Dữ liệu mô phỏng</div>
     </section>
 
     <!-- TAB GOOD DAYS -->
@@ -602,10 +605,6 @@ body{
     <button onclick="switchTab('good-days')" id="nav-good-days" class="nav-item">
       <span class="nav-icon nav-icon-inactive">🌸</span>
       <span class="nav-label" style="color:#78716C">Ngày tốt</span>
-    </button>
-    <button onclick="switchTab('news')" id="nav-news" class="nav-item">
-      <span class="nav-icon nav-icon-inactive">📰</span>
-      <span class="nav-label" style="color:#78716C">Tin tức</span>
     </button>
     <button onclick="switchTab('prayers')" id="nav-prayers" class="nav-item">
       <span class="nav-icon nav-icon-inactive">📖</span>
@@ -810,6 +809,7 @@ function renderDayView(){
 // ===== MONTH VIEW =====
 function changeMonth(offset){currentMonthView+=offset;if(currentMonthView>12){currentMonthView=1;currentYearView+=1}else if(currentMonthView<1){currentMonthView=12;currentYearView-=1}renderMonthView()}
 function renderMonthView(){
+  renderNews()
   document.getElementById('calendar-month-title').innerText='Tháng '+currentMonthView+' - '+currentYearView
   var fd=new Date(currentYearView,currentMonthView-1,1),so=(fd.getDay()+7)%7,td=new Date(currentYearView,currentMonthView,0).getDate()
   var grid=document.getElementById('calendar-grid-days');grid.innerHTML=''
@@ -874,9 +874,10 @@ function renderNews(){
     }
     articles.push(a)
   }
-  var html=articles.map(function(a){
-    var cs=['#D1FAE5','#FEE2E2','#DBEAFE']
-    return '<div class="news-article" onclick="showElderAlert(\''+a.title.replace(/'/g,"\\'")+'\nNguồn: '+a.source+'\n(Liên kết đọc sẽ mở trong ứng dụng thật)\')"><div class="news-article-thumb" style="background:'+cs[articles.indexOf(a)%3]+'">'+a.icon+'</div><div class="news-article-info"><div class="news-article-title">'+a.title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+a.color+'">'+a.cat+'</span><span>'+a.source+'</span><span style="color:#064E3B;font-weight:700">🔗 Đọc tiếp</span></div></div></div>'
+  var colors=['#D1FAE5','#FEE2E2','#DBEAFE']
+  var html=articles.map(function(a,i){
+    var msg=a.title+' (Nguồn: '+a.source+') - Liên kết đọc sẽ mở trong ứng dụng thật.'
+    return '<div class="news-article" onclick="showElderAlert(\''+msg.replace(/'/g,"\\'")+'\')"><div class="news-article-thumb" style="background:'+colors[i%3]+'">'+a.icon+'</div><div class="news-article-info"><div class="news-article-title">'+a.title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+a.color+'">'+a.cat+'</span><span>'+a.source+'</span><span style="color:#064E3B;font-weight:700">🔗 Đọc tiếp</span></div></div></div>'
   }).join('')
   document.getElementById('news-list').innerHTML=html
 }
@@ -898,13 +899,12 @@ function toggleAutoScroll(){var btn=document.getElementById('autoscroll-btn'),bo
 function stopAutoScroll(){var btn=document.getElementById('autoscroll-btn');if(btn){btn.innerText='BẬT';btn.style.background='#064E3B'}isAutoScrolling=false;clearInterval(scrollTimer)}
 // ===== TAB SWITCHING =====
 function switchTab(tabId){
-  currentTab=tabId;var tabs=['home','month','good-days','news','prayers','more']
+  currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
   // WebView overlay handling
   if(isWebViewMode){var ov=document.getElementById('ui-package-overlay');if(ov){var show=tabId==='more';ov.style.display=show?'block':'none';if(show)refreshUiOverlayData()}}
   tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
-  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()  }else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()
-  }else if(tabId==='news'){renderNews()}else if(tabId==='prayers'){renderPrayersList()}
+  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()  }else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
   playBell()
 }
 // ===== UI PACKAGE DEMO =====
