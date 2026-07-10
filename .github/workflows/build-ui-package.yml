@@ -1,0 +1,52 @@
+name: Build & Deploy UI Package
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/src/main/assets/ui/default/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read current version
+        id: version
+        run: |
+          CURRENT=$(jq -r '.uiVersion // 1' landing/ui/manifest.json)
+          echo "old=$CURRENT" >> $GITHUB_OUTPUT
+          echo "new=$((CURRENT + 1))" >> $GITHUB_OUTPUT
+
+      - name: Build ui-package.zip
+        run: |
+          cd app/src/main/assets/ui/default
+          zip -r $GITHUB_WORKSPACE/landing/ui/ui-package.zip . -x ".*"
+
+      - name: Compute SHA-256
+        id: hash
+        run: |
+          HASH=$(sha256sum landing/ui/ui-package.zip | cut -d' ' -f1)
+          echo "value=$HASH" >> $GITHUB_OUTPUT
+
+      - name: Update manifest.json
+        run: |
+          jq --arg v "${{ steps.version.outputs.new }}" \
+             --arg h "${{ steps.hash.outputs.value }}" \
+             '.uiVersion = ($v | tonumber) | .sha256 = $h' \
+             landing/ui/manifest.json > landing/ui/manifest_.json
+          mv landing/ui/manifest_.json landing/ui/manifest.json
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add landing/ui/
+          git diff --staged --quiet || \
+          git commit -m "chore: auto-build UI package v${{ steps.version.outputs.new }}"
+          git push
