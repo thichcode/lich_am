@@ -70,7 +70,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            CompositionLocalProvider(LocalThemeMode provides themeMode) {
+            CompositionLocalProvider(
+                LocalThemeMode provides themeMode,
+                LocalUseWebView provides remember { mutableStateOf(true) }
+            ) {
                 LichAmTheme(darkTheme = isDark) {
                     AppMain()
                 }

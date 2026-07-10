@@ -25,14 +25,24 @@ import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.util.Calendar
 
+val LocalUseWebView = staticCompositionLocalOf { mutableStateOf(true) }
+
 // Colors moved to Theme.kt
 
 @Composable
 fun HomeScreen() {
+    val useWebView = LocalUseWebView.current
     val today = remember { LocalDate.now() }
-    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        Box(modifier = Modifier.weight(1f)) {
-            DayDetailContent(date = today)
+
+    if (useWebView.value) {
+        WebViewHomeScreen(useCompose = false) {
+            useWebView.value = false
+        }
+    } else {
+        Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+            Box(modifier = Modifier.weight(1f)) {
+                DayDetailContent(date = today)
+            }
         }
     }
 }

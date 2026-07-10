@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Lịch Âm</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+<div id="app-loading">
+  <div class="spinner"></div>
+  <p>Đang tải...</p>
+</div>
+<div id="app-content" style="display:none">
+  <div id="nav-row" class="nav-row">
+    <button class="nav-btn nav-btn-green" onclick="nativeApp.changeDate(-1)">◀<br><span class="nav-label">Hôm qua</span></button>
+    <button class="nav-btn nav-btn-gold" onclick="nativeApp.changeDate(0)">HÔM NAY<br><span class="nav-small" id="nav-year">Năm 2026</span></button>
+    <button class="nav-btn nav-btn-green" onclick="nativeApp.changeDate(1)">▶<br><span class="nav-label">Hôm sau</span></button>
+  </div>
+
+  <div id="calendar-card" class="card card-border-green">
+    <div class="card-top-bar card-top-bar-red"></div>
+    <div class="card-body">
+      <div class="cal-header">
+        <div class="cal-weekday" id="cal-weekday">CHỦ NHẬT</div>
+        <div class="cal-day" id="cal-day">1</div>
+        <div class="cal-monthyear" id="cal-monthyear">Tháng 1 2026</div>
+      </div>
+      <div class="quote-box" id="quote-box">
+        <span class="quote-mark quote-mark-left">"</span>
+        <span class="quote-mark quote-mark-right">"</span>
+        <p class="quote-text" id="quote-text">Có công mài sắt, có ngày nên kim.</p>
+      </div>
+      <div id="lunar-section">
+        <div class="current-hour" id="current-hour">Hiện tại: Giờ Tý</div>
+        <div class="lunar-day-row">
+          <span class="moon-icon">🌙</span>
+          <span class="lunar-day-num" id="lunar-day">1</span>
+          <span class="lunar-month" id="lunar-month">THÁNG GIÊNG</span>
+        </div>
+        <div class="canchi-row" id="canchi-row">
+          <div class="canchi-col">
+            <div class="canchi-label">NĂM</div>
+            <div class="canchi-value" id="cc-year">Giáp Thìn</div>
+            <div class="canchi-animal" id="cc-year-animal">(Rồng)</div>
+          </div>
+          <div class="canchi-col">
+            <div class="canchi-label">THÁNG</div>
+            <div class="canchi-value" id="cc-month">Giáp Dần</div>
+            <div class="canchi-animal" id="cc-month-animal">(Hổ)</div>
+          </div>
+          <div class="canchi-col">
+            <div class="canchi-label">NGÀY</div>
+            <div class="canchi-value" id="cc-day">Giáp Tý</div>
+            <div class="canchi-animal" id="cc-day-animal">(Chuột)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="hours-row" class="hours-row" style="display:none">
+    <div class="hours-col" id="good-hours-col">
+      <div class="hours-header hours-header-good">✅ GIỜ HOÀNG ĐẠO</div>
+      <div class="hours-grid" id="good-hours-grid"></div>
+    </div>
+    <div class="hours-col" id="bad-hours-col">
+      <div class="hours-header hours-header-bad">❌ GIỜ HẮC ĐẠO</div>
+      <div class="hours-grid" id="bad-hours-grid"></div>
+    </div>
+  </div>
+
+  <div id="activities-card" class="card card-border-green" style="display:none">
+    <div class="card-body" style="position:relative;overflow:hidden">
+      <div class="bamboo-bg">🎋</div>
+      <div id="activities-content">
+        <div class="activity-row" id="good-activities">
+          <div class="activity-icon activity-icon-good">✅</div>
+          <div class="activity-text">
+            <div class="activity-title activity-title-good">VIỆC NÊN LÀM</div>
+            <div class="activity-desc" id="good-activities-text"></div>
+          </div>
+        </div>
+        <div class="activity-divider"></div>
+        <div class="activity-row" id="bad-activities">
+          <div class="activity-icon activity-icon-bad">❌</div>
+          <div class="activity-text">
+            <div class="activity-title activity-title-bad">VIỆC TRÁNH (KỴ)</div>
+            <div class="activity-desc" id="bad-activities-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="clash-card" class="card card-border-gold" style="display:none">
+    <div class="card-body">
+      <div class="clash-row">
+        <div class="clash-col">
+          <div class="clash-label">⚡ TUỔI XUNG KHẮC</div>
+          <div class="clash-value clash-value-red" id="clash-ages"></div>
+        </div>
+        <div class="clash-col">
+          <div class="clash-label">🧭 HƯỚNG TỐT</div>
+          <div class="clash-value clash-value-green" id="direction-hy-than"></div>
+          <div class="clash-value clash-value-green" id="direction-tai-than"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="term-card" class="card card-border-outline" style="display:none">
+    <div class="card-body">
+      <div class="term-row">
+        <div class="term-col" id="term-current">
+          <div class="term-title">🌿 TIẾT KHÍ</div>
+          <div class="term-name"></div>
+          <div class="term-date"></div>
+        </div>
+        <div class="term-divider"></div>
+        <div class="term-col" id="term-next">
+          <div class="term-title">🌿 TIẾT KHÍ TIẾP THEO</div>
+          <div class="term-name"></div>
+          <div class="term-date"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="events-card" class="card card-border-outline" style="display:none">
+    <div class="card-body">
+      <div class="events-row">
+        <span class="events-icon">📅</span>
+        <div class="events-content">
+          <div class="events-title">SỰ KIỆN - NGÀY LỄ</div>
+          <div id="events-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>

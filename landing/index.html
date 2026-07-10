@@ -1,1434 +1,908 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Âm Cao Niên - Phiên Bản Đặc Biệt</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Bold Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        elder: {
-                            bg: '#FDFBF7', // Nền giấy dó ấm, không lóa mắt
-                            green: '#064E3B', // Xanh lá đậm, cực kỳ rõ nét
-                            red: '#991B1B', // Đỏ đậm truyền thống, tương phản cao
-                            dark: '#1F2937', // Chữ xám đen siêu rõ
-                            card: '#FFFFFF',
-                            gold: '#B45309' // Vàng thổ hoàng cổ kính
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Tối ưu hóa font chữ dễ đọc nhất cho người già */
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Hiệu ứng viền nổi đậm đà giúp phân biệt các vùng tốt hơn */
-        .elder-border {
-            border: 3px solid #064E3B;
-        }
-        .elder-border-red {
-            border: 3px solid #991B1B;
-        }
-        .elder-shadow {
-            box-shadow: 0 8px 0px 0px rgba(6, 78, 59, 0.15);
-        }
-
-        /* Tăng kích thước vùng cuộn để dễ kéo */
-        ::-webkit-scrollbar {
-            width: 12px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F3F4F6;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #064E3B;
-            border-radius: 10px;
-            border: 3px solid #F3F4F6;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,viewport-fit=cover">
+<title>Lịch Âm Cao Niên</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+tailwind.config={
+  darkMode:'class',
+  theme:{
+    extend:{
+      colors:{
+        elder:{bg:'#FDFBF7',green:'#064E3B',red:'#991B1B',dark:'#1F2937',card:'#FFFFFF',gold:'#B45309'}
+      }
+    }
+  }
+}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  background:#F4F1EA;
+  color:#1F2937;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+}
+.app-shell{
+  width:100%;
+  max-width:420px;
+  margin:0 auto;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  background:#FDFBF7;
+  position:relative;
+}
+.main-content{
+  flex:1;
+  padding:12px 16px;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+/* Nav row */
+.nav-row{display:flex;gap:8px;width:100%}
+.nav-btn{flex:1;border:none;border-radius:12px;color:#fff;font-weight:900;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;min-height:52px;line-height:1.2;-webkit-tap-highlight-color:transparent;user-select:none}
+.nav-btn:active{transform:scale(0.96)}
+.nav-btn-green{background:#064E3B}
+.nav-btn-gold{background:#B45309}
+/* Calendar card */
+.cal-card{background:#fff;border-radius:16px;border:4px solid #064E3B;overflow:hidden;width:100%}
+.cal-top-bar{height:4px;background:#991B1B;width:100%}
+.cal-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.cal-header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;width:100%}
+.cal-weekday{font-weight:900;color:#064E3B;font-size:clamp(16px,4.5vw,22px);line-height:1.1;text-align:left}
+.cal-day{font-weight:900;color:#991B1B;font-size:clamp(64px,18vw,80px);line-height:1;text-align:center;letter-spacing:-2px}
+.cal-monthyear{font-weight:900;color:#064E3B;font-size:clamp(13px,3.8vw,18px);line-height:1.2;text-align:right}
+/* Quote */
+.quote-box{position:relative;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:10px;padding:10px 16px;width:100%}
+.quote-mark{position:absolute;font-size:20px;color:#D1D5DB;user-select:none;pointer-events:none}
+.quote-mark-left{top:2px;left:6px}
+.quote-mark-right{bottom:2px;right:6px}
+.quote-text{text-align:center;font-size:clamp(14px,4vw,16px);line-height:1.5;font-weight:700;color:#1F2937;padding:0 20px}
+/* Lunar section */
+.lunar-section{display:flex;flex-direction:column;gap:8px;width:100%}
+.lunar-hour{text-align:center;color:#78716C;font-size:clamp(13px,3.8vw,15px);font-weight:700}
+.lunar-main{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:nowrap}
+.lunar-moon{font-size:clamp(22px,6vw,28px);line-height:1}
+.lunar-day-num{color:#064E3B;font-size:clamp(36px,10vw,48px);line-height:1;font-weight:900;letter-spacing:-1px}
+.lunar-month-text{color:#1F2937;font-size:clamp(16px,4.5vw,22px);font-weight:900;white-space:nowrap}
+.canchi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:6px 0;text-align:center;width:100%}
+.canchi-cell{padding:2px 4px}
+.canchi-label{color:#78716C;font-size:clamp(9px,2.6vw,11px);font-weight:800}
+.canchi-value{color:#1F2937;font-size:clamp(12px,3.5vw,14px);font-weight:700}
+.canchi-animal{color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700}
+/* Info cards - stack vertically on mobile */
+.info-stack{display:flex;flex-direction:column;gap:10px;width:100%}
+.info-card{background:#fff;border-radius:12px;overflow:hidden;width:100%;min-width:0}
+.info-card-good{border:2px solid #064E3B}
+.info-card-bad{border:2px solid #991B1B}
+.info-card-lunar{border:2px solid #B45309}
+.info-header{text-align:center;padding:6px 8px;color:#fff;font-size:clamp(10px,3vw,12px);font-weight:900;letter-spacing:0.5px}
+.info-header-good{background:#064E3B}
+.info-header-bad{background:#991B1B}
+.info-header-lunar{background:#B45309}
+.info-body{padding:8px;width:100%}
+.hour-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;width:100%}
+.hour-chip{display:flex;flex-direction:column;align-items:center;padding:4px 2px;border-radius:6px;text-align:center;min-width:0}
+.hour-chip-good{background:rgba(6,78,59,0.08);border:1px solid rgba(6,78,59,0.25)}
+.hour-chip-bad{background:rgba(153,27,27,0.08);border:1px solid rgba(153,27,27,0.25)}
+.hour-time{font-size:clamp(7px,2vw,9px);font-weight:700;color:#1F2937;line-height:1.2;white-space:nowrap}
+.hour-name{font-size:clamp(9px,2.6vw,11px);font-weight:900;line-height:1.3}
+.hour-name-good{color:#064E3B}
+.hour-name-bad{color:#991B1B}
+/* Lunar mini card */
+.lunar-mini-body{display:flex;flex-direction:column;gap:6px;padding:8px}
+.lunar-mini-row{display:flex;justify-content:space-around;text-align:center}
+.lunar-mini-item{}
+.lunar-mini-label{color:#78716C;font-size:clamp(9px,2.6vw,11px);font-weight:800}
+.lunar-mini-value{color:#1F2937;font-size:clamp(12px,3.5vw,14px);font-weight:700}
+.lunar-mini-animal{color:#B45309;font-size:clamp(10px,3vw,12px);font-weight:700}
+/* Bottom nav */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  max-width:420px;
+  margin:0 auto;
+  height:calc(64px + env(safe-area-inset-bottom,0px));
+  background:#fff;
+  border-top:3px solid #D1D5DB;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:4px 4px calc(4px + env(safe-area-inset-bottom,0px)) 4px;
+  z-index:50;
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;padding:2px 0;-webkit-tap-highlight-color:transparent;user-select:none;min-width:0}
+.nav-item:active{transform:scale(0.92)}
+.nav-icon{width:40px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.15s}
+.nav-icon-active{background:#064E3B;color:#fff;box-shadow:0 2px 6px rgba(6,78,59,0.3)}
+.nav-icon-inactive{background:transparent;color:#78716C}
+.nav-label{font-size:clamp(9px,2.5vw,11px);font-weight:900;white-space:nowrap}
+/* Activity card */
+.activity-card{background:#fff;border-radius:12px;border:3px solid #064E3B;overflow:hidden;position:relative;width:100%}
+.activity-body{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.activity-bamboo{position:absolute;bottom:4px;right:8px;font-size:56px;opacity:0.15;pointer-events:none;user-select:none}
+.activity-row{display:flex;gap:10px;align-items:flex-start}
+.activity-icon{font-size:clamp(22px,6vw,28px);line-height:1;flex-shrink:0}
+.activity-content{flex:1;min-width:0}
+.activity-title{font-size:clamp(10px,3vw,11px);font-weight:900;letter-spacing:1px;margin-bottom:2px}
+.activity-title-good{color:#064E3B}
+.activity-title-bad{color:#991B1B}
+.activity-desc{color:#1F2937;font-size:clamp(13px,3.8vw,15px);font-weight:700;line-height:1.5;word-wrap:break-word}
+/* Clash & Directions */
+.clash-card{background:#fff;border-radius:12px;border:3px solid #B45309;overflow:hidden;width:100%}
+.clash-body{padding:12px 14px;display:flex;gap:12px}
+.clash-col{flex:1;min-width:0}
+.clash-label{font-size:clamp(9px,2.6vw,11px);font-weight:900;color:#92400E;margin-bottom:3px}
+.clash-value{font-size:clamp(11px,3.2vw,13px);font-weight:700;line-height:1.4}
+.clash-value-red{color:#991B1B}
+.clash-value-green{color:#064E3B}
+/* Division line */
+.divider{width:1px;background:#D1D5DB;flex-shrink:0}
+/* Term card */
+.term-card{background:#fff;border-radius:10px;border:1px solid #D1D5DB;overflow:hidden;width:100%;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.term-body{padding:14px;display:flex;gap:8px}
+.term-col{flex:1;min-width:0}
+.term-label{font-size:clamp(9px,2.6vw,11px);font-weight:800;color:#064E3B;display:flex;align-items:center;gap:4px}
+.term-name-text{font-size:clamp(16px,4.5vw,20px);font-weight:800;color:#1F2937;margin:4px 0 2px}
+.term-date-text{font-size:clamp(11px,3.2vw,14px);color:#1F2937}
+/* Events card */
+.events-card{background:#fff;border-radius:10px;border:1px solid #D1D5DB;overflow:hidden;width:100%;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.events-body{padding:14px;display:flex;gap:12px;align-items:flex-start}
+.events-icon{font-size:clamp(24px,7vw,34px);flex-shrink:0;line-height:1}
+.events-content{flex:1;min-width:0}
+.events-title{font-size:clamp(15px,4.2vw,19px);font-weight:800;color:#064E3B;margin-bottom:8px}
+.event-item{display:flex;gap:6px;padding:3px 0;font-size:clamp(12px,3.5vw,14px)}
+.event-date{color:#1F2937;flex-shrink:0;min-width:0}
+.event-name{color:#064E3B;font-weight:600}
+/* Tab system */
+.tab-section{display:block}
+.tab-section.hidden{display:none}
+/* Month calendar grid */
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.month-grid-cell{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px;font-size:clamp(11px,3vw,14px);cursor:pointer;transition:all 0.1s;min-width:0}
+.month-grid-cell:active{transform:scale(0.9)}
+.month-grid-day{font-weight:900;line-height:1.1}
+.month-grid-lunar{font-size:clamp(7px,2vw,9px);font-weight:700;opacity:0.8}
+/* Prayer items */
+.prayer-item{background:#fff;border-radius:10px;border:2px solid #D1D5DB;overflow:hidden;width:100%;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:border-color 0.15s}
+.prayer-item:active{transform:scale(0.98)}
+.prayer-icon{width:36px;height:36px;border-radius:50%;background:#FEF3C7;color:#B45309;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.prayer-info{flex:1;min-width:0}
+.prayer-category{font-size:clamp(8px,2.2vw,10px);font-weight:900;color:#78716C;text-transform:uppercase}
+.prayer-title{font-size:clamp(14px,4vw,16px);font-weight:900;color:#1F2937;margin-top:1px}
+.prayer-arrow{font-size:16px;color:#D1D5DB;flex-shrink:0}
+/* Good days list */
+.good-day-item{background:#fff;border-radius:10px;border:3px solid #064E3B;overflow:hidden;width:100%;padding:12px;display:flex;gap:10px;align-items:center}
+.good-day-badge{width:52px;height:52px;border-radius:8px;background:#B45309;color:#1F2937;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;border:2px solid #92400E}
+.good-day-num{font-size:clamp(16px,4.5vw,20px);line-height:1}
+.good-day-month{font-size:clamp(8px,2.2vw,10px)}
+.good-day-info{flex:1;min-width:0}
+.good-day-desc{font-size:clamp(13px,3.8vw,15px);font-weight:900;color:#1F2937}
+.good-day-lunar{font-size:clamp(10px,3vw,12px);color:#78716C;font-weight:700}
+.good-day-sub{font-size:clamp(10px,3vw,12px);color:#064E3B;font-weight:700;margin-top:4px;background:#F0FDF4;padding:4px 8px;border-radius:6px;border:1px solid #BBF7D0}
+/* Filter buttons */
+.filter-row{display:flex;gap:6px;width:100%}
+.filter-btn{flex:1;padding:10px 4px;border-radius:10px;border:2px solid transparent;font-size:clamp(11px,3vw,13px);font-weight:900;cursor:pointer;text-align:center;transition:all 0.1s;-webkit-tap-highlight-color:transparent}
+.filter-btn:active{transform:scale(0.95)}
+/* Prayer modal */
+.prayer-modal{position:fixed;inset:0;background:rgba(30,30,30,0.8);backdrop-filter:blur(4px);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:8px}
+.prayer-modal.open{display:flex}
+.prayer-modal-content{width:100%;max-width:400px;background:#FDFBF7;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:90vh;display:flex;flex-direction:column;border-top:8px solid #064E3B;overflow:hidden}
+.prayer-modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #E5E7EB;flex-shrink:0}
+.prayer-modal-title{font-size:clamp(16px,4.5vw,20px);font-weight:900;color:#1F2937;margin-top:2px}
+.prayer-modal-close{width:36px;height:36px;border-radius:50%;background:#E5E7EB;border:none;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0}
+.prayer-modal-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 0;flex-shrink:0}
+.prayer-modal-text{flex:1;overflow-y:auto;font-size:clamp(16px,4.5vw,18px);line-height:1.8;color:#1F2937;font-weight:600;padding:8px 0}
+/* Dark mode overrides */
+.dark .cal-card,.dark .info-card,.dark .activity-card,.dark .clash-card,.dark .term-card,.dark .events-card,.dark .prayer-item,.dark .good-day-item{background:#1F2937;border-color:#374151}
+.dark .cal-top-bar{background:#991B1B}
+.dark .cal-weekday{color:#34D399}
+.dark .cal-day{color:#FCA5A5}
+.dark .cal-monthyear{color:#34D399}
+.dark .quote-box{background:#374151;border-color:#4B5563}
+.dark .quote-text{color:#F9FAFB}
+.dark .lunar-hour{color:#D1D5DB}
+.dark .lunar-day-num{color:#34D399}
+.dark .lunar-month-text{color:#F9FAFB}
+.dark .canchi-grid{background:#374151;border-color:#4B5563}
+.dark .canchi-label{color:#D1D5DB}
+.dark .canchi-value{color:#F9FAFB}
+.dark .canchi-animal{color:#34D399}
+.dark .info-card-good,.dark .info-card-bad,.dark .info-card-lunar{background:#1F2937}
+.dark .bottom-nav{background:#1F2937;border-color:#374151}
+.dark .nav-label{color:#D1D5DB}
+.dark .nav-icon-inactive{color:#9CA3AF}
+.dark .term-card,.dark .events-card{background:#1F2937;border-color:#374151}
+.dark .term-label{color:#34D399}
+.dark .term-name-text,.dark .term-date-text,.dark .event-date,.dark .event-name{color:#F9FAFB}
+.dark .clash-body{background:#1F2937}
+.dark .clash-label{color:#FCD34D}
+.dark .clash-value-green{color:#34D399}
+.dark .activity-body{background:#1F2937}
+.dark .activity-title-good{color:#34D399}
+.dark .activity-title-bad{color:#FCA5A5}
+.dark .activity-desc{color:#F9FAFB}
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);padding:10px 20px;background:rgba(30,30,30,0.92);color:#fff;font-size:clamp(12px,3.5vw,14px);font-weight:700;border-radius:50px;box-shadow:0 4px 12px rgba(0,0,0,0.2);pointer-events:none;opacity:0;transition:opacity 0.3s;z-index:200;white-space:nowrap;border:2px solid #FBBF24}
+.toast.show{opacity:1}
+/* Alert modal */
+.alert-modal{position:fixed;inset:0;background:rgba(30,30,30,0.75);backdrop-filter:blur(2px);z-index:150;display:none;align-items:center;justify-content:center;padding:24px}
+.alert-modal.open{display:flex}
+.alert-content{width:100%;max-width:360px;background:#fff;border-radius:16px;padding:24px;border:4px solid #064E3B;text-align:center;display:flex;flex-direction:column;gap:12px}
+.alert-icon{font-size:32px}
+.alert-title{font-size:18px;font-weight:900;color:#064E3B}
+.alert-text{font-size:15px;color:#1F2937;font-weight:700;line-height:1.5}
+.alert-btn{width:100%;padding:12px;background:#064E3B;color:#fff;font-weight:900;font-size:15px;border:none;border-radius:10px;cursor:pointer}
+.alert-btn:active{transform:scale(0.96)}
+/* News box */
+.news-box{background:#fff;border-radius:12px;border:2px solid #064E3B;overflow:hidden;width:100%}
+.news-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:2px solid #E5E7EB}
+.news-title{font-size:clamp(10px,3vw,12px);font-weight:900;color:#991B1B;display:flex;align-items:center;gap:6px}
+.news-dot{width:8px;height:8px;border-radius:50%;background:#991B1B;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.news-refresh{font-size:clamp(10px,3vw,12px);background:#F0FDF4;color:#064E3B;font-weight:700;padding:4px 10px;border-radius:8px;border:1px solid #BBF7D0;cursor:pointer}
+.news-refresh:active{transform:scale(0.95)}
+.news-list{padding:8px 12px;display:flex;flex-direction:column;gap:4px}
+.news-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #F3F4F6}
+.news-item:last-child{border-bottom:none}
+.news-index{width:22px;height:22px;border-radius:50%;background:#D1FAE5;color:#064E3B;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.news-text{font-size:clamp(12px,3.5vw,14px);font-weight:700;color:#1F2937;line-height:1.3}
+.news-meta{display:flex;gap:6px;margin-top:2px}
+.news-category{font-size:clamp(8px,2.2vw,10px);font-weight:800;background:#F0FDF4;color:#064E3B;padding:1px 6px;border-radius:4px}
+.news-source{font-size:clamp(8px,2.2vw,10px);font-weight:700;color:#9CA3AF}
+/* Welcome banner */
+.welcome-banner{background:#064E3B;color:#FEF3C7;padding:14px 16px;border-radius:12px;position:relative;overflow:hidden}
+.welcome-banner p{font-size:clamp(13px,3.8vw,15px);font-weight:700;line-height:1.4}
+.welcome-banner span{position:absolute;bottom:2px;right:8px;font-size:40px;opacity:0.2;pointer-events:none}
+/* UI Package demo */
+.ui-toggle-row{display:flex;align-items:center;gap:8px;padding:2px 0}
+.ui-toggle{position:relative;display:inline-flex;width:40px;height:22px;cursor:pointer;flex-shrink:0}
+.ui-toggle input{opacity:0;width:0;height:0}
+.ui-toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:22px;transition:0.2s}
+.ui-toggle-slider::before{content:'';position:absolute;left:2px;bottom:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:0.2s}
+.ui-toggle input:checked+.ui-toggle-slider{background:#064E3B}
+.ui-toggle input:checked+.ui-toggle-slider::before{transform:translateX(18px)}
+/* Settings section */
+.settings-card{background:#fff;border-radius:10px;border:1px solid #D1D5DB;overflow:hidden;width:100%}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:2px solid #F3F4F6;cursor:pointer;gap:8px}
+.settings-item:last-child{border-bottom:none}
+.settings-item:active{background:#F9FAFB}
+.settings-item-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.settings-item-icon{font-size:22px;flex-shrink:0;width:28px;text-align:center}
+.settings-item-text{flex:1;min-width:0}
+.settings-item-title{font-size:clamp(13px,3.8vw,14px);font-weight:900;color:#1F2937}
+.settings-item-sub{font-size:clamp(10px,3vw,11px);color:#9CA3AF;font-weight:700}
+.settings-item-arrow{color:#D1D5DB;font-size:14px;flex-shrink:0}
+</style>
 </head>
-<body class="bg-[#F4F1EA] min-h-full text-elder-dark transition-all duration-200">
-
+<body>
 <audio id="bellSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
 
-<!-- Khung ứng dụng giả lập điện thoại màn hình lớn, chống mỏi mắt -->
-<div class="max-w-md mx-auto min-h-screen flex flex-col bg-elder-bg shadow-2xl relative border-x-4 border-stone-300">
-    
-    <!-- Thân ứng dụng chính chứa các tab -->
-    <main id="elder-main-content" class="flex-grow px-4 py-6 pb-28 text-[20px] font-semibold leading-relaxed">
-        
-        <!-- ==================== TAB 1: XEM NGÀY (HÔM NAY) ==================== -->
-        <section id="tab-home" class="space-y-4">
-            
-            <!-- Bộ điều khiển đổi ngày cực lớn, dễ bấm -->
-            <div class="grid grid-cols-3 gap-2 items-center">
-                <button onclick="navigateDay(-1)" class="py-3 px-2 bg-elder-green text-white rounded-xl text-center active:scale-95 shadow-md flex flex-col items-center justify-center">
-                    <span class="text-xl font-black">◀</span>
-                    <span class="text-xs font-bold uppercase mt-0.5">Hôm qua</span>
-                </button>
-                <button onclick="resetToSampleDate()" class="py-3 px-1 bg-elder-gold text-white rounded-xl text-center active:scale-95 shadow-md flex flex-col items-center justify-center">
-                    <span class="text-sm font-black">HÔM NAY</span>
-                    <span id="label-current-year" class="text-[10px] font-bold">Năm 2026</span>
-                </button>
-                <button onclick="navigateDay(1)" class="py-3 px-2 bg-elder-green text-white rounded-xl text-center active:scale-95 shadow-md flex flex-col items-center justify-center">
-                    <span class="text-xl font-black">▶</span>
-                    <span class="text-xs font-bold uppercase mt-0.5">Hôm sau</span>
-                </button>
-            </div>
+<div class="app-shell">
+  <!-- ScrollaBLE MAIN CONTENT -->
+  <main class="main-content" id="elder-main-content">
 
-            <!-- TỜ LỊCH BLOCK CHÍNH (Thiết kế rực rỡ, chữ cực to theo mẫu ảnh.png) -->
-            <div class="bg-white rounded-2xl p-5 border-4 border-elder-green shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 inset-x-0 h-4 bg-red-700"></div> <!-- Mô phỏng gáy lịch đỏ -->
-                
-                <!-- Hàng ngày dương cực to rõ -->
-                <div class="grid grid-cols-3 items-center text-center mt-2 pb-3 border-b-2 border-stone-200">
-                    <div id="solar-weekday" class="text-left font-black text-2xl text-elder-green leading-tight">
-                        THỨ<br>NĂM
-                    </div>
-                    <div>
-                        <h1 id="solar-day" class="text-8xl font-black text-elder-red tracking-tighter leading-none select-none">9</h1>
-                    </div>
-                    <div id="solar-month-year" class="text-right font-black text-xl text-elder-green leading-tight">
-                        Tháng 7<br>2026
-                    </div>
-                </div>
-
-                <!-- HỘP DANH NGÔN GỐC TỪ ẢNH.PNG (Nằm ngay dưới ngày dương lịch) -->
-                <div class="my-4 p-4 bg-white rounded-xl border border-stone-200 text-center text-stone-600 italic relative shadow-sm">
-                    <span class="text-3xl text-stone-300 absolute top-1 left-2 select-none">“</span>
-                    <p id="daily-quote" class="font-bold text-base leading-relaxed px-6 my-1">Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao</p>
-                    <span class="text-3xl text-stone-300 absolute bottom-1 right-2 select-none">”</span>
-                </div>
-
-                <!-- KHU VỰC TRỌNG TÂM: LỊCH ÂM CHI TIẾT (Được phóng to) -->
-                <div class="bg-emerald-50/50 p-4 rounded-xl border-2 border-dashed border-elder-green text-center">
-                    <p class="text-sm text-stone-500 font-bold" id="current-hour-label">Hiện tại: Giờ Tý</p>
-                    <div class="flex items-center justify-center gap-2 my-1">
-                        <span class="text-3xl">🌙</span>
-                        <h2 id="lunar-day-large" class="text-5xl font-black text-elder-green">25</h2>
-                        <span id="lunar-month" class="text-2xl font-black text-stone-800">THÁNG 05</span>
-                    </div>
-                    
-                    <!-- Can Chi dịch nghĩa siêu thuần Việt -->
-                    <div class="grid grid-cols-3 gap-1 bg-white p-2.5 rounded-lg border border-stone-200 mt-2 text-xs font-bold text-stone-700">
-                        <div class="border-r border-stone-200">
-                            <p class="text-stone-400 text-[10px]">NĂM</p>
-                            <p id="lunar-year-chi" class="text-stone-900 text-xs">Bính Ngọ<br><span class="text-emerald-700 text-[10px]">(Ngựa)</span></p>
-                        </div>
-                        <div class="border-r border-stone-200">
-                            <p class="text-stone-400 text-[10px]">THÁNG</p>
-                            <p id="lunar-month-chi" class="text-stone-900 text-xs">Giáp Ngọ<br><span class="text-emerald-700 text-[10px]">(Ngựa)</span></p>
-                        </div>
-                        <div>
-                            <p class="text-stone-400 text-[10px]">NGÀY</p>
-                            <p id="lunar-day-chi" class="text-stone-900 text-xs">Giáp Thân<br><span class="text-emerald-700 text-[10px]">(Khỉ)</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HAI CỘT GIỜ HOÀNG ĐẠO (TỐT) - HẮC ĐẠO (XẤU) (2 DÒNG CHỮ NHỎ) -->
-            <div class="grid grid-cols-2 gap-3">
-                <!-- Cột Giờ Tốt -->
-                <div class="bg-white p-3 rounded-xl border-2 border-emerald-600 shadow-md">
-                    <h3 class="text-sm font-black text-white bg-emerald-700 px-2 py-1 rounded-lg uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
-                        <span>✅</span> GIỜ HOÀNG ĐẠO
-                    </h3>
-                    <ul id="good-hours" class="grid grid-cols-2 gap-1.5 text-center">
-                        <!-- Nạp động -->
-                    </ul>
-                </div>
-
-                <!-- Cột Giờ Xấu -->
-                <div class="bg-white p-3 rounded-xl border-2 border-red-600 shadow-md">
-                    <h3 class="text-sm font-black text-white bg-red-700 px-2 py-1 rounded-lg uppercase tracking-wider flex items-center justify-center gap-1 mb-2">
-                        <span>❌</span> GIỜ HẮC ĐẠO
-                    </h3>
-                    <ul id="bad-hours" class="grid grid-cols-2 gap-1.5 text-center">
-                        <!-- Nạp động -->
-                    </ul>
-                </div>
-            </div>
-
-            <!-- VIỆC NÊN LÀM & KHÔNG NÊN LÀM (Biểu tượng siêu to) -->
-            <div class="bg-white p-4 rounded-xl border-3 border-elder-green shadow-md space-y-3.5 relative overflow-hidden">
-                <!-- Hoa văn trang trí hình cây trúc cách điệu góc phải -->
-                <div class="absolute bottom-1 right-2 w-14 h-20 opacity-20 pointer-events-none">
-                    <svg viewBox="0 0 100 150" fill="none" class="text-elder-green w-full h-full">
-                        <path d="M50 150 L50 20 M50 100 Q80 80 85 50 M50 60 Q20 40 10 20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-                        <path d="M85 50 Q90 30 75 40 Z M10 20 Q5 5 20 15 Z" fill="currentColor"/>
-                    </svg>
-                </div>
-
-                <!-- Việc Nên Làm -->
-                <div class="flex items-start gap-3.5 relative z-10">
-                    <span class="text-3xl text-emerald-600 shrink-0"><i class="fa-solid fa-circle-check"></i></span>
-                    <div>
-                        <h4 class="text-xs font-black text-emerald-800 uppercase tracking-widest">VIỆC NÊN LÀM</h4>
-                        <p id="should-do" class="text-base font-black text-stone-900 mt-0.5">Cúng tế, làm từ thiện, dọn dẹp ban thờ</p>
-                    </div>
-                </div>
-
-                <div class="border-t-2 border-stone-100"></div>
-
-                <!-- Việc Kiêng Kỵ -->
-                <div class="flex items-start gap-3.5 relative z-10">
-                    <span class="text-3xl text-elder-red shrink-0"><i class="fa-solid fa-circle-xmark"></i></span>
-                    <div>
-                        <h4 class="text-xs font-black text-red-800 uppercase tracking-widest">VIỆC TRÁNH (KỴ)</h4>
-                        <p id="should-avoid" class="text-base font-black text-stone-900 mt-0.5">Xuất hành đi xa, khởi công, cưới hỏi</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TUỔI XUNG KHẮC VÀ HƯỚNG TỐT (Người lớn tuổi rất lưu tâm) -->
-            <div class="bg-white p-4 rounded-xl border-3 border-amber-600 shadow-md grid grid-cols-2 gap-3 divide-x-2 divide-stone-100">
-                <div class="pr-2">
-                    <h5 class="text-xs font-black text-amber-800 uppercase tracking-wider mb-1">⚡ TUỔI XUNG KHẮC</h5>
-                    <p id="clash-ages" class="text-sm font-bold text-red-700">Mậu Tý, Nhâm Tý, Canh Dần</p>
-                </div>
-                <div class="pl-3">
-                    <h5 class="text-xs font-black text-emerald-800 uppercase tracking-wider mb-1">🧭 HƯỚNG TỐT</h5>
-                    <p class="text-sm font-bold text-stone-850">
-                        Hỷ Thần: <span class="text-emerald-700">Đông Bắc</span><br>
-                        Tài Thần: <span class="text-emerald-700">Đông Nam</span>
-                    </p>
-                </div>
-            </div>
-
-            <!-- TIẾT KHÍ TRONG NGÀY -->
-            <div class="bg-white p-4 rounded-xl border-3 border-stone-200 shadow-md">
-                <div class="grid grid-cols-2 divide-x-2 divide-stone-150">
-                    <div class="pr-2">
-                        <span class="text-[10px] font-black text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                            🍀 TIẾT KHÍ HIỆN TẠI
-                        </span>
-                        <h4 id="current-solar-term" class="text-lg font-black text-elder-green mt-0.5">Tiểu Thử</h4>
-                        <p id="term-start-date" class="text-xs text-stone-500 font-bold">Bắt đầu từ: 07/07/2026</p>
-                    </div>
-                    <div class="pl-3">
-                        <span class="text-[10px] font-black text-stone-400 uppercase tracking-wider flex items-center gap-1">
-                            🍀 TIẾT KHÍ TIẾP THEO
-                        </span>
-                        <h4 id="next-solar-term" class="text-lg font-black text-stone-700 mt-0.5">Đại Thử</h4>
-                        <p id="next-term-start-date" class="text-xs text-stone-500 font-bold">Dự kiến từ: 22/07/2026</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- KHU VỰC ĐỘNG: TIN TỨC NỔI BẬT HOẶC THÔNG BÁO (THAY THẾ HOÀN TOÀN BỘ CHỌN NGÀY) -->
-            <div id="dynamic-info-box" class="space-y-4">
-                <!-- Sẽ được điền động bằng Javascript -->
-            </div>
-
-        </section>
-
-        <!-- ==================== TAB 2: LỊCH THÁNG (BẢN TO DỄ NHÌN) ==================== -->
-        <section id="tab-month" class="hidden space-y-4">
-            <div class="bg-white p-4 rounded-2xl border-4 border-elder-green shadow-xl">
-                
-                <!-- Bộ đổi tháng cực lớn -->
-                <div class="flex justify-between items-center mb-4">
-                    <button onclick="changeMonth(-1)" class="w-12 h-12 bg-elder-green text-white text-xl font-bold rounded-full flex items-center justify-center active:scale-90">◀</button>
-                    <h2 id="calendar-month-title" class="text-xl font-black text-elder-green text-center">Tháng 7 - Năm 2026</h2>
-                    <button onclick="changeMonth(1)" class="w-12 h-12 bg-elder-green text-white text-xl font-bold rounded-full flex items-center justify-center active:scale-90">▶</button>
-                </div>
-
-                <!-- Thứ trong tuần chữ To đậm -->
-                <div class="grid grid-cols-7 gap-1 text-center font-black text-sm text-stone-500 uppercase mb-2">
-                    <div class="text-red-700">CN</div>
-                    <div>T2</div>
-                    <div>T3</div>
-                    <div>T4</div>
-                    <div>T5</div>
-                    <div>T6</div>
-                    <div class="text-emerald-700">T7</div>
-                </div>
-
-                <!-- Các ngày trong tháng -->
-                <div id="calendar-grid-days" class="grid grid-cols-7 gap-1.5">
-                    <!-- Nạp động bằng Javascript -->
-                </div>
-
-                <!-- Chú thích ký hiệu màu sắc cực rõ -->
-                <div class="mt-4 pt-3 border-t border-stone-200 text-xs font-black text-stone-500 flex justify-center gap-4">
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-red-700 rounded-full"></span> Hôm nay</span>
-                    <span class="flex items-center gap-1"><span class="w-3 h-3 bg-emerald-100 border border-emerald-400 rounded-full"></span> Ngày tốt</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TAB 3: XEM NGÀY ĐẸP (CHO CON CHÁU) ==================== -->
-        <section id="tab-good-days" class="hidden space-y-4">
-            <h3 class="text-lg font-black text-center text-elder-green mb-3">🌸 CHỌN VIỆC TRỌNG ĐẠI ĐỂ TÌM NGÀY TỐT:</h3>
-            
-            <!-- Bộ lọc việc lớn dạng nút dẹt to dày -->
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="filterGoodDays('cuoihoi')" id="btn-f-cuoihoi" class="py-2.5 px-1 bg-elder-green text-white rounded-xl text-sm font-black border-2 border-transparent">Cưới Hỏi</button>
-                <button onclick="filterGoodDays('khaitruong')" id="btn-f-khaitruong" class="py-2.5 px-1 bg-stone-200 text-stone-700 rounded-xl text-sm font-black border-2 border-transparent">Khai Trương</button>
-                <button onclick="filterGoodDays('dongtho')" id="btn-f-dongtho" class="py-2.5 px-1 bg-stone-200 text-stone-700 rounded-xl text-sm font-black border-2 border-transparent">Làm Nhà</button>
-            </div>
-
-            <!-- Danh sách ngày lành tháng tốt lọc sẵn -->
-            <div id="good-days-list" class="space-y-3">
-                <!-- Nạp động ngày tốt lành -->
-            </div>
-        </section>
-
-        <!-- ==================== TAB 4: SÁCH VĂN KHẤN GIA TIÊN (CHỮ CỰC ĐẠI) ==================== -->
-        <section id="tab-prayers" class="hidden space-y-4">
-            <div class="p-1.5 bg-stone-200 rounded-xl flex gap-2">
-                <input type="text" id="prayerSearchInput" oninput="searchPrayers(this.value)" placeholder="Gõ tìm bài văn khấn..." class="flex-grow px-3 py-2 text-sm rounded-lg focus:outline-none text-stone-900 font-bold border-2 border-stone-300">
-                <button onclick="resetPrayerFilter()" class="px-3 py-2 bg-stone-600 text-white rounded-lg text-xs font-bold shrink-0">Xóa</button>
-            </div>
-
-            <div id="prayers-list-container" class="space-y-3">
-                <!-- Danh sách bài khấn -->
-            </div>
-
-            <!-- CHƯƠNG TRÌNH ĐỌC VĂN KHẤN KHÔNG CẦN KÍNH (MODAL CỰC ĐẠI) -->
-            <div id="prayer-reader-modal" class="fixed inset-0 bg-stone-900/80 backdrop-blur-sm hidden z-50 flex items-end justify-center p-2">
-                <div class="bg-[#FDFBF7] w-full max-w-md rounded-t-3xl p-5 space-y-4 shadow-2xl flex flex-col max-h-[90vh] border-t-8 border-elder-green">
-                    
-                    <div class="flex justify-between items-start border-b-2 border-stone-200 pb-3">
-                        <div>
-                            <span class="text-xs uppercase font-bold text-elder-gold tracking-widest">📖 KHẤN NGUYỆN TÂM THÀNH</span>
-                            <h3 id="prayer-reader-title" class="text-xl font-black text-stone-900 mt-1">Bài khấn gia tiên</h3>
-                        </div>
-                        <button onclick="closePrayerReader()" class="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center text-stone-700 text-lg font-bold hover:bg-stone-300">
-                            ✕
-                        </button>
-                    </div>
-
-                    <!-- Thanh điều khiển cuộn chữ tự động rảnh tay cho các cụ -->
-                    <div class="flex justify-between items-center bg-amber-50 p-3 rounded-xl text-sm border border-amber-200">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-stone-700">Tự động chạy chữ:</span>
-                            <button id="autoscroll-btn" onclick="toggleAutoScroll()" class="px-4 py-1.5 bg-elder-green text-white font-black rounded-lg text-xs active:scale-90">BẬT</button>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="adjustFontSize(-2)" class="w-8 h-8 rounded-full bg-white flex items-center justify-center border-2 border-stone-300 font-black text-sm">-A</button>
-                            <button onclick="adjustFontSize(2)" class="w-8 h-8 rounded-full bg-white flex items-center justify-center border-2 border-stone-300 font-black text-sm">+A</button>
-                        </div>
-                    </div>
-
-                    <!-- Khung đọc chữ to đại học từ xa -->
-                    <div id="prayer-text-scroll" class="flex-grow overflow-y-auto leading-relaxed text-stone-800 font-bold pr-2 space-y-4 max-h-[50vh] text-xl">
-                        <!-- Thân bài khấn nạp động -->
-                    </div>
-                    
-                    <div class="pt-2 text-center text-xs text-stone-400 font-bold border-t border-stone-200">
-                        Vừa đọc vừa thành tâm dâng hương.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== TAB 5: HƯỚNG DẪN & TIỆN ÍCH ==================== -->
-        <section id="tab-more" class="hidden space-y-4">
-            
-            <!-- Khung giới thiệu tóm tắt dễ hiểu -->
-            <div class="bg-emerald-800 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                <h3 class="text-lg font-black text-amber-200">KÍNH CHÚC BÁC NHIỀU SỨC KHỎE!</h3>
-                <p class="text-sm font-bold opacity-90 mt-1 leading-relaxed">
-                    Mỗi ngày xem lịch, nghe tiếng chuông thiền ngân vang giúp tinh thần thêm an lạc, thân thể khỏe mạnh dẻo dai.
-                </p>
-                <span class="absolute bottom-1 right-2 text-5xl opacity-20">🌸</span>
-            </div>
-
-            <!-- Các nút cài đặt nhanh dễ hiểu cho người cao tuổi -->
-            <div class="bg-white p-3 rounded-xl border-3 border-stone-200 shadow-md divide-y-2 divide-stone-100">
-                
-                <!-- Bật/Tắt chế độ đọc đêm (Tương phản cao) -->
-                <div class="py-3.5 flex justify-between items-center cursor-pointer" onclick="toggleElderContrast()">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">🌙</span>
-                        <div>
-                            <p class="text-sm font-black text-stone-800">Chế độ Đọc Đêm</p>
-                            <p class="text-[11px] text-stone-400 font-bold">Chuyển sang giao diện tối dịu nhẹ, giảm mỏi mắt</p>
-                        </div>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-stone-100 border-2 border-stone-300 flex items-center justify-center text-lg">
-                        <i id="contrastIcon" class="fa-solid fa-circle-half-stroke text-stone-600"></i>
-                    </div>
-                </div>
-
-                <!-- Bật/Tắt hiệu ứng khánh đồng ngân vang khi xem lịch -->
-                <div class="py-3.5 flex justify-between items-center cursor-pointer" onclick="toggleBellEffect()">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">🔔</span>
-                        <div>
-                            <p class="text-sm font-black text-stone-800">Tiếng Khánh Đồng Thiền</p>
-                            <p class="text-[11px] text-stone-400 font-bold">Kêu "coong" thanh tịnh khi lật trang</p>
-                        </div>
-                    </div>
-                    <div id="bell-toggle-indicator" class="w-12 h-6 bg-elder-green rounded-full p-0.5 relative transition-all duration-200">
-                        <div class="w-5 h-5 bg-white rounded-full absolute right-0.5 transition-all"></div>
-                    </div>
-                </div>
-
-                <!-- Quay lại ngày mẫu để so sánh -->
-                <div class="py-3.5 flex justify-between items-center cursor-pointer" onclick="resetToSampleDate()">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">🔄</span>
-                        <div>
-                            <p class="text-sm font-black text-stone-800">Quay Về Hôm Nay</p>
-                            <p class="text-[11px] text-stone-400 font-bold">Trở về ngày hiện tại để xem lịch</p>
-                        </div>
-                    </div>
-                    <span class="text-stone-400">▶</span>
-                </div>
-
-                <!-- Hướng dẫn sử dụng nhanh -->
-                <div class="py-3.5 flex justify-between items-center cursor-pointer" onclick="showElderAlert('Chào các bác, các cụ! Hãy sử dụng tab Lịch tháng để lựa chọn ngày bất kì và đổi ngày linh hoạt. Tiếng chuông khánh thiền sẽ vang lên báo hiệu lật tờ lịch thành công.')">
-                    <div class="flex items-center gap-3">
-                        <span class="text-2xl">❓</span>
-                        <div>
-                            <p class="text-sm font-black text-stone-800">Hướng dẫn sử dụng nhanh</p>
-                            <p class="text-[11px] text-stone-400 font-bold">Cách lật trang lịch và các tính năng</p>
-                        </div>
-                    </div>
-                    <span class="text-stone-400">▶</span>
-                </div>
-
-            </div>
-
-            <!-- Thông tin chân trang thể hiện lòng tôn kính -->
-            <div class="text-center text-xs text-stone-400 font-bold space-y-1 py-4">
-                <p>LỊCH VẠN SỰ CAO NIÊN AN LÒNG</p>
-                <p class="opacity-70">Chúc Quý Cao Niên Sức Khỏe - Thọ Tỷ Nam Sơn!</p>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- THANH MENU ĐIỀU HƯỚNG DƯỚI CÙNG (CỰC TO, RÕ CHỮ, KHÔNG CẦN KÍNH) -->
-    <nav class="absolute bottom-0 inset-x-0 h-24 bg-white border-t-4 border-stone-200 flex justify-around items-center px-2 z-40">
-        
-        <!-- Tab 1: Hôm nay -->
-        <button onclick="switchTab('home')" id="nav-home" class="flex-1 py-1 flex flex-col items-center justify-center gap-1 text-elder-green">
-            <span class="w-12 h-10 bg-elder-green text-white rounded-xl flex items-center justify-center text-xl shadow-md">
-                📅
-            </span>
-            <span class="text-xs font-black">Hôm nay</span>
+    <!-- TAB HOME -->
+    <section id="tab-home" class="tab-section">
+      <!-- Date navigation row -->
+      <div class="nav-row">
+        <button onclick="navigateDay(-1)" class="nav-btn nav-btn-green">
+          <span style="font-size:clamp(16px,4.5vw,20px);font-weight:900">◀</span>
+          <span style="font-size:clamp(9px,2.5vw,10px);font-weight:900">Hôm qua</span>
         </button>
-
-        <!-- Tab 2: Lịch tháng -->
-        <button onclick="switchTab('month')" id="nav-month" class="flex-1 py-1 flex flex-col items-center justify-center gap-1 text-stone-400">
-            <span class="w-12 h-10 rounded-xl flex items-center justify-center text-xl">
-                &nbsp;📆&nbsp;
-            </span>
-            <span class="text-xs font-black">Lịch tháng</span>
+        <button onclick="resetToSampleDate()" class="nav-btn nav-btn-gold">
+          <span style="font-size:clamp(11px,3vw,14px);font-weight:900">HÔM NAY</span>
+          <span id="label-current-year" style="font-size:clamp(8px,2.2vw,9px);font-weight:700;opacity:0.8">Năm 2026</span>
         </button>
-
-        <!-- Tab 3: Ngày tốt -->
-        <button onclick="switchTab('good-days')" id="nav-good-days" class="flex-1 py-1 flex flex-col items-center justify-center gap-1 text-stone-400">
-            <span class="w-12 h-10 rounded-xl flex items-center justify-center text-xl">
-                🌸
-            </span>
-            <span class="text-xs font-black">Xem ngày đẹp</span>
+        <button onclick="navigateDay(1)" class="nav-btn nav-btn-green">
+          <span style="font-size:clamp(16px,4.5vw,20px);font-weight:900">▶</span>
+          <span style="font-size:clamp(9px,2.5vw,10px);font-weight:900">Hôm sau</span>
         </button>
+      </div>
 
-        <!-- Tab 4: Văn khấn -->
-        <button onclick="switchTab('prayers')" id="nav-prayers" class="flex-1 py-1 flex flex-col items-center justify-center gap-1 text-stone-400">
-            <span class="w-12 h-10 rounded-xl flex items-center justify-center text-xl">
-                📖
-            </span>
-            <span class="text-xs font-black">Văn khấn</span>
-        </button>
+      <!-- Calendar card -->
+      <div class="cal-card">
+        <div class="cal-top-bar"></div>
+        <div class="cal-body">
+          <!-- Header: weekday | day | month/year -->
+          <div class="cal-header">
+            <div class="cal-weekday" id="solar-weekday">THỨ NĂM</div>
+            <div class="cal-day" id="solar-day">9</div>
+            <div class="cal-monthyear" id="solar-month-year">Tháng 7<br>2026</div>
+          </div>
 
-        <!-- Tab 5: Thêm -->
-        <button onclick="switchTab('more')" id="nav-more" class="flex-1 py-1 flex flex-col items-center justify-center gap-1 text-stone-400">
-            <span class="w-12 h-10 rounded-xl flex items-center justify-center text-xl">
-                ⚙️
-            </span>
-            <span class="text-xs font-black">Tiện ích</span>
-        </button>
+          <!-- Quote -->
+          <div class="quote-box">
+            <span class="quote-mark quote-mark-left">"</span>
+            <span class="quote-mark quote-mark-right">"</span>
+            <p class="quote-text" id="daily-quote">Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao</p>
+          </div>
 
-    </nav>
+          <!-- Lunar section -->
+          <div class="lunar-section" id="lunar-section">
+            <div class="lunar-hour" id="current-hour-label">Hiện tại: Giờ Tý</div>
+            <div class="lunar-main">
+              <span class="lunar-moon">🌙</span>
+              <span class="lunar-day-num" id="lunar-day-large">1</span>
+              <span class="lunar-month-text" id="lunar-month">THÁNG GIÊNG</span>
+            </div>
+            <!-- Can Chi -->
+            <div class="canchi-grid">
+              <div class="canchi-cell">
+                <div class="canchi-label">NĂM</div>
+                <div class="canchi-value" id="lunar-year-chi">Bính Ngọ<br><span class="canchi-animal">(Ngựa)</span></div>
+              </div>
+              <div class="canchi-cell">
+                <div class="canchi-label">THÁNG</div>
+                <div class="canchi-value" id="lunar-month-chi">Giáp Ngọ<br><span class="canchi-animal">(Ngựa)</span></div>
+              </div>
+              <div class="canchi-cell">
+                <div class="canchi-label">NGÀY</div>
+                <div class="canchi-value" id="lunar-day-chi">Giáp Thân<br><span class="canchi-animal">(Khỉ)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 info cards stacked vertically -->
+      <div class="info-stack">
+        <!-- Good hours -->
+        <div class="info-card info-card-good">
+          <div class="info-header info-header-good">✅ GIỜ HOÀNG ĐẠO</div>
+          <div class="info-body">
+            <div class="hour-grid" id="good-hours">
+              <div class="hour-chip hour-chip-good"><span class="hour-time">23h-01h</span><span class="hour-name hour-name-good">Giờ Tý</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">01h-03h</span><span class="hour-name hour-name-good">Giờ Sửu</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">03h-05h</span><span class="hour-name hour-name-good">Giờ Dần</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">11h-13h</span><span class="hour-name hour-name-good">Giờ Ngọ</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">15h-17h</span><span class="hour-name hour-name-good">Giờ Thân</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">17h-19h</span><span class="hour-name hour-name-good">Giờ Dậu</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lunar mini card -->
+        <div class="info-card info-card-lunar" id="lunar-mini-card" style="display:none">
+          <div class="info-header info-header-lunar">🌙 LỊCH ÂM CHI TIẾT</div>
+          <div class="lunar-mini-body">
+            <div class="lunar-mini-row">
+              <div class="lunar-mini-item">
+                <div class="lunar-mini-label">Âm lịch</div>
+                <div class="lunar-mini-value" id="lunar-mini-date">1</div>
+                <div class="lunar-mini-animal" id="lunar-mini-month">Tháng 1</div>
+              </div>
+              <div class="lunar-mini-item">
+                <div class="lunar-mini-label">Ngày</div>
+                <div class="lunar-mini-value" id="lunar-mini-day-chi">Giáp Tý</div>
+                <div class="lunar-mini-animal" id="lunar-mini-day-animal">(Chuột)</div>
+              </div>
+              <div class="lunar-mini-item">
+                <div class="lunar-mini-label">Tháng</div>
+                <div class="lunar-mini-value" id="lunar-mini-month-chi">Bính Dần</div>
+                <div class="lunar-mini-animal" id="lunar-mini-month-animal">(Hổ)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bad hours -->
+        <div class="info-card info-card-bad">
+          <div class="info-header info-header-bad">❌ GIỜ HẮC ĐẠO</div>
+          <div class="info-body">
+            <div class="hour-grid" id="bad-hours">
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">05h-07h</span><span class="hour-name hour-name-bad">Giờ Mão</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">07h-09h</span><span class="hour-name hour-name-bad">Giờ Thìn</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">09h-11h</span><span class="hour-name hour-name-bad">Giờ Tỵ</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">13h-15h</span><span class="hour-name hour-name-bad">Giờ Mùi</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">19h-21h</span><span class="hour-name hour-name-bad">Giờ Tuất</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">21h-23h</span><span class="hour-name hour-name-bad">Giờ Hợi</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="activity-card" id="activities-card">
+        <div class="activity-body">
+          <div class="activity-bamboo">🎋</div>
+          <div class="activity-row">
+            <span class="activity-icon" style="color:#064E3B">✅</span>
+            <div class="activity-content">
+              <div class="activity-title activity-title-good">VIỆC NÊN LÀM</div>
+              <p class="activity-desc" id="should-do">Cúng tế, làm từ thiện, dọn dẹp ban thờ</p>
+            </div>
+          </div>
+          <div style="border-top:2px solid #F3F4F6"></div>
+          <div class="activity-row">
+            <span class="activity-icon" style="color:#991B1B">❌</span>
+            <div class="activity-content">
+              <div class="activity-title activity-title-bad">VIỆC TRÁNH (KỴ)</div>
+              <p class="activity-desc" id="should-avoid">Xuất hành đi xa, khởi công, cưới hỏi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clash & Directions -->
+      <div class="clash-card" id="clash-card">
+        <div class="clash-body">
+          <div class="clash-col">
+            <div class="clash-label">⚡ TUỔI XUNG KHẮC</div>
+            <div class="clash-value clash-value-red" id="clash-ages">Mậu Tý, Nhâm Tý, Canh Dần</div>
+          </div>
+          <div class="divider"></div>
+          <div class="clash-col">
+            <div class="clash-label">🧭 HƯỚNG TỐT</div>
+            <div class="clash-value clash-value-green" id="direction-hy-than">Hỷ Thần: Đông Bắc</div>
+            <div class="clash-value clash-value-green" id="direction-tai-than">Tài Thần: Đông Nam</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solar terms -->
+      <div class="term-card" id="term-card">
+        <div class="term-body">
+          <div class="term-col">
+            <div class="term-label">🍀 TIẾT KHÍ</div>
+            <div class="term-name-text" id="current-solar-term">Tiểu Thử</div>
+            <div class="term-date-text" id="term-start-date">Bắt đầu: 07/07</div>
+          </div>
+          <div class="divider"></div>
+          <div class="term-col">
+            <div class="term-label">🍀 TIẾP THEO</div>
+            <div class="term-name-text" id="next-solar-term">Đại Thử</div>
+            <div class="term-date-text" id="next-term-start-date">Dự kiến: 22/07</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="events-card" id="events-card" style="display:none">
+        <div class="events-body">
+          <span class="events-icon">📅</span>
+          <div class="events-content">
+            <div class="events-title">SỰ KIỆN - NGÀY LỄ</div>
+            <div id="events-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic news box -->
+      <div id="dynamic-info-box"></div>
+    </section>
+
+    <!-- TAB MONTH -->
+    <section id="tab-month" class="tab-section hidden">
+      <div class="cal-card">
+        <div class="cal-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <button onclick="changeMonth(-1)" class="nav-btn nav-btn-green" style="flex:none;width:44px;height:44px;padding:0;font-size:18px">◀</button>
+            <h2 id="calendar-month-title" style="font-size:clamp(15px,4.2vw,18px);font-weight:900;color:#064E3B;text-align:center;flex:1">Tháng 7 - 2026</h2>
+            <button onclick="changeMonth(1)" class="nav-btn nav-btn-green" style="flex:none;width:44px;height:44px;padding:0;font-size:18px">▶</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-weight:900;font-size:clamp(10px,2.8vw,12px);color:#78716C;margin-bottom:4px">
+            <div style="color:#991B1B">CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div style="color:#064E3B">T7</div>
+          </div>
+          <div id="calendar-grid-days" class="month-grid"></div>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;padding-top:10px;border-top:2px solid #E5E7EB;font-size:clamp(9px,2.5vw,11px);font-weight:700;color:#78716C">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#991B1B;display:inline-block"></span> Hôm nay</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#D1FAE5;border:2px solid #6EE7B7;display:inline-block"></span> Ngày tốt</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB GOOD DAYS -->
+    <section id="tab-good-days" class="tab-section hidden">
+      <div class="welcome-banner"><p>🌸 Chọn việc trọng đại để tìm ngày tốt</p><span>🌸</span></div>
+      <div class="filter-row">
+        <button onclick="filterGoodDays('cuoihoi')" id="btn-f-cuoihoi" class="filter-btn" style="background:#064E3B;color:#fff;border-color:#B45309">Cưới Hỏi</button>
+        <button onclick="filterGoodDays('khaitruong')" id="btn-f-khaitruong" class="filter-btn" style="background:#E5E7EB;color:#1F2937">Khai Trương</button>
+        <button onclick="filterGoodDays('dongtho')" id="btn-f-dongtho" class="filter-btn" style="background:#E5E7EB;color:#1F2937">Làm Nhà</button>
+      </div>
+      <div id="good-days-list" style="display:flex;flex-direction:column;gap:8px"></div>
+    </section>
+
+    <!-- TAB PRAYERS -->
+    <section id="tab-prayers" class="tab-section hidden">
+      <div style="display:flex;gap:6px;width:100%">
+        <input type="text" id="prayerSearchInput" oninput="searchPrayers(this.value)" placeholder="Gõ tìm bài khấn..." style="flex:1;padding:10px 12px;font-size:clamp(13px,3.8vw,15px);border-radius:10px;border:2px solid #D1D5DB;font-weight:700;background:#fff;outline:none;min-width:0">
+        <button onclick="resetPrayerFilter()" style="padding:10px 14px;background:#78716C;color:#fff;font-weight:900;font-size:clamp(11px,3vw,13px);border:none;border-radius:10px;cursor:pointer">Xóa</button>
+      </div>
+      <div id="prayers-list-container" style="display:flex;flex-direction:column;gap:8px"></div>
+    </section>
+
+    <!-- TAB MORE (Settings) -->
+    <section id="tab-more" class="tab-section hidden">
+      <div class="settings-card">
+        <div class="settings-item" onclick="showElderAlert('Chào các bác! Hãy dùng tab Lịch tháng để chọn ngày. Tiếng chuông khánh thiền sẽ vang lên báo hiệu lật tờ lịch thành công.')">
+          <div class="settings-item-left"><span class="settings-item-icon">💡</span><div class="settings-item-text"><div class="settings-item-title">Hướng dẫn</div><div class="settings-item-sub">Cách dùng ứng dụng</div></div></div>
+          <span class="settings-item-arrow">▶</span>
+        </div>
+        <div class="settings-item" onclick="toggleElderContrast()">
+          <div class="settings-item-left"><span class="settings-item-icon">🌙</span><div class="settings-item-text"><div class="settings-item-title">Chế độ đọc đêm</div><div class="settings-item-sub" id="contrast-label">Giao diện tối dịu nhẹ</div></div></div>
+          <span class="settings-item-arrow"><i id="contrastIcon" class="fa-solid fa-circle-half-stroke" style="color:#78716C;font-size:20px"></i></span>
+        </div>
+        <div class="settings-item" onclick="toggleBellEffect()">
+          <div class="settings-item-left"><span class="settings-item-icon">🔔</span><div class="settings-item-text"><div class="settings-item-title">Tiếng khánh đồng</div><div class="settings-item-sub">Âm thanh khi lật trang</div></div></div>
+          <span id="bell-toggle-indicator" style="width:44px;height:24px;background:#064E3B;border-radius:12px;padding:2px;position:relative;flex-shrink:0;transition:0.2s"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;right:2px;transition:0.2s"></div></span>
+        </div>
+        <div class="settings-item" onclick="resetToSampleDate()">
+          <div class="settings-item-left"><span class="settings-item-icon">🔄</span><div class="settings-item-text"><div class="settings-item-title">Quay về hôm nay</div><div class="settings-item-sub">Trở về ngày hiện tại</div></div></div>
+          <span class="settings-item-arrow">▶</span>
+        </div>
+      </div>
+
+      <!-- UI Package section -->
+      <div class="settings-card" style="margin-top:0">
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:18px">📦</span>
+            <div><div style="font-size:clamp(13px,3.8vw,14px);font-weight:900;color:#1F2937">Gói Giao Diện Web</div><div id="ui-package-version" style="font-size:clamp(10px,3vw,11px);font-weight:700;color:#9CA3AF">UI Package v1 (mặc định)</div></div>
+          </div>
+          <div class="ui-toggle-row">
+            <label class="ui-toggle"><input type="checkbox" id="webview-toggle" onchange="toggleWebViewMode(this.checked)"><span class="ui-toggle-slider"></span></label>
+            <span style="font-size:clamp(11px,3.2vw,13px);font-weight:700;color:#1F2937">Dùng giao diện WebView</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="simulateUICheck()" style="flex:1;padding:8px 2px;background:#064E3B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">🔄 Cập nhật</button>
+            <button onclick="simulateUIReload()" style="flex:1;padding:8px 2px;background:#78716C;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">🔃 Tải lại</button>
+            <button onclick="simulateUIReset()" style="flex:1;padding:8px 2px;background:#991B1B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">↩️ Mặc định</button>
+          </div>
+          <p id="ui-status-msg" style="font-size:clamp(9px,2.5vw,10px);font-weight:700;color:#9CA3AF;margin-top:4px"></p>
+        </div>
+      </div>
+
+      <!-- App info -->
+      <div class="settings-card" style="margin-top:0">
+        <div style="padding:16px;text-align:center">
+          <div style="font-size:clamp(18px,5vw,22px);font-weight:900;color:#064E3B">Lịch Âm</div>
+          <div style="font-size:clamp(12px,3.5vw,14px);font-weight:700;color:#78716C;margin:4px 0 8px">Phiên bản 1.2</div>
+          <div style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#78716C">Lịch âm dương Việt Nam</div>
+          <div style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#78716C;margin-bottom:8px">Ứng dụng ngoại tuyến hoàn toàn</div>
+          <div style="height:2px;background:#E5E7EB;margin:8px 0"></div>
+          <div style="font-size:clamp(10px,2.8vw,12px);font-weight:700;color:#9CA3AF">Thuật toán: Hồ Ngọc Đức</div>
+          <div style="font-size:clamp(10px,2.8vw,12px);font-weight:700;color:#9CA3AF">© 2026 Lịch Âm</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UI Package Overlay (created by JS) -->
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button onclick="switchTab('home')" id="nav-home" class="nav-item">
+      <span class="nav-icon nav-icon-active">📅</span>
+      <span class="nav-label" style="color:#064E3B">Hôm nay</span>
+    </button>
+    <button onclick="switchTab('month')" id="nav-month" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">📆</span>
+      <span class="nav-label" style="color:#78716C">Lịch tháng</span>
+    </button>
+    <button onclick="switchTab('good-days')" id="nav-good-days" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">🌸</span>
+      <span class="nav-label" style="color:#78716C">Ngày tốt</span>
+    </button>
+    <button onclick="switchTab('prayers')" id="nav-prayers" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">📖</span>
+      <span class="nav-label" style="color:#78716C">Văn khấn</span>
+    </button>
+    <button onclick="switchTab('more')" id="nav-more" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">⚙️</span>
+      <span class="nav-label" style="color:#78716C">Tiện ích</span>
+    </button>
+  </nav>
 </div>
 
-<!-- THÔNG BÁO DẠNG HỘP THOẠI SIÊU LỚN DỄ ĐỌC -->
-<div id="elder-alert-box" class="fixed inset-0 bg-stone-900/75 backdrop-blur-sm hidden z-50 flex items-center justify-center p-6">
-    <div class="bg-white w-full max-w-sm rounded-2xl p-6 border-4 border-elder-green text-center space-y-4 shadow-2xl">
-        <span class="text-4xl text-amber-500">💡</span>
-        <h4 class="text-lg font-black text-elder-green">LƯU Ý CHO BÁC</h4>
-        <p id="elder-alert-text" class="text-base text-stone-800 font-bold leading-relaxed">
-            Đây là thông báo hướng dẫn dễ hiểu cho người lớn tuổi.
-        </p>
-        <button onclick="closeElderAlert()" class="w-full py-3 bg-elder-green hover:bg-emerald-800 text-white font-black text-base rounded-xl active:scale-95 shadow-md">
-            ĐÃ HIỂU, ĐÓNG LẠI
-        </button>
+<!-- TOAST -->
+<div id="elder-toast" class="toast">🔔 <span id="elder-toast-text">Đã cập nhật</span></div>
+
+<!-- ALERT MODAL -->
+<div id="elder-alert-box" class="alert-modal">
+  <div class="alert-content">
+    <div class="alert-icon">💡</div>
+    <div class="alert-title">LƯU Ý</div>
+    <p class="alert-text" id="elder-alert-text">Đây là thông báo.</p>
+    <button onclick="closeElderAlert()" class="alert-btn">ĐÃ HIỂU, ĐÓNG LẠI</button>
+  </div>
+</div>
+
+<!-- PRAYER MODAL -->
+<div id="prayer-reader-modal" class="prayer-modal">
+  <div class="prayer-modal-content">
+    <div class="prayer-modal-header">
+      <div>
+        <div style="font-size:clamp(9px,2.5vw,11px);font-weight:900;color:#B45309;letter-spacing:1px">📖 KHẤN NGUYỆN TÂM THÀNH</div>
+        <h3 id="prayer-reader-title" class="prayer-modal-title">Bài khấn gia tiên</h3>
+      </div>
+      <button onclick="closePrayerReader()" class="prayer-modal-close">✕</button>
     </div>
-</div>
-
-<!-- Hộp toast thông báo nhỏ nổi ở trên -->
-<div id="elder-toast" class="fixed top-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-stone-900/90 text-white text-sm font-black rounded-full shadow-xl pointer-events-none opacity-0 transition-all duration-300 z-50 flex items-center gap-2 border-2 border-amber-400">
-    🔔 <span id="elder-toast-text">Đã cập nhật ngày thành công!</span>
+    <div class="prayer-modal-controls">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#1F2937">Tự động:</span>
+        <button id="autoscroll-btn" onclick="toggleAutoScroll()" style="padding:6px 12px;background:#064E3B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">BẬT</button>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="adjustFontSize(-2)" style="width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #D1D5DB;font-weight:900;font-size:12px;cursor:pointer">-A</button>
+        <button onclick="adjustFontSize(2)" style="width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #D1D5DB;font-weight:900;font-size:12px;cursor:pointer">+A</button>
+      </div>
+    </div>
+    <div id="prayer-text-scroll" class="prayer-modal-text"></div>
+    <div style="text-align:center;font-size:clamp(9px,2.5vw,11px);color:#9CA3AF;font-weight:700;padding-top:8px;border-top:2px solid #E5E7EB">Vừa đọc vừa thành tâm dâng hương.</div>
+  </div>
 </div>
 
 <script>
-    function INT(x) {
-        return Math.floor(x);
-    }
-
-    function jdFromDate(dd, mm, yy) {
-        var a = INT((14 - mm) / 12);
-        var y = yy + 4800 - a;
-        var m = mm + 12 * a - 3;
-        var jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
-        if (jd < 2299161) {
-            jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
-        }
-        return jd;
-    }
-
-    function jdToDate(jd) {
-        var a, b, c, d, e, m, day, month, year;
-        if (jd > 2299160) {
-            a = jd + 32044;
-            b = INT((4 * a + 3) / 146097);
-            c = a - INT((b * 146097) / 4);
-        } else {
-            b = 0;
-            c = jd + 32082;
-        }
-        d = INT((4 * c + 3) / 1461);
-        e = c - INT((1461 * d) / 4);
-        m = INT((5 * e + 2) / 153);
-        day = e - INT((153 * m + 2) / 5) + 1;
-        month = m + 3 - 12 * INT(m / 10);
-        year = b * 100 + d - 4800 + INT(m / 10);
-        return [day, month, year];
-    }
-
-    function getNewMoonDay(k, timeZone) {
-        var T = k / 1236.85;
-        var T2 = T * T;
-        var T3 = T2 * T;
-        var dr = Math.PI / 180;
-        var Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
-        Jd1 = Jd1 + 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
-        var M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
-        var Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
-        var F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
-        var C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
-        C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
-        C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr);
-        C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
-        C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
-        C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr));
-        C1 = C1 + 0.0010 * Math.sin(dr * (2 * F - Mpr)) + 0.0005 * Math.sin(dr * (2 * Mpr + M));
-        var deltat;
-        if (T < -11) {
-            deltat = 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3;
-        } else {
-            deltat = -0.000278 + 0.000265 * T + 0.000262 * T2;
-        }
-        var JdNew = Jd1 + C1 - deltat;
-        return INT(JdNew + 0.5 + timeZone / 24);
-    }
-
-    function getSunLongitude(jdn, timeZone) {
-        var T = (jdn - 2451545.5 - timeZone / 24) / 36525;
-        var T2 = T * T;
-        var dr = Math.PI / 180;
-        var M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
-        var L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
-        var DL = (1.91460 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M) +
-                 (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) +
-                 0.000290 * Math.sin(dr * 3 * M);
-        var L = L0 + DL;
-        L = L * dr;
-        L = L - Math.PI * 2 * INT(L / (Math.PI * 2));
-        if (L < 0) L += Math.PI * 2;
-        return INT(L / Math.PI * 6);
-    }
-
-    function getLunarMonth11(yy, timeZone) {
-        var off = jdFromDate(31, 12, yy) - 2415021;
-        var k = INT(off / 29.530588853);
-        var nm = getNewMoonDay(k, timeZone);
-        var sunLong = getSunLongitude(nm, timeZone);
-        if (sunLong >= 9) {
-            nm = getNewMoonDay(k - 1, timeZone);
-        }
-        return nm;
-    }
-
-    function getLeapMonthOffset(a11, timeZone) {
-        var k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5);
-        var last = 0;
-        var i = 1;
-        var arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
-        do {
-            last = arc;
-            i++;
-            arc = getSunLongitude(getNewMoonDay(k + i, timeZone), timeZone);
-        } while (arc != last && i < 14);
-        return i - 1;
-    }
-
-    function convertSolar2Lunar(dd, mm, yy, timeZone) {
-        var dayNumber = jdFromDate(dd, mm, yy);
-        var k = INT((dayNumber - 2415021.076998695) / 29.530588853);
-        var monthStart = getNewMoonDay(k + 1, timeZone);
-        if (monthStart > dayNumber) {
-            monthStart = getNewMoonDay(k, timeZone);
-        }
-        var a11 = getLunarMonth11(yy, timeZone);
-        var b11 = a11;
-        var lunarYear;
-        if (a11 >= monthStart) {
-            lunarYear = yy;
-            a11 = getLunarMonth11(yy - 1, timeZone);
-        } else {
-            lunarYear = yy + 1;
-            b11 = getLunarMonth11(yy + 1, timeZone);
-        }
-        var lunarDay = dayNumber - monthStart + 1;
-        var diff = INT((monthStart - a11) / 29);
-        var lunarLeap = 0;
-        var lunarMonth = diff + 11;
-        if (b11 - a11 > 365) {
-            var leapMonthDiff = getLeapMonthOffset(a11, timeZone);
-            if (diff >= leapMonthDiff) {
-                lunarMonth = diff + 10;
-                if (diff == leapMonthDiff) {
-                    lunarLeap = 1;
-                }
-            }
-        }
-        if (lunarMonth > 12) {
-            lunarMonth = lunarMonth - 12;
-        }
-        if (lunarMonth >= 11 && diff < 4) {
-            lunarYear -= 1;
-        }
-        return [lunarDay, lunarMonth, lunarYear, lunarLeap];
-    }
-
-    const CANS = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý'];
-    const CHIS = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi'];
-    const ANIMALS = ['Chuột', 'Trâu', 'Hổ', 'Mèo', 'Rồng', 'Rắn', 'Ngựa', 'Dê', 'Khỉ', 'Gà', 'Chó', 'Lợn'];
-
-    function getYearCanChi(lunarYear) {
-        var canIdx = (lunarYear + 6) % 10;
-        var chiIdx = (lunarYear + 8) % 12;
-        return {
-            text: CANS[canIdx] + ' ' + CHIS[chiIdx],
-            animal: ANIMALS[chiIdx]
-        };
-    }
-
-    function getMonthCanChi(lunarYear, lunarMonth) {
-        var yearCanIdx = (lunarYear + 6) % 10;
-        var canIdx = (yearCanIdx * 2 + lunarMonth + 1) % 10;
-        var chiIdx = (lunarMonth + 1) % 12;
-        return {
-            text: CANS[canIdx] + ' ' + CHIS[chiIdx],
-            animal: ANIMALS[chiIdx]
-        };
-    }
-
-    function getDayCanChi(jd) {
-        var canIdx = (jd + 9) % 10;
-        var chiIdx = (jd + 1) % 12;
-        return {
-            text: CANS[canIdx] + ' ' + CHIS[chiIdx],
-            animal: ANIMALS[chiIdx]
-        };
-    }
-
-    function getHoursForDay(chiIdx) {
-        let good = [];
-        if (chiIdx === 0 || chiIdx === 6) { // Tý, Ngọ
-            good = [0, 1, 3, 6, 8, 9]; // Tý, Sửu, Mão, Ngọ, Thân, Dậu
-        } else if (chiIdx === 1 || chiIdx === 7) { // Sửu, Mùi
-            good = [2, 3, 5, 8, 10, 11]; // Dần, Mão, Tỵ, Thân, Tuất, Hợi
-        } else if (chiIdx === 2 || chiIdx === 8) { // Dần, Thân
-            good = [0, 1, 4, 5, 7, 10]; // Tý, Sửu, Thìn, Tỵ, Mùi, Tuất
-        } else if (chiIdx === 3 || chiIdx === 9) { // Mão, Dậu
-            good = [0, 2, 3, 6, 7, 9]; // Tý, Dần, Mão, Ngọ, Mùi, Dậu
-        } else if (chiIdx === 4 || chiIdx === 10) { // Thìn, Tuất
-            good = [2, 4, 5, 8, 9, 11]; // Dần, Thìn, Tỵ, Thân, Dậu, Hợi
-        } else if (chiIdx === 5 || chiIdx === 11) { // Tỵ, Hợi
-            good = [1, 4, 6, 7, 10, 11]; // Sửu, Thìn, Ngọ, Mùi, Tuất, Hợi
-        }
-        
-        const allHours = [
-            { time: '23h - 01h', label: 'Tý' },
-            { time: '01h - 03h', label: 'Sửu' },
-            { time: '03h - 05h', label: 'Dần' },
-            { time: '05h - 07h', label: 'Mão' },
-            { time: '07h - 09h', label: 'Thìn' },
-            { time: '09h - 11h', label: 'Tỵ' },
-            { time: '11h - 13h', label: 'Ngọ' },
-            { time: '13h - 15h', label: 'Mùi' },
-            { time: '15h - 17h', label: 'Thân' },
-            { time: '17h - 19h', label: 'Dậu' },
-            { time: '19h - 21h', label: 'Tuất' },
-            { time: '21h - 23h', label: 'Hợi' }
-        ];
-
-        let goodHours = [];
-        let badHours = [];
-        for (let i = 0; i < 12; i++) {
-            if (good.includes(i)) {
-                goodHours.push(allHours[i]);
-            } else {
-                badHours.push(allHours[i]);
-            }
-        }
-        return { goodHours, badHours };
-    }
-
-    function getSolarTerm(day, month) {
-        const terms = [
-            { name: 'Tiểu Hàn', m: 1, d: 5 },
-            { name: 'Đại Hàn', m: 1, d: 20 },
-            { name: 'Lập Xuân', m: 2, d: 4 },
-            { name: 'Vũ Thủy', m: 2, d: 19 },
-            { name: 'Kinh Trập', m: 3, d: 5 },
-            { name: 'Xuân Phân', m: 3, d: 20 },
-            { name: 'Thanh Minh', m: 4, d: 4 },
-            { name: 'Cốc Vũ', m: 4, d: 20 },
-            { name: 'Lập Hạ', m: 5, d: 5 },
-            { name: 'Tiểu Mãn', m: 5, d: 21 },
-            { name: 'Mang Chủng', m: 6, d: 5 },
-            { name: 'Hạ Chí', m: 6, d: 21 },
-            { name: 'Tiểu Thử', m: 7, d: 7 },
-            { name: 'Đại Thử', m: 7, d: 22 },
-            { name: 'Lập Thu', m: 8, d: 7 },
-            { name: 'Xử Thử', m: 8, d: 23 },
-            { name: 'Bạch Lộ', m: 9, d: 7 },
-            { name: 'Thu Phân', m: 9, d: 23 },
-            { name: 'Hàn Lộ', m: 10, d: 8 },
-            { name: 'Sương Giáng', m: 10, d: 23 },
-            { name: 'Lập Đông', m: 11, d: 7 },
-            { name: 'Tiểu Tuyết', m: 11, d: 22 },
-            { name: 'Đại Tuyết', m: 12, d: 7 },
-            { name: 'Đông Chí', m: 12, d: 21 }
-        ];
-        
-        let currentIdx = -1;
-        for (let i = 0; i < terms.length; i++) {
-            if (month > terms[i].m || (month === terms[i].m && day >= terms[i].d)) {
-                currentIdx = i;
-            }
-        }
-        if (currentIdx === -1) {
-            currentIdx = terms.length - 1; // Mặc định là Đông Chí năm cũ
-        }
-        
-        let nextIdx = (currentIdx + 1) % terms.length;
-        const curTerm = terms[currentIdx];
-        const nextTerm = terms[nextIdx];
-        
-        return {
-            current: curTerm.name,
-            currentStart: `${String(curTerm.d).padStart(2, '0')}/${String(curTerm.m).padStart(2, '0')}`,
-            next: nextTerm.name,
-            nextStart: `${String(nextTerm.d).padStart(2, '0')}/${String(nextTerm.m).padStart(2, '0')}`
-        };
-    }
-
-    function getElderDayData(dateString) {
-        const d = new Date(dateString);
-        if (isNaN(d.getTime())) return getElderDayData('2026-07-09');
-        
-        const day = d.getDate();
-        const month = d.getMonth() + 1;
-        const year = d.getFullYear();
-        
-        const weekdays = ['CHỦ NHẬT', 'THỨ HAI', 'THỨ BA', 'THỨ TƯ', 'THỨ NĂM', 'THỨ SÁU', 'THỨ BẢY'];
-        
-        // Tính lịch Âm chuẩn động từ JS Hồ Ngọc Đức
-        const [lunarDay, lunarMonth, lunarYear, lunarLeap] = convertSolar2Lunar(day, month, year, 7);
-        const yearCanChi = getYearCanChi(lunarYear);
-        const monthCanChi = getMonthCanChi(lunarYear, lunarMonth);
-        const jd = jdFromDate(day, month, year);
-        const dayCanChi = getDayCanChi(jd);
-        
-        const isGood = (jd % 2 === 0);
-        
-        const quotes = [
-            'Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao.',
-            'Kính lão đắc thọ, trọng già già để tuổi cho.',
-            'Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ cho dây mà trồng.',
-            'Con người có tổ có tông, như cây có cội như sông có nguồn.',
-            'Lá rụng về cội, nước chảy về nguồn.',
-            'Gieo hành vi gặt thói quen, gieo thói quen gặt tính cách.'
-        ];
-        const quoteIndex = (day + month) % quotes.length;
-        
-        // Tính giờ tốt/xấu
-        const dayChiIdx = (jd + 1) % 12;
-        const hours = getHoursForDay(dayChiIdx);
-        
-        // Bản đồ tuổi xung khắc dựa trên Địa chi ngày
-        const conflictMap = {
-            'Chuột': 'Mậu Ngọ, Nhâm Ngọ, Canh Tý',
-            'Trâu': 'Kỷ Mùi, Quý Mùi, Tân Sửu',
-            'Hổ': 'Canh Thân, Giáp Thân, Mậu Dần',
-            'Mèo': 'Tân Dậu, Ất Dậu, Kỷ Mão',
-            'Rồng': 'Nhâm Tuất, Bính Tuất, Giáp Thìn',
-            'Rắn': 'Quý Hợi, Đinh Hợi, Ất Tỵ',
-            'Ngựa': 'Nhâm Tý, Bính Tý, Giáp Ngọ',
-            'Dê': 'Quý Sửu, Đinh Sửu, Ất Mùi',
-            'Khỉ': 'Mậu Dần, Bính Dần, Canh Thần',
-            'Gà': 'Kỷ Mão, Đinh Mão, Tân Dậu',
-            'Chó': 'Canh Thìn, Bính Thìn, Mậu Tuất',
-            'Hợi': 'Tân Tỵ, Đinh Tỵ, Kỷ Hợi'
-        };
-        const clashAges = conflictMap[dayCanChi.animal] || 'Xung khắc các tuổi Thân, Dần trong gia đạo';
-        
-        const term = getSolarTerm(day, month);
-        
-        return {
-            solar: { day, month: 'Tháng ' + month, year, weekday: weekdays[d.getDay()] },
-            lunar: { 
-                day: lunarDay, 
-                month: 'Tháng ' + (lunarMonth < 10 ? '0' + lunarMonth : lunarMonth) + (lunarLeap ? ' (Nhuận)' : ''),
-                yearChi: yearCanChi.text,
-                monthChi: monthCanChi.text,
-                dayChi: dayCanChi.text,
-                yearAnimal: yearCanChi.animal,
-                monthAnimal: monthCanChi.animal,
-                dayAnimal: dayCanChi.animal
-            },
-            isGoodDay: isGood,
-            starText: isGood ? 'Ngày Hoàng Đạo' : 'Ngày Hắc Đạo',
-            quote: quotes[quoteIndex],
-            goodHours: hours.goodHours,
-            badHours: hours.badHours,
-            shouldDo: isGood ? 'Cúng tế, làm từ thiện, dọn dẹp ban thờ' : 'Chăm sóc sức khỏe, nghỉ ngơi tĩnh dưỡng, uống trà thiền',
-            shouldAvoid: isGood ? 'Mâu thuẫn cãi cọ, xuất hành đi quá xa' : 'Khai trương lớn, mua bán tài sản trọng đại, cưới hỏi',
-            clashAges: clashAges,
-            solarTerm: term.current,
-            termStart: term.currentStart + '/' + year,
-            nextTerm: term.next,
-            nextTermStart: term.nextStart + '/' + year
-        };
-    }
-
-    // BIẾN TRẠNG THÁI TOÀN CỤC CỦA APP
-    const initDate = new Date();
-    let currentDate = `${initDate.getFullYear()}-${String(initDate.getMonth()+1).padStart(2,'0')}-${String(initDate.getDate()).padStart(2,'0')}`;
-    let currentTab = 'home';
-    let currentMonthView = initDate.getMonth() + 1;
-    let currentYearView = initDate.getFullYear();
-    let isBellEnabled = true;
-
-    // PHÁT TIẾNG CHUÔNG KHÁNH KHẰN ĐỒNG THANH TỊNH
-    function playBell() {
-        if (!isBellEnabled) return;
-        const bell = document.getElementById('bellSound');
-        bell.volume = 0.5;
-        bell.currentTime = 0;
-        bell.play().catch(e => {});
-    }
-
-    function toggleBellEffect() {
-        isBellEnabled = !isBellEnabled;
-        const toggle = document.getElementById('bell-toggle-indicator');
-        const ball = toggle.querySelector('div');
-        
-        if (isBellEnabled) {
-            toggle.className = "w-12 h-6 bg-elder-green rounded-full p-0.5 relative transition-all duration-200";
-            ball.className = "w-5 h-5 bg-white rounded-full absolute right-0.5 transition-all";
-            showElderToast("Đã bật tiếng Khánh đồng");
-            playBell();
-        } else {
-            toggle.className = "w-12 h-6 bg-stone-300 rounded-full p-0.5 relative transition-all duration-200";
-            ball.className = "w-5 h-5 bg-white rounded-full absolute left-0.5 transition-all";
-            showElderToast("Đã tắt tiếng chuông");
-        }
-    }
-
-    // CHẾ ĐỘ ĐỌC BAN ĐÊM TƯƠNG PHẢN CAO CHO MẮT LÃO
-    let isHighContrast = false;
-    function toggleElderContrast() {
-        isHighContrast = !isHighContrast;
-        const icon = document.getElementById('contrastIcon');
-        if (isHighContrast) {
-            document.body.classList.add('dark');
-            document.body.style.backgroundColor = '#111827';
-            if (icon) {
-                icon.className = "fa-solid fa-sun text-yellow-400";
-            }
-            showElderToast("Đã bật giao diện dịu mắt");
-        } else {
-            document.body.classList.remove('dark');
-            document.body.style.backgroundColor = '#F4F1EA';
-            if (icon) {
-                icon.className = "fa-solid fa-circle-half-stroke text-stone-600";
-            }
-            showElderToast("Đã về giao diện ấm áp ban ngày");
-        }
-    }
-
-    // ĐỔI NGÀY SỬ DỤNG PHÍM TIỆN LỢI
-    function navigateDay(offset) {
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() + offset);
-        
-        const yyyy = d.getFullYear();
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const dd = String(d.getDate()).padStart(2, '0');
-        
-        currentDate = `${yyyy}-${mm}-${dd}`;
-        currentMonthView = d.getMonth() + 1;
-        currentYearView = yyyy;
-        
-        playBell();
-        renderDayView();
-        showElderToast(`Đã chuyển tới ngày ${dd}/${mm}`);
-    }
-
-    function resetToSampleDate() {
-        const t = new Date();
-        currentDate = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
-        currentMonthView = t.getMonth() + 1;
-        currentYearView = t.getFullYear();
-        playBell();
-        renderDayView();
-        switchTab('home');
-        showElderToast(`Quay lại hôm nay ${String(t.getDate()).padStart(2,'0')}/${String(t.getMonth()+1).padStart(2,'0')}`);
-    }
-
-    function handleDatePicked(val) {
-        if (val) {
-            currentDate = val;
-            const parts = val.split('-');
-            currentMonthView = parseInt(parts[1]);
-            currentYearView = parseInt(parts[0]);
-            playBell();
-            renderDayView();
-            switchTab('home');
-            showElderToast(`Đã chọn: ngày ${parts[2]} tháng ${parts[1]}`);
-        }
-    }
-
-    // HÀM LẤY TIN TỨC NỔI BẬT QUA GEMINI API CÓ GOOGLE SEARCH GROUNDING
-    async function fetchFeaturedNews() {
-        const infoBox = document.getElementById('dynamic-info-box');
-        
-        if (!navigator.onLine) {
-            renderOfflineAlert();
-            return;
-        }
-
-        infoBox.innerHTML = `
-            <div class="p-4 bg-emerald-50/50 dark:bg-stone-850 rounded-2xl border-2 border-dashed border-elder-green text-center animate-pulse">
-                <span class="text-xl inline-block animate-spin mr-2">⏳</span>
-                <span class="text-base font-bold text-emerald-900 dark:text-emerald-100">Đang cập nhật thời sự trực tuyến...</span>
-            </div>
-        `;
-
-        const userQuery = `Hãy tìm 3 tin tức thời sự quan trọng, nổi bật nhất tại Việt Nam. Trả về đúng cấu trúc danh sách JSON gồm 3 tin tức chính thống.`;
-        const systemPrompt = `Bạn là biên tập viên tin tức cao cấp. Hãy tổng hợp 3 sự kiện/tin tức thời sự nóng hổi nhất hôm nay tại Việt Nam. Phải trả về dữ liệu thuần JSON theo đúng cấu trúc mẫu sau (Không viết bất kỳ mô tả hay ký tự phụ nào ngoài khối JSON):
-        [
-          {
-            "title": "Tiêu đề tin tức nổi bật 1 (ngắn gọn, dưới 65 ký tự)",
-            "source": "Tên báo (VnExpress, Tuổi Trẻ, Thanh Niên...)",
-            "category": "Thời sự"
-          }
-        ]`;
-
-        const apiKey = ""; 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-        const payload = {
-            contents: [{ parts: [{ text: userQuery }] }],
-            tools: [{ "google_search": {} }],
-            systemInstruction: {
-                parts: [{ text: systemPrompt }]
-            },
-            generationConfig: {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "ARRAY",
-                    items: {
-                        type: "OBJECT",
-                        properties: {
-                            title: { type: "STRING" },
-                            source: { type: "STRING" },
-                            category: { type: "STRING" }
-                        },
-                        required: ["title", "source", "category"]
-                    }
-                }
-            }
-        };
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) throw new Error("Lỗi kết nối máy chủ tin tức");
-
-            const result = await response.json();
-            const candidate = result.candidates?.[0];
-            const textJson = candidate?.content?.parts?.[0]?.text;
-            
-            if (textJson) {
-                const newsList = JSON.parse(textJson);
-                renderNewsList(newsList);
-            } else {
-                throw new Error("Dữ liệu trống");
-            }
-        } catch (error) {
-            console.warn("Không tải được tin tức qua API, hiển thị thông báo offline:", error);
-            renderOfflineAlert();
-        }
-    }
-
-    function renderOfflineAlert() {
-        const infoBox = document.getElementById('dynamic-info-box');
-        infoBox.innerHTML = `
-            <div class="p-4 bg-[#FAF7F0] dark:bg-stone-800 rounded-2xl border-2 border-stone-200 text-center text-stone-600 dark:text-stone-300 shadow-sm">
-                <p class="font-bold text-sm">💡 Đã ngắt kết nối mạng. Bạn vẫn có thể xem Lịch âm mượt mà và bình an.</p>
-            </div>
-        `;
-    }
-
-    function renderNewsList(newsList) {
-        const infoBox = document.getElementById('dynamic-info-box');
-        
-        let newsItemsHTML = newsList.map((item, index) => `
-            <div class="flex items-start gap-2.5 py-2 border-b border-stone-100 last:border-b-0">
-                <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center justify-center shrink-0 mt-0.5">${index + 1}</span>
-                <div class="flex-grow text-left">
-                    <p class="text-sm font-black text-stone-900 dark:text-stone-100 leading-tight">${item.title}</p>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 font-extrabold px-1.5 py-0.5 rounded">${item.category}</span>
-                        <span class="text-[10px] text-stone-400 font-bold">Nguồn: ${item.source}</span>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        infoBox.innerHTML = `
-            <div class="p-4 bg-white dark:bg-stone-800 rounded-2xl border-2 border-emerald-600 shadow-md">
-                <div class="flex justify-between items-center mb-2 pb-2 border-b-2 border-stone-100">
-                    <span class="text-xs uppercase font-black text-red-700 flex items-center gap-1">
-                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-ping"></span> TIN NỔI BẬT TRONG NGÀY
-                    </span>
-                    <button onclick="fetchFeaturedNews()" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-2 py-1 rounded-lg border border-emerald-200 transition-all flex items-center gap-1 active:scale-95">
-                        🔄 Cập nhật
-                    </button>
-                </div>
-                <div class="space-y-1">
-                    ${newsItemsHTML}
-                </div>
-            </div>
-        `;
-    }
-
-    // BỘ CHUYỂN ĐỔI CÁC MÀN HÌNH CHỨC NĂNG
-    function switchTab(tabId) {
-        currentTab = tabId;
-        const tabs = ['home', 'month', 'good-days', 'prayers', 'more'];
-        
-        tabs.forEach(t => {
-            const el = document.getElementById('tab-' + t);
-            if (t === tabId) {
-                el.classList.remove('hidden');
-                el.classList.add('block');
-            } else {
-                el.classList.add('hidden');
-                el.classList.remove('block');
-            }
-        });
-
-        tabs.forEach(t => {
-            const btn = document.getElementById('nav-' + t);
-            const spanIcon = btn.querySelector('span');
-            if (t === tabId) {
-                btn.className = "flex-1 py-1 flex flex-col items-center justify-center gap-1 text-elder-green scale-110 transition-all";
-                spanIcon.className = "w-12 h-10 bg-elder-green text-white rounded-xl flex items-center justify-center text-xl shadow-md";
-            } else {
-                btn.className = "flex-1 py-1 flex flex-col items-center justify-center gap-1 text-stone-400 transition-all";
-                spanIcon.className = "w-12 h-10 rounded-xl flex items-center justify-center text-xl";
-            }
-        });
-
-        if (tabId === 'home') {
-            fetchFeaturedNews(); 
-        } else if (tabId === 'month') {
-            renderMonthView();
-        } else if (tabId === 'good-days') {
-            filterGoodDays('cuoihoi');
-        } else if (tabId === 'prayers') {
-            renderPrayersList();
-        }
-        playBell();
-    }
-
-    // KHỞI CHẠY KẾT XUẤT CÁC THÔNG TIN NGÀY LÊN MÀN HÌNH CHÍNH
-    function renderDayView() {
-        const data = getElderDayData(currentDate);
-        
-        // Cập nhật ngày dương lớn
-        document.getElementById('solar-weekday').innerHTML = data.solar.weekday.replace(" ", "<br>");
-        document.getElementById('solar-month-year').innerHTML = `${data.solar.month}<br>${data.solar.year}`;
-        document.getElementById('solar-day').innerText = data.solar.day;
-        document.getElementById('label-current-year').innerText = `Năm ${data.solar.year}`;
-
-        // Cập nhật danh ngôn tĩnh ở tờ lịch block chính
-        document.getElementById('daily-quote').innerText = data.quote;
-
-        // Gọi tải tin tức trực tuyến đặt dưới đáy trang chủ
-        fetchFeaturedNews();
-
-        // Cập nhật giờ hiện tại
-        const now = new Date();
-        const h = now.getHours();
-        const hourChiIdx = Math.floor(h / 2) % 12;
-        const chiNames = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
-        const hourLabel = document.getElementById('current-hour-label');
-        if (hourLabel) hourLabel.innerText = `Hiện tại: Giờ ${chiNames[hourChiIdx]}`;
-
-        // Cập nhật ngày âm can chi thuần Việt dễ hiểu
-        document.getElementById('lunar-day-large').innerText = data.lunar.day;
-        document.getElementById('lunar-month').innerText = data.lunar.month.toUpperCase();
-        
-        // Thêm chú thích con giáp vào sau chữ can chi một cách động và chuẩn xác
-        document.getElementById('lunar-year-chi').innerHTML = `${data.lunar.yearChi.split(' ')[0]} ${data.lunar.yearChi.split(' ')[1]}<br><span class="text-emerald-700 text-[10px]">(${data.lunar.yearAnimal})</span>`;
-        document.getElementById('lunar-month-chi').innerHTML = `${data.lunar.monthChi.split(' ')[0]} ${data.lunar.monthChi.split(' ')[1]}<br><span class="text-emerald-700 text-[10px]">(${data.lunar.monthAnimal})</span>`;
-        document.getElementById('lunar-day-chi').innerHTML = `${data.lunar.dayChi.split(' ')[0]} ${data.lunar.dayChi.split(' ')[1]}<br><span class="text-emerald-700 text-[10px]">(${data.lunar.dayAnimal})</span>`;
-
-        // ĐỔI THÀNH 2 DÒNG CHỮ NHỎ CHO GIỜ TỐT
-        const goodList = document.getElementById('good-hours');
-        goodList.innerHTML = data.goodHours.map(h => 
-            `<li class="bg-emerald-50/85 dark:bg-emerald-950/20 p-1.5 rounded-lg border border-emerald-200 flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] text-stone-550 dark:text-stone-400 font-bold leading-tight mb-0.5">${h.time}</span>
-                <span class="text-xs sm:text-sm font-black text-emerald-800 dark:text-emerald-300 leading-tight">Giờ ${h.label}</span>
-             </li>`
-        ).join('');
-
-        // ĐỔI THÀNH 2 DÒNG CHỮ NHỎ CHO GIỜ XẤU
-        const badList = document.getElementById('bad-hours');
-        badList.innerHTML = data.badHours.map(h => 
-            `<li class="bg-red-50/50 dark:bg-red-950/20 p-1.5 rounded-lg border border-red-100 flex flex-col items-center justify-center text-center">
-                <span class="text-[10px] text-stone-550 dark:text-stone-400 font-bold leading-tight mb-0.5">${h.time}</span>
-                <span class="text-xs sm:text-sm font-black text-stone-700 dark:text-stone-300 leading-tight">Giờ ${h.label}</span>
-             </li>`
-        ).join('');
-
-        // Việc nên - kiêng
-        document.getElementById('should-do').innerText = data.shouldDo;
-        document.getElementById('should-avoid').innerText = data.shouldAvoid;
-
-        // Tuổi xung khắc
-        document.getElementById('clash-ages').innerText = data.clashAges;
-
-        // Tiết khí
-        document.getElementById('current-solar-term').innerText = data.solarTerm;
-        document.getElementById('term-start-date').innerText = `Bắt đầu từ: ${data.termStart}`;
-        document.getElementById('next-solar-term').innerText = data.nextTerm;
-        document.getElementById('next-term-start-date').innerText = `Dự kiến từ: ${data.nextTermStart}`;
-    }
-
-    // KẾT XUẤT LỊCH THÁNG BẢN TO RÕ RÀNG
-    function changeMonth(offset) {
-        currentMonthView += offset;
-        if (currentMonthView > 12) {
-            currentMonthView = 1;
-            currentYearView += 1;
-        } else if (currentMonthView < 1) {
-            currentMonthView = 12;
-            currentYearView -= 1;
-        }
-        renderMonthView();
-    }
-
-    function renderMonthView() {
-        document.getElementById('calendar-month-title').innerText = `Tháng ${currentMonthView} - Năm ${currentYearView}`;
-        
-        const firstDay = new Date(currentYearView, currentMonthView - 1, 1);
-        const startOffset = (firstDay.getDay() + 7) % 7; 
-        const totalDays = new Date(currentYearView, currentMonthView, 0).getDate();
-        
-        const grid = document.getElementById('calendar-grid-days');
-        grid.innerHTML = '';
-
-        for (let i = 0; i < startOffset; i++) {
-            grid.innerHTML += `<div class="aspect-square bg-transparent"></div>`;
-        }
-
-        const today = new Date();
-        const activeSel = new Date(currentDate);
-
-        for (let day = 1; day <= totalDays; day++) {
-            const thisDateStr = `${currentYearView}-${String(currentMonthView).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const dayData = getElderDayData(thisDateStr);
-            
-            const isSelected = activeSel.getDate() === day && activeSel.getMonth() + 1 === currentMonthView && activeSel.getFullYear() === currentYearView;
-            const isToday = today.getDate() === day && today.getMonth() + 1 === currentMonthView && today.getFullYear() === currentYearView;
-            
-            let bgStyle = "bg-stone-100 hover:bg-stone-200 text-stone-900 border border-stone-300";
-            
-            if (isSelected) {
-                bgStyle = "bg-elder-green text-white font-black scale-105 border-4 border-amber-400";
-            } else if (isToday) {
-                bgStyle = "bg-red-700 text-white font-black border-4 border-amber-300";
-            } else if (dayData.isGoodDay) {
-                bgStyle = "bg-emerald-100 text-emerald-900 font-bold border-2 border-emerald-300 hover:bg-emerald-200";
-            }
-
-            grid.innerHTML += `
-                <button onclick="handleDatePicked('${thisDateStr}')" class="aspect-square ${bgStyle} rounded-xl p-1 flex flex-col justify-between items-center transition-all active:scale-90">
-                    <span class="text-sm font-black">${day}</span>
-                    <span class="text-[9px] font-bold opacity-80">${dayData.lunar.day}</span>
-                </button>
-            `;
-        }
-    }
-
-    // XEM NGÀY ĐẸP CHO GIA ĐẠO
-    function filterGoodDays(type) {
-        const categories = ['cuoihoi', 'khaitruong', 'dongtho'];
-        categories.forEach(cat => {
-            const btn = document.getElementById('btn-f-' + cat);
-            if (cat === type) {
-                btn.className = "py-2.5 px-1 bg-elder-green text-white rounded-xl text-sm font-black border-2 border-amber-400 scale-105 transition-all shadow-md";
-            } else {
-                btn.className = "py-2.5 px-1 bg-stone-200 text-stone-700 rounded-xl text-sm font-bold border-2 border-transparent transition-all";
-            }
-        });
-
-        const list = document.getElementById('good-days-list');
-        list.innerHTML = '';
-
-        const sampleGoodDays = [
-            { solar: '15/07/2026', lunar: '01/06 âm', desc: 'Ngày Tân Tỵ - Cực Kỳ Đại Cát', sub: 'Mưu cầu hạnh phúc gia đạo viên mãn, tốt cho dạm ngõ, ăn hỏi.' },
-            { solar: '22/07/2026', lunar: '08/06 âm', desc: 'Ngày Mậu Tý - Ngày Hoàng Đạo cát lợi', sub: 'Rất tốt cho các cụ đứng tuổi động thổ, sửa sang mồ mả tổ tiên.' },
-            { solar: '27/07/2026', lunar: '13/06 âm', desc: 'Ngày Quý Tỵ - Lộc Tài dồi dào sung túc', sub: 'Hợp khai trương quán xá gia đình, rước may mắn tài lộc.' }
-        ];
-
-        list.innerHTML = sampleGoodDays.map(item => `
-            <div class="bg-white p-4 rounded-xl border-3 border-elder-green shadow-md flex justify-between items-center gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 rounded-lg bg-amber-500 text-stone-950 flex flex-col justify-center items-center font-black text-center shrink-0 border-2 border-amber-600">
-                        <span class="text-lg leading-none">${item.solar.split('/')[0]}</span>
-                        <span class="text-xs">THÁNG ${item.solar.split('/')[1]}</span>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-black text-stone-900">${item.desc}</h4>
-                        <p class="text-xs text-stone-500 font-bold">Lịch Âm: ${item.lunar}</p>
-                        <p class="text-xs text-emerald-800 font-bold mt-1 bg-emerald-50 p-1.5 rounded-md border border-emerald-100">${item.sub}</p>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // SÁCH BÀI VĂN KHẤN CHỮ TO CỔ TRUYỀN
-    const prayersDB = [
-        {
-            id: 'mungone',
-            title: 'Khấn Mùng Một & Ngày Rằm hàng tháng',
-            category: 'Gia Tiên',
-            body: `Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>
-Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.<br>
-Con kính lạy Hoàng thiên Hậu Thổ chư vị Tôn thần.<br>
-Con kính lạy ngài Bản cảnh Thành hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo quân cùng chư vị Thần linh.<br>
-Con kính lạy Tổ Tiên, Hiển khảo, Hiển Tỷ, hương linh nội ngoại tông tộc nội tộc dâng hiến kính lễ.<br><br>
-Hôm nay là ngày Mùng Một (hoặc ngày Rằm) năm Bính Ngọ.<br>
-Chúng con thành tâm chuẩn bị lễ hoa, trà quả dâng lên ban thờ tiên tổ tiên cốt phù độ trì.<br>
-Cầu xin chư vị thần linh nâng đỡ bảo hộ gia đình bình an, tai qua nạn khỏi, bệnh tật tiêu trừ, gia đạo ấm êm.<br>
-Hương linh tổ tiên rộng lòng bao dung cho lỗi lầm con cháu.<br><br>
-Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).`
-        },
-        {
-            id: 'giatien',
-            title: 'Khấn Tổ Tiên vào ngày Giỗ Chạp',
-            category: 'Gia Tiên',
-            body: `Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>
-Kính lạy chư vị Thần linh Thổ công thổ địa lai lâm chứng giám dâng hiến.<br>
-Kính lạy vong linh Tổ tiên dòng họ nội ngoại tôn kính.<br><br>
-Hôm nay gia đình chúng con sửa soạn mâm cơm tươm tất kính dâng ngày giỗ tôn kính của... vong linh tôn kính.<br>
-Cầu mong vong linh sớm siêu sinh cực lạc, hưởng nhang khói thành kính của con cháu lâu đời.<br>
-Phù trì cho toàn thể gia quyến sức khỏe, thịnh vượng bền lâu.<br><br>
-Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).`
-        },
-        {
-            id: 'giao-thua',
-            title: 'Khấn Giao Thừa Cổ Truyền trong nhà',
-            category: 'Tết Cổ Truyền',
-            body: `Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>
-Kính lạy cựu niên quan đương niên hành khiển thần quân tôn kính.<br>
-Kính lạy tân niên quan đại vương tối cao.<br><br>
-Phút giây thiêng liêng giao thừa đất trời chuyển hóa, chúng con thành tâm dâng hương trà quả lễ vật tạ ơn trời đất phật thánh thần tiên độ trì suốt một năm bình an ấm áp đã qua.<br>
-Mong cầu năm mới gia hộ bình an, dồi dào khí lực, muôn sự hanh thông.<br><br>
-Nam mô A Di Đà Phật! (3 lần, lạy 3 lạy).`
-        }
-    ];
-
-    let prayerSearchKey = '';
-
-    function renderPrayersList() {
-        const container = document.getElementById('prayers-list-container');
-        container.innerHTML = '';
-
-        const filtered = prayersDB.filter(p => 
-            p.title.toLowerCase().includes(prayerSearchKey.toLowerCase())
-        );
-
-        if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="text-center py-6 text-stone-400 font-bold">
-                    <p class="text-sm">Không tìm thấy bài khấn này.</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = filtered.map(p => `
-            <div class="bg-white p-4 rounded-xl border-2 border-stone-300 shadow-md flex justify-between items-center hover:border-elder-green transition-all cursor-pointer" onclick="openPrayerReader('${p.id}')">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-100 text-elder-gold flex items-center justify-center text-lg shrink-0">
-                        📚
-                    </div>
-                    <div>
-                        <span class="text-[10px] uppercase font-black bg-stone-100 px-2 py-0.5 rounded text-stone-500">${p.category}</span>
-                        <h4 class="text-base font-black text-stone-900 mt-1">${p.title}</h4>
-                    </div>
-                </div>
-                <span class="text-xl text-stone-300">▶</span>
-            </div>
-        `).join('');
-    }
-
-    function searchPrayers(q) {
-        prayerSearchKey = q;
-        renderPrayersList();
-    }
-
-    function resetPrayerFilter() {
-        document.getElementById('prayerSearchInput').value = '';
-        prayerSearchKey = '';
-        renderPrayersList();
-    }
-
-    // ĐIỀU KHIỂN ĐỌC KHẤN TỰ ĐỘNG CHẠY CHỮ RẢNH TAY
-    let isAutoScrolling = false;
-    let scrollTimer = null;
-    let currentPrayerFontSize = 20; 
-
-    function openPrayerReader(id) {
-        const p = prayersDB.find(item => item.id === id);
-        if (!p) return;
-
-        document.getElementById('prayer-reader-title').innerText = p.title;
-        const box = document.getElementById('prayer-text-scroll');
-        box.innerHTML = p.body;
-        box.style.fontSize = `${currentPrayerFontSize}px`;
-
-        document.getElementById('prayer-reader-modal').classList.remove('hidden');
-        playBell();
-    }
-
-    function closePrayerReader() {
-        document.getElementById('prayer-reader-modal').classList.add('hidden');
-        stopAutoScroll();
-    }
-
-    function adjustFontSize(offset) {
-        currentPrayerFontSize += offset;
-        if (currentPrayerFontSize < 14) currentPrayerFontSize = 14;
-        if (currentPrayerFontSize > 32) currentPrayerFontSize = 32;
-        document.getElementById('prayer-text-scroll').style.fontSize = `${currentPrayerFontSize}px`;
-        showElderToast(`Đã đổi cỡ chữ bài khấn sang: ${currentPrayerFontSize}px`);
-    }
-
-    function toggleAutoScroll() {
-        const btn = document.getElementById('autoscroll-btn');
-        const box = document.getElementById('prayer-text-scroll');
-        
-        if (isAutoScrolling) {
-            stopAutoScroll();
-        } else {
-            isAutoScrolling = true;
-            btn.innerText = "TẠM DỪNG";
-            btn.className = "px-4 py-1.5 bg-red-700 text-white font-black rounded-lg text-xs active:scale-90";
-            
-            scrollTimer = setInterval(() => {
-                box.scrollTop += 1;
-                if (box.scrollTop + box.clientHeight >= box.scrollHeight) {
-                    stopAutoScroll();
-                }
-            }, 75); 
-        }
-    }
-
-    function stopAutoScroll() {
-        const btn = document.getElementById('autoscroll-btn');
-        if (btn) {
-            btn.innerText = "BẬT CHẠY CHỮ";
-            btn.className = "px-4 py-1.5 bg-elder-green text-white font-black rounded-lg text-xs active:scale-90";
-        }
-        isAutoScrolling = false;
-        clearInterval(scrollTimer);
-    }
-
-    // HỘP THOẠI HƯỚNG DẪN DỄ HIỂU KHÔNG DÙNG ALERT HỆ THỐNG
-    function showElderAlert(msg) {
-        document.getElementById('elder-alert-text').innerText = msg;
-        document.getElementById('elder-alert-box').classList.remove('hidden');
-        playBell();
-    }
-
-    function closeElderAlert() {
-        document.getElementById('elder-alert-box').classList.add('hidden');
-    }
-
-    function showElderToast(text) {
-        const toast = document.getElementById('elder-toast');
-        const tText = document.getElementById('elder-toast-text');
-        tText.innerText = text;
-        
-        toast.classList.remove('opacity-0');
-        toast.classList.add('opacity-100');
-        
-        setTimeout(() => {
-            toast.classList.remove('opacity-100');
-            toast.classList.add('opacity-0');
-        }, 2000);
-    }
-
-    window.addEventListener('online', () => {
-        showElderToast("Đã khôi phục kết nối Internet, đang cập nhật thời sự...");
-        fetchFeaturedNews();
-    });
-    window.addEventListener('offline', () => {
-        showElderToast("Đã ngắt kết nối mạng");
-        renderOfflineAlert();
-    });
-
-    // TỰ ĐỘNG CHẠY KHI TẢI TRANG LẦN ĐẦU
-    window.onload = function() {
-        renderDayView();
-    };
+// ===== LUNAR CALCULATION ENGINE =====
+function INT(x){return Math.floor(x)}
+function jdFromDate(dd,mm,yy){
+  var a=INT((14-mm)/12),y=yy+4800-a,m=mm+12*a-3,jd=dd+INT((153*m+2)/5)+365*y+INT(y/4)-INT(y/100)+INT(y/400)-32045
+  if(jd<2299161)jd=dd+INT((153*m+2)/5)+365*y+INT(y/4)-32083
+  return jd
+}
+function jdToDate(jd){
+  var a,b,c,d,e,m,day,month,year
+  if(jd>2299160){a=jd+32044;b=INT((4*a+3)/146097);c=a-INT((b*146097)/4)}else{b=0;c=jd+32082}
+  d=INT((4*c+3)/1461);e=c-INT((1461*d)/4);m=INT((5*e+2)/153)
+  day=e-INT((153*m+2)/5)+1;month=m+3-12*INT(m/10);year=b*100+d-4800+INT(m/10)
+  return[day,month,year]
+}
+function getNewMoonDay(k,timeZone){
+  var T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180
+  var Jd1=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3
+  Jd1+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr)
+  var M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3
+  var Mpr=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3
+  var F=21.2964+390.67050646*k-0.0016528*T2-0.00000236*T3
+  var C1=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M)
+  C1-=0.4068*Math.sin(Mpr*dr)+0.0161*Math.sin(dr*2*Mpr)
+  C1-=0.0004*Math.sin(dr*3*Mpr)+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mpr))
+  C1-=0.0074*Math.sin(dr*(M-Mpr))+0.0004*Math.sin(dr*(2*F+M))
+  C1-=0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mpr))
+  C1+=0.0010*Math.sin(dr*(2*F-Mpr))+0.0005*Math.sin(dr*(2*Mpr+M))
+  var deltat=T<-11?0.001+0.000839*T+0.0002261*T2-0.00000845*T3-0.000000081*T*T3:-0.000278+0.000265*T+0.000262*T2
+  return INT(Jd1+C1-deltat+0.5+timeZone/24)
+}
+function getSunLongitude(jdn,timeZone){
+  var T=(jdn-2451545.5-timeZone/24)/36525,T2=T*T,dr=Math.PI/180
+  var M=357.52910+35999.05030*T-0.0001559*T2-0.00000048*T*T2
+  var L0=280.46645+36000.76983*T+0.0003032*T2
+  var DL=(1.91460-0.004817*T-0.000014*T2)*Math.sin(dr*M)+(0.019993-0.000101*T)*Math.sin(dr*2*M)+0.000290*Math.sin(dr*3*M)
+  var L=(L0+DL)*dr;L-=Math.PI*2*INT(L/(Math.PI*2))
+  if(L<0)L+=Math.PI*2
+  return INT(L/Math.PI*6)
+}
+function getLunarMonth11(yy,timeZone){
+  var off=jdFromDate(31,12,yy)-2415021,k=INT(off/29.530588853),nm=getNewMoonDay(k,timeZone)
+  if(getSunLongitude(nm,timeZone)>=9)nm=getNewMoonDay(k-1,timeZone)
+  return nm
+}
+function getLeapMonthOffset(a11,timeZone){
+  var k=INT((a11-2415021.076998695)/29.530588853+0.5),last=0,i=1,arc=getSunLongitude(getNewMoonDay(k+i,timeZone),timeZone)
+  do{last=arc;i++;arc=getSunLongitude(getNewMoonDay(k+i,timeZone),timeZone)}while(arc!=last&&i<14)
+  return i-1
+}
+function convertSolar2Lunar(dd,mm,yy,timeZone){
+  var dayNumber=jdFromDate(dd,mm,yy),k=INT((dayNumber-2415021.076998695)/29.530588853),monthStart=getNewMoonDay(k+1,timeZone)
+  if(monthStart>dayNumber)monthStart=getNewMoonDay(k,timeZone)
+  var a11=getLunarMonth11(yy,timeZone),b11=a11,lunarYear
+  if(a11>=monthStart){lunarYear=yy;a11=getLunarMonth11(yy-1,timeZone)}else{lunarYear=yy+1;b11=getLunarMonth11(yy+1,timeZone)}
+  var lunarDay=dayNumber-monthStart+1,diff=INT((monthStart-a11)/29),lunarLeap=0,lunarMonth=diff+11
+  if(b11-a11>365){var leapMonthDiff=getLeapMonthOffset(a11,timeZone);if(diff>=leapMonthDiff){lunarMonth=diff+10;if(diff==leapMonthDiff)lunarLeap=1}}
+  if(lunarMonth>12)lunarMonth-=12
+  if(lunarMonth>=11&&diff<4)lunarYear-=1
+  return[lunarDay,lunarMonth,lunarYear,lunarLeap]
+}
+const CANS=['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý']
+const CHIS=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi']
+const ANIMALS=['Chuột','Trâu','Hổ','Mèo','Rồng','Rắn','Ngựa','Dê','Khỉ','Gà','Chó','Lợn']
+function getYearCanChi(lunarYear){
+  var ci=(lunarYear+6)%10,zi=(lunarYear+8)%12
+  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
+}
+function getMonthCanChi(lunarYear,lunarMonth){
+  var yci=(lunarYear+6)%10,ci=(yci*2+lunarMonth+1)%10,zi=(lunarMonth+1)%12
+  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
+}
+function getDayCanChi(jd){
+  var ci=(jd+9)%10,zi=(jd+1)%12
+  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
+}
+function getHoursForDay(chiIdx){
+  var good=[]
+  if(chiIdx===0||chiIdx===6)good=[0,1,3,6,8,9]
+  else if(chiIdx===1||chiIdx===7)good=[2,3,5,8,10,11]
+  else if(chiIdx===2||chiIdx===8)good=[0,1,4,5,7,10]
+  else if(chiIdx===3||chiIdx===9)good=[0,2,3,6,7,9]
+  else if(chiIdx===4||chiIdx===10)good=[2,4,5,8,9,11]
+  else if(chiIdx===5||chiIdx===11)good=[1,4,6,7,10,11]
+  var allH=[{t:'23h-01h',l:'Tý'},{t:'01h-03h',l:'Sửu'},{t:'03h-05h',l:'Dần'},{t:'05h-07h',l:'Mão'},{t:'07h-09h',l:'Thìn'},{t:'09h-11h',l:'Tỵ'},{t:'11h-13h',l:'Ngọ'},{t:'13h-15h',l:'Mùi'},{t:'15h-17h',l:'Thân'},{t:'17h-19h',l:'Dậu'},{t:'19h-21h',l:'Tuất'},{t:'21h-23h',l:'Hợi'}]
+  var gh=[],bh=[]
+  for(var i=0;i<12;i++){if(good.includes(i))gh.push(allH[i]);else bh.push(allH[i])}
+  return{goodHours:gh,badHours:bh}
+}
+function getSolarTerm(day,month){
+  var terms=[{n:'Tiểu Hàn',m:1,d:5},{n:'Đại Hàn',m:1,d:20},{n:'Lập Xuân',m:2,d:4},{n:'Vũ Thủy',m:2,d:19},{n:'Kinh Trập',m:3,d:5},{n:'Xuân Phân',m:3,d:20},{n:'Thanh Minh',m:4,d:4},{n:'Cốc Vũ',m:4,d:20},{n:'Lập Hạ',m:5,d:5},{n:'Tiểu Mãn',m:5,d:21},{n:'Mang Chủng',m:6,d:5},{n:'Hạ Chí',m:6,d:21},{n:'Tiểu Thử',m:7,d:7},{n:'Đại Thử',m:7,d:22},{n:'Lập Thu',m:8,d:7},{n:'Xử Thử',m:8,d:23},{n:'Bạch Lộ',m:9,d:7},{n:'Thu Phân',m:9,d:23},{n:'Hàn Lộ',m:10,d:8},{n:'Sương Giáng',m:10,d:23},{n:'Lập Đông',m:11,d:7},{n:'Tiểu Tuyết',m:11,d:22},{n:'Đại Tuyết',m:12,d:7},{n:'Đông Chí',m:12,d:21}]
+  var ci=-1;for(var i=0;i<terms.length;i++){if(month>terms[i].m||(month===terms[i].m&&day>=terms[i].d))ci=i}
+  if(ci===-1)ci=terms.length-1
+  var ni=(ci+1)%terms.length
+  return{current:terms[ci].n,currentStart:String(terms[ci].d).padStart(2,'0')+'/'+String(terms[ci].m).padStart(2,'0'),next:terms[ni].n,nextStart:String(terms[ni].d).padStart(2,'0')+'/'+String(terms[ni].m).padStart(2,'0')}
+}
+function getElderDayData(dateStr){
+  var d=new Date(dateStr);if(isNaN(d.getTime()))d=new Date('2026-07-09')
+  var day=d.getDate(),month=d.getMonth()+1,year=d.getFullYear()
+  var wd=['CHỦ NHẬT','THỨ HAI','THỨ BA','THỨ TƯ','THỨ NĂM','THỨ SÁU','THỨ BẢY']
+  var ld=convertSolar2Lunar(day,month,year,7)
+  var ly=ld[0],lm=ld[1],lyr=ld[2],ll=ld[3],yc=getYearCanChi(lyr),mc=getMonthCanChi(lyr,lm),jd=jdFromDate(day,month,year),dc=getDayCanChi(jd)
+  var isGood=(jd%2===0),quotes=['Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao.','Kính lão đắc thọ, trọng già già để tuổi cho.','Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ cho dây mà trồng.','Con người có tổ có tông, như cây có cội như sông có nguồn.','Lá rụng về cội, nước chảy về nguồn.','Gieo hành vi gặt thói quen, gieo thói quen gặt tính cách.']
+  var qi=(day+month)%quotes.length,dci=(jd+1)%12,hrs=getHoursForDay(dci)
+  var cm={'Chuột':'Mậu Ngọ, Nhâm Ngọ, Canh Tý','Trâu':'Kỷ Mùi, Quý Mùi, Tân Sửu','Hổ':'Canh Thân, Giáp Thân, Mậu Dần','Mèo':'Tân Dậu, Ất Dậu, Kỷ Mão','Rồng':'Nhâm Tuất, Bính Tuất, Giáp Thìn','Rắn':'Quý Hợi, Đinh Hợi, Ất Tỵ','Ngựa':'Nhâm Tý, Bính Tý, Giáp Ngọ','Dê':'Quý Sửu, Đinh Sửu, Ất Mùi','Khỉ':'Mậu Dần, Bính Dần, Canh Thần','Gà':'Kỷ Mão, Đinh Mão, Tân Dậu','Chó':'Canh Thìn, Bính Thìn, Mậu Tuất','Hợi':'Tân Tỵ, Đinh Tỵ, Kỷ Hợi'}
+  var ca=cm[dc.animal]||'Xung khắc các tuổi Thân, Dần',term=getSolarTerm(day,month)
+  return{solar:{day:day,month:'Tháng '+month,year:year,weekday:wd[d.getDay()]},lunar:{day:ly,month:'Tháng '+(lm<10?'0':"")+lm+(ll?' (Nhuận)':""),yearChi:yc.text,monthChi:mc.text,dayChi:dc.text,yearAnimal:yc.animal,monthAnimal:mc.animal,dayAnimal:dc.animal},isGoodDay:isGood,starText:isGood?'Ngày Hoàng Đạo':'Ngày Hắc Đạo',quote:quotes[qi],goodHours:hrs.goodHours,badHours:hrs.badHours,shouldDo:isGood?'Cúng tế, làm từ thiện, dọn dẹp ban thờ':'Chăm sóc sức khỏe, nghỉ ngơi tĩnh dưỡng, uống trà thiền',shouldAvoid:isGood?'Mâu thuẫn cãi cọ, xuất hành đi quá xa':'Khai trương lớn, mua bán tài sản trọng đại, cưới hỏi',clashAges:ca,solarTerm:term.current,termStart:term.currentStart+'/'+year,nextTerm:term.next,nextTermStart:term.nextStart+'/'+year}
+}
+// ===== STATE =====
+var initDate=new Date(),currentDate=initDate.getFullYear()+'-'+String(initDate.getMonth()+1).padStart(2,'0')+'-'+String(initDate.getDate()).padStart(2,'0'),currentTab='home',currentMonthView=initDate.getMonth()+1,currentYearView=initDate.getFullYear(),isBellEnabled=true,isHighContrast=false,isAutoScrolling=false,scrollTimer=null,currentPrayerFontSize=18
+// ===== BELL =====
+function playBell(){if(!isBellEnabled)return;var b=document.getElementById('bellSound');b.volume=0.5;b.currentTime=0;b.play().catch(function(){})}
+function toggleBellEffect(){isBellEnabled=!isBellEnabled;var t=document.getElementById('bell-toggle-indicator'),b=t.querySelector('div')
+if(isBellEnabled){t.style.background='#064E3B';b.style.right='2px';b.style.left='auto';showElderToast('Đã bật tiếng Khánh đồng')}else{t.style.background='#D1D5DB';b.style.left='2px';b.style.right='auto';showElderToast('Đã tắt tiếng chuông')}}
+function toggleElderContrast(){isHighContrast=!isHighContrast;var ic=document.getElementById('contrastIcon'),lb=document.getElementById('contrast-label')
+if(isHighContrast){document.body.classList.add('dark');ic.className='fa-solid fa-sun';ic.style.color='#FBBF24';lb.innerText='Giao diện tối đang bật';showElderToast('Đã bật giao diện dịu mắt')}else{document.body.classList.remove('dark');ic.className='fa-solid fa-circle-half-stroke';ic.style.color='#78716C';lb.innerText='Giao diện tối dịu nhẹ';showElderToast('Đã về giao diện ấm áp')}}
+// ===== NAVIGATION =====
+function navigateDay(offset){var d=new Date(currentDate);d.setDate(d.getDate()+offset);currentDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');currentMonthView=d.getMonth()+1;currentYearView=d.getFullYear();playBell();renderDayView();if(isWebViewMode)refreshUiOverlayData();showElderToast('Đã chuyển tới ngày '+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'))}
+function resetToSampleDate(){var t=new Date();currentDate=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');currentMonthView=t.getMonth()+1;currentYearView=t.getFullYear();playBell();renderDayView();switchTab('home');showElderToast('Quay về hôm nay')}
+function handleDatePicked(val){currentDate=val;var p=val.split('-');currentMonthView=parseInt(p[1]);currentYearView=parseInt(p[0]);playBell();renderDayView();switchTab('home');showElderToast('Đã chọn: '+p[2]+'/'+p[1])}
+// ===== RENDER DAY VIEW =====
+function renderDayView(){
+  var data=getElderDayData(currentDate)
+  document.getElementById('solar-weekday').innerHTML=data.solar.weekday.replace(' ','<br>')
+  document.getElementById('solar-month-year').innerHTML=data.solar.month+'<br>'+data.solar.year
+  document.getElementById('solar-day').innerText=data.solar.day
+  document.getElementById('label-current-year').innerText='Năm '+data.solar.year
+  document.getElementById('daily-quote').innerText=data.quote
+  var now=new Date(),h=now.getHours(),hci=Math.floor(h/2)%12
+  document.getElementById('current-hour-label').innerText='Hiện tại: Giờ '+CHIS[hci]
+  document.getElementById('lunar-day-large').innerText=data.lunar.day
+  document.getElementById('lunar-month').innerText=data.lunar.month.toUpperCase()
+  document.getElementById('lunar-year-chi').innerHTML=data.lunar.yearChi.split(' ')[0]+' '+data.lunar.yearChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.yearAnimal+')</span>'
+  document.getElementById('lunar-month-chi').innerHTML=data.lunar.monthChi.split(' ')[0]+' '+data.lunar.monthChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.monthAnimal+')</span>'
+  document.getElementById('lunar-day-chi').innerHTML=data.lunar.dayChi.split(' ')[0]+' '+data.lunar.dayChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.dayAnimal+')</span>'
+  // Lunar mini card
+  var lmc=document.getElementById('lunar-mini-card')
+  if(data.lunar.day){lmc.style.display='block'
+    document.getElementById('lunar-mini-date').innerText=data.lunar.day
+    document.getElementById('lunar-mini-month').innerText='Tháng '+(data.lunar.month||'')
+    document.getElementById('lunar-mini-day-chi').innerText=data.lunar.dayChi
+    document.getElementById('lunar-mini-day-animal').innerText='('+data.lunar.dayAnimal+')'
+    document.getElementById('lunar-mini-month-chi').innerText=data.lunar.monthChi
+    document.getElementById('lunar-mini-month-animal').innerText='('+data.lunar.monthAnimal+')'
+  }else{lmc.style.display='none'}
+  // Hours
+  var gl=document.getElementById('good-hours');gl.innerHTML=data.goodHours.map(function(h){return'<div class="hour-chip hour-chip-good"><span class="hour-time">'+h.t+'</span><span class="hour-name hour-name-good">Giờ '+h.l+'</span></div>'}).join('')
+  var bl=document.getElementById('bad-hours');bl.innerHTML=data.badHours.map(function(h){return'<div class="hour-chip hour-chip-bad"><span class="hour-time">'+h.t+'</span><span class="hour-name hour-name-bad">Giờ '+h.l+'</span></div>'}).join('')
+  document.getElementById('should-do').innerText=data.shouldDo
+  document.getElementById('should-avoid').innerText=data.shouldAvoid
+  document.getElementById('clash-ages').innerText=data.clashAges
+  var canIdx=CANS.indexOf(data.lunar.dayChi.split(' ')[0])
+  var hyThan=['Đông Bắc','Đông Bắc','Chính Tây','Chính Tây','Chính Đông','Chính Đông','Chính Nam','Chính Nam','Tây Bắc','Tây Bắc']
+  var taiThan=['Đông Nam','Đông Nam','Chính Tây','Chính Tây','Chính Đông','Chính Đông','Chính Nam','Chính Nam','Tây Bắc','Tây Bắc']
+  document.getElementById('direction-hy-than').innerText='Hỷ Thần: '+(hyThan[canIdx]||'')
+  document.getElementById('direction-tai-than').innerText='Tài Thần: '+(taiThan[canIdx]||'')
+  document.getElementById('current-solar-term').innerText=data.solarTerm
+  document.getElementById('term-start-date').innerText='Bắt đầu: '+data.termStart
+  document.getElementById('next-solar-term').innerText=data.nextTerm
+  document.getElementById('next-term-start-date').innerText='Dự kiến: '+data.nextTermStart
+}
+// ===== MONTH VIEW =====
+function changeMonth(offset){currentMonthView+=offset;if(currentMonthView>12){currentMonthView=1;currentYearView+=1}else if(currentMonthView<1){currentMonthView=12;currentYearView-=1}renderMonthView()}
+function renderMonthView(){
+  document.getElementById('calendar-month-title').innerText='Tháng '+currentMonthView+' - '+currentYearView
+  var fd=new Date(currentYearView,currentMonthView-1,1),so=(fd.getDay()+7)%7,td=new Date(currentYearView,currentMonthView,0).getDate()
+  var grid=document.getElementById('calendar-grid-days');grid.innerHTML=''
+  for(var i=0;i<so;i++)grid.innerHTML+='<div></div>'
+  var today=new Date(),act=new Date(currentDate)
+  for(var d=1;d<=td;d++){
+    var ds=currentYearView+'-'+String(currentMonthView).padStart(2,'0')+'-'+String(d).padStart(2,'0'),dd=getElderDayData(ds)
+    var sel=act.getDate()===d&&act.getMonth()+1===currentMonthView&&act.getFullYear()===currentYearView
+    var isT=today.getDate()===d&&today.getMonth()+1===currentMonthView&&today.getFullYear()===currentYearView
+    var bg='background:#F3F4F6;color:#1F2937'
+    if(sel)bg='background:#064E3B;color:#fff;border:3px solid #FBBF24'
+    else if(isT)bg='background:#991B1B;color:#fff;border:3px solid #FBBF24'
+    else if(dd.isGoodDay)bg='background:#D1FAE5;color:#064E3B;border:2px solid #6EE7B7'
+    grid.innerHTML+='<button onclick="handleDatePicked(\''+ds+'\')" class="month-grid-cell" style="'+bg+'"><span class="month-grid-day">'+d+'</span><span class="month-grid-lunar">'+dd.lunar.day+'</span></button>'
+  }
+}
+// ===== GOOD DAYS =====
+function filterGoodDays(type){
+  var cats=['cuoihoi','khaitruong','dongtho']
+  cats.forEach(function(c){var b=document.getElementById('btn-f-'+c);if(c===type)b.style.cssText='flex:1;padding:10px 4px;border-radius:10px;font-size:clamp(11px,3vw,13px);font-weight:900;text-align:center;border:2px solid #B45309;background:#064E3B;color:#fff;cursor:pointer';else b.style.cssText='flex:1;padding:10px 4px;border-radius:10px;font-size:clamp(11px,3vw,13px);font-weight:900;text-align:center;border:2px solid transparent;background:#E5E7EB;color:#1F2937;cursor:pointer'})
+  var list=document.getElementById('good-days-list')
+  var samples=[{s:'15/07/2026',l:'01/06 âm',d:'Ngày Tân Tỵ - Cực Kỳ Đại Cát',sub:'Mưu cầu hạnh phúc gia đạo viên mãn'},{s:'22/07/2026',l:'08/06 âm',d:'Ngày Mậu Tý - Ngày Hoàng Đạo',sub:'Tốt động thổ, sửa sang mồ mả'},{s:'27/07/2026',l:'13/06 âm',d:'Ngày Quý Tỵ - Lộc Tài',sub:'Hợp khai trương, rước may mắn'}]
+  list.innerHTML=samples.map(function(i){return'<div class="good-day-item"><div class="good-day-badge"><span class="good-day-num">'+i.s.split('/')[0]+'</span><span class="good-day-month">THÁNG '+i.s.split('/')[1]+'</span></div><div class="good-day-info"><div class="good-day-desc">'+i.d+'</div><div class="good-day-lunar">Âm: '+i.l+'</div><div class="good-day-sub">'+i.sub+'</div></div></div>'}).join('')
+}
+// ===== PRAYERS =====
+var prayersDB=[{id:'mungone',title:'Khấn Mùng Một & Ngày Rằm',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.<br>Con kính lạy Hoàng thiên Hậu Thổ chư vị Tôn thần.<br>Con kính lạy ngài Bản cảnh Thành hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo quân cùng chư vị Thần linh.<br>Con kính lạy Tổ Tiên, Hiển khảo, Hiển Tỷ, hương linh nội ngoại tông tộc nội tộc dâng hiến kính lễ.<br><br>Hôm nay là ngày Mùng Một (hoặc ngày Rằm) năm Bính Ngọ.<br>Chúng con thành tâm chuẩn bị lễ hoa, trà quả dâng lên ban thờ tiên tổ tiên cốt phù độ trì.<br>Cầu xin chư vị thần linh nâng đỡ bảo hộ gia đình bình an, tai qua nạn khỏi, bệnh tật tiêu trừ, gia đạo ấm êm.<br>Hương linh tổ tiên rộng lòng bao dung cho lỗi lầm con cháu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giatien',title:'Khấn Tổ Tiên ngày Giỗ',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy chư vị Thần linh Thổ công thổ địa lai lâm chứng giám dâng hiến.<br>Kính lạy vong linh Tổ tiên dòng họ nội ngoại tôn kính.<br><br>Hôm nay gia đình chúng con sửa soạn mâm cơm tươm tất kính dâng ngày giỗ tôn kính của... vong linh tôn kính.<br>Cầu mong vong linh sớm siêu sinh cực lạc, hưởng nhang khói thành kính của con cháu lâu đời.<br>Phù trì cho toàn thể gia quyến sức khỏe, thịnh vượng bền lâu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giao-thua',title:'Khấn Giao Thừa',category:'Tết Cổ Truyền',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy cựu niên quan đương niên hành khiển thần quân tôn kính.<br>Kính lạy tân niên quan đại vương tối cao.<br><br>Phút giây thiêng liêng giao thừa đất trời chuyển hóa, chúng con thành tâm dâng hương trà quả lễ vật tạ ơn trời đất phật thánh thần tiên độ trì suốt một năm bình an ấm áp đã qua.<br>Mong cầu năm mới gia hộ bình an, dồi dào khí lực, muôn sự hanh thông.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lạy).'}]
+var prayerSearchKey=''
+function renderPrayersList(){
+  var c=document.getElementById('prayers-list-container');c.innerHTML=''
+  var f=prayersDB.filter(function(p){return p.title.toLowerCase().includes(prayerSearchKey.toLowerCase())})
+  if(f.length===0){c.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-weight:700;font-size:14px">Không tìm thấy bài khấn.</div>';return}
+  c.innerHTML=f.map(function(p){return'<div class="prayer-item" onclick="openPrayerReader(\''+p.id+'\')"><div class="prayer-icon">📚</div><div class="prayer-info"><div class="prayer-category">'+p.category+'</div><div class="prayer-title">'+p.title+'</div></div><span class="prayer-arrow">▶</span></div>'}).join('')
+}
+function searchPrayers(q){prayerSearchKey=q;renderPrayersList()}
+function resetPrayerFilter(){document.getElementById('prayerSearchInput').value='';prayerSearchKey='';renderPrayersList()}
+function openPrayerReader(id){var p=prayersDB.find(function(i){return i.id===id});if(!p)return;document.getElementById('prayer-reader-title').innerText=p.title;document.getElementById('prayer-text-scroll').innerHTML=p.body;document.getElementById('prayer-text-scroll').style.fontSize=currentPrayerFontSize+'px';document.getElementById('prayer-reader-modal').classList.add('open');playBell()}
+function closePrayerReader(){document.getElementById('prayer-reader-modal').classList.remove('open');stopAutoScroll()}
+function adjustFontSize(offset){currentPrayerFontSize+=offset;if(currentPrayerFontSize<14)currentPrayerFontSize=14;if(currentPrayerFontSize>32)currentPrayerFontSize=32;document.getElementById('prayer-text-scroll').style.fontSize=currentPrayerFontSize+'px';showElderToast('Cỡ chữ: '+currentPrayerFontSize+'px')}
+function toggleAutoScroll(){var btn=document.getElementById('autoscroll-btn'),box=document.getElementById('prayer-text-scroll');if(isAutoScrolling){stopAutoScroll()}else{isAutoScrolling=true;btn.innerText='TẠM DỪNG';btn.style.background='#991B1B';scrollTimer=setInterval(function(){box.scrollTop+=1;if(box.scrollTop+box.clientHeight>=box.scrollHeight)stopAutoScroll()},100)}}
+function stopAutoScroll(){var btn=document.getElementById('autoscroll-btn');if(btn){btn.innerText='BẬT';btn.style.background='#064E3B'}isAutoScrolling=false;clearInterval(scrollTimer)}
+// ===== TAB SWITCHING =====
+function switchTab(tabId){
+  currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
+  // WebView overlay handling
+  if(isWebViewMode){var ov=document.getElementById('ui-package-overlay');if(ov){var show=tabId==='more';ov.style.display=show?'block':'none';if(show)refreshUiOverlayData()}}
+  tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
+  tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
+  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays('cuoihoi')}else if(tabId==='prayers'){renderPrayersList()}
+  playBell()
+}
+// ===== UI PACKAGE DEMO =====
+var isWebViewMode=false
+function refreshUiOverlayData(){
+  var data=getElderDayData(currentDate),wd=['CHỦ NHẬT','THỨ HAI','THỨ BA','THỨ TƯ','THỨ NĂM','THỨ SÁU','THỨ BẢY'],d=new Date(currentDate)
+  document.getElementById('ui-weekday').innerHTML=wd[d.getDay()].replace(' ','<br>')
+  document.getElementById('ui-day').innerText=data.solar.day
+  document.getElementById('ui-monthyear').innerHTML=data.solar.month+'<br>'+data.solar.year
+  document.getElementById('ui-quote').innerText=data.quote
+  var now=new Date();document.getElementById('ui-hour').innerText='Hiện tại: Giờ '+CHIS[Math.floor(now.getHours()/2)%12]
+  document.getElementById('ui-lunar-day').innerText=data.lunar.day
+  document.getElementById('ui-lunar-month').innerText=data.lunar.month.toUpperCase()
+  document.getElementById('ui-cc-year').innerHTML=data.lunar.yearChi.split(' ')[0]+' '+data.lunar.yearChi.split(' ')[1]+'<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">('+data.lunar.yearAnimal+')</span>'
+  document.getElementById('ui-cc-month').innerHTML=data.lunar.monthChi.split(' ')[0]+' '+data.lunar.monthChi.split(' ')[1]+'<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">('+data.lunar.monthAnimal+')</span>'
+  document.getElementById('ui-cc-day').innerHTML=data.lunar.dayChi.split(' ')[0]+' '+data.lunar.dayChi.split(' ')[1]+'<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">('+data.lunar.dayAnimal+')</span>'
+  document.getElementById('ui-good-hours').innerHTML=data.goodHours.map(function(h){return'<div style="background:rgba(6,78,59,0.08);padding:4px 2px;border-radius:6px;border:1px solid rgba(6,78,59,0.25);text-align:center"><div style="font-size:clamp(7px,2vw,9px);font-weight:700;color:#1F2937">'+h.t+'</div><div style="font-size:clamp(9px,2.6vw,11px);font-weight:900;color:#064E3B">Giờ '+h.l+'</div></div>'}).join('')
+  document.getElementById('ui-bad-hours').innerHTML=data.badHours.map(function(h){return'<div style="background:rgba(153,27,27,0.08);padding:4px 2px;border-radius:6px;border:1px solid rgba(153,27,27,0.25);text-align:center"><div style="font-size:clamp(7px,2vw,9px);font-weight:700;color:#1F2937">'+h.t+'</div><div style="font-size:clamp(9px,2.6vw,11px);font-weight:900;color:#991B1B">Giờ '+h.l+'</div></div>'}).join('')
+}
+function toggleWebViewMode(enabled){
+  isWebViewMode=enabled;var mc=document.getElementById('elder-main-content'),sections=mc.querySelectorAll('.tab-section'),ov=document.getElementById('ui-package-overlay')
+  if(enabled){
+    sections.forEach(function(t){t.style.display='none'})
+    if(!ov){
+      ov=document.createElement('div');ov.id='ui-package-overlay'
+      ov.innerHTML='<div class="info-stack"><div class="cal-card"><div class="cal-top-bar"></div><div class="cal-body"><div class="cal-header"><div class="cal-weekday" id="ui-weekday">THỨ NĂM</div><div class="cal-day" id="ui-day">9</div><div class="cal-monthyear" id="ui-monthyear">Tháng 7<br>2026</div></div><div class="quote-box"><span class="quote-mark quote-mark-left">"</span><span class="quote-mark quote-mark-right">"</span><p class="quote-text" id="ui-quote">Đang tải...</p></div><div class="lunar-section"><div class="lunar-hour" id="ui-hour">Hiện tại: Giờ Tý</div><div class="lunar-main"><span class="lunar-moon">🌙</span><span class="lunar-day-num" id="ui-lunar-day">1</span><span class="lunar-month-text" id="ui-lunar-month">THÁNG GIÊNG</span></div><div class="canchi-grid"><div class="canchi-cell"><div class="canchi-label">NĂM</div><div class="canchi-value" id="ui-cc-year">Giáp Thìn<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Rồng)</span></div></div><div class="canchi-cell"><div class="canchi-label">THÁNG</div><div class="canchi-value" id="ui-cc-month">Giáp Dần<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Hổ)</span></div></div><div class="canchi-cell"><div class="canchi-label">NGÀY</div><div class="canchi-value" id="ui-cc-day">Giáp Tý<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Chuột)</span></div></div></div></div></div></div><div class="info-card info-card-good"><div class="info-header info-header-good">✅ GIỜ HOÀNG ĐẠO</div><div class="info-body"><div class="hour-grid" id="ui-good-hours"></div></div></div><div class="info-card info-card-bad"><div class="info-header info-header-bad">❌ GIỜ HẮC ĐẠO</div><div class="info-body"><div class="hour-grid" id="ui-bad-hours"></div></div></div><div style="text-align:center;padding:8px;font-size:clamp(9px,2.5vw,11px);color:#78716C;font-weight:700;border-top:2px solid #E5E7EB"><span style="color:#064E3B;font-weight:900">⏺ Giao diện WebView</span> — UI Package v1</div></div>'
+      mc.appendChild(ov)
+    }else{ov.style.display='block'}
+    refreshUiOverlayData();showElderToast('Đã chuyển sang giao diện WebView')
+  }else{
+    sections.forEach(function(t){t.style.removeProperty('display')})
+    if(ov)ov.style.display='none'
+    showElderToast('Đã về giao diện Compose')
+  }
+}
+function simulateUICheck(){document.getElementById('ui-status-msg').innerText='⏳ Đang kiểm tra...';setTimeout(function(){document.getElementById('ui-status-msg').innerText='✅ UI Package đã là bản mới nhất (v1).'},1500)}
+function simulateUIReload(){document.getElementById('ui-status-msg').innerText='🔄 Đã tải lại.';if(isWebViewMode)toggleWebViewMode(true)}
+function simulateUIReset(){document.getElementById('ui-package-version').innerText='UI Package v1 (mặc định)';document.getElementById('ui-status-msg').innerText='↩️ Đã đặt lại UI mặc định.';if(isWebViewMode){toggleWebViewMode(false);document.getElementById('webview-toggle').checked=false}showElderToast('Đã về UI package mặc định')}
+// ===== ALERTS & TOASTS =====
+function showElderAlert(msg){document.getElementById('elder-alert-text').innerText=msg;document.getElementById('elder-alert-box').classList.add('open');playBell()}
+function closeElderAlert(){document.getElementById('elder-alert-box').classList.remove('open')}
+function showElderToast(text){var t=document.getElementById('elder-toast'),tt=document.getElementById('elder-toast-text');tt.innerText=text;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
+// ===== INIT =====
+window.onload=function(){renderDayView()}
 </script>
 </body>
 </html>
