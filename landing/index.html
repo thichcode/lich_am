@@ -184,6 +184,18 @@ body{
 .good-day-desc{font-size:clamp(13px,3.8vw,15px);font-weight:900;color:#1F2937}
 .good-day-lunar{font-size:clamp(10px,3vw,12px);color:#78716C;font-weight:700}
 .good-day-sub{font-size:clamp(10px,3vw,12px);color:#064E3B;font-weight:700;margin-top:4px;background:#F0FDF4;padding:4px 8px;border-radius:6px;border:1px solid #BBF7D0}
+/* Lottery */
+.lottery-card{background:#fff;border-radius:12px;border:3px solid #B45309;overflow:hidden;width:100%}
+.lottery-header{background:#B45309;color:#fff;text-align:center;padding:8px;font-size:clamp(12px,3.5vw,14px);font-weight:900;letter-spacing:1px}
+.lottery-body{padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.lottery-region{display:flex;flex-direction:column;gap:4px}
+.lottery-region-title{font-size:clamp(11px,3.2vw,13px);font-weight:900;display:flex;align-items:center;gap:6px}
+.lottery-region-title .badge{font-size:clamp(8px,2.2vw,9px);padding:1px 6px;border-radius:4px;color:#fff;font-weight:800}
+.lottery-prizes{display:flex;flex-wrap:wrap;gap:4px}
+.lottery-prize{font-size:clamp(9px,2.6vw,11px);font-weight:700;padding:3px 6px;border-radius:4px;background:#F9FAFB;border:1px solid #E5E7EB;white-space:nowrap}
+.lottery-prize-special{background:#FEF3C7;border-color:#FCD34D;color:#92400E}
+.lottery-prize.green{color:#064E3B}
+.lottery-prize.red{color:#991B1B}
 /* Filter buttons */
 .filter-row{display:flex;gap:6px;width:100%}
 .filter-btn{flex:1;padding:10px 4px;border-radius:10px;border:2px solid transparent;font-size:clamp(11px,3vw,13px);font-weight:900;cursor:pointer;text-align:center;transition:all 0.1s;-webkit-tap-highlight-color:transparent}
@@ -198,7 +210,9 @@ body{
 .prayer-modal-controls{display:flex;justify-content:space-between;align-items:center;padding:10px 0;flex-shrink:0}
 .prayer-modal-text{flex:1;overflow-y:auto;font-size:clamp(16px,4.5vw,18px);line-height:1.8;color:#1F2937;font-weight:600;padding:8px 0}
 /* Dark mode overrides */
-.dark .cal-card,.dark .info-card,.dark .activity-card,.dark .clash-card,.dark .term-card,.dark .events-card,.dark .prayer-item,.dark .good-day-item{background:#1F2937;border-color:#374151}
+.dark .cal-card,.dark .info-card,.dark .activity-card,.dark .clash-card,.dark .term-card,.dark .events-card,.dark .prayer-item,.dark .good-day-item,.dark .lottery-card{background:#1F2937;border-color:#374151}
+.dark .lottery-prize{background:#374151;border-color:#4B5563;color:#F9FAFB}
+.dark .lottery-prize-special{background:#78350F;border-color:#B45309;color:#FDE68A}
 .dark .cal-top-bar{background:#991B1B}
 .dark .cal-weekday{color:#34D399}
 .dark .cal-day{color:#FCA5A5}
@@ -482,6 +496,10 @@ body{
         <button onclick="filterGoodDays('dongtho')" id="btn-f-dongtho" class="filter-btn" style="background:#E5E7EB;color:#1F2937">Làm Nhà</button>
       </div>
       <div id="good-days-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="lottery-card" id="lottery-card">
+        <div class="lottery-header">🎰 KẾT QUẢ XỔ SỐ HÔM NAY</div>
+        <div class="lottery-body" id="lottery-body"></div>
+      </div>
     </section>
 
     <!-- TAB PRAYERS -->
@@ -791,6 +809,31 @@ function filterGoodDays(type){
   var list=document.getElementById('good-days-list')
   var samples=[{s:'15/07/2026',l:'01/06 âm',d:'Ngày Tân Tỵ - Cực Kỳ Đại Cát',sub:'Mưu cầu hạnh phúc gia đạo viên mãn'},{s:'22/07/2026',l:'08/06 âm',d:'Ngày Mậu Tý - Ngày Hoàng Đạo',sub:'Tốt động thổ, sửa sang mồ mả'},{s:'27/07/2026',l:'13/06 âm',d:'Ngày Quý Tỵ - Lộc Tài',sub:'Hợp khai trương, rước may mắn'}]
   list.innerHTML=samples.map(function(i){return'<div class="good-day-item"><div class="good-day-badge"><span class="good-day-num">'+i.s.split('/')[0]+'</span><span class="good-day-month">THÁNG '+i.s.split('/')[1]+'</span></div><div class="good-day-info"><div class="good-day-desc">'+i.d+'</div><div class="good-day-lunar">Âm: '+i.l+'</div><div class="good-day-sub">'+i.sub+'</div></div></div>'}).join('')
+  renderLottery()
+}
+function renderLottery(){
+  var d=new Date(),dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0'),yy=d.getFullYear()
+  function rn(len){var s='';for(var i=0;i<len;i++)s+=Math.floor(Math.random()*10);return s}
+  var regions=[
+    {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[
+      {label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}
+    ]},
+    {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[
+      {label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}
+    ]},
+    {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[
+      {label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}
+    ]}
+  ]
+  var html=regions.map(function(r){
+    var ps=r.prizes.map(function(p){
+      var cls='lottery-prize'+(p.special?' lottery-prize-special':'')
+      return '<span class="'+cls+'"><span class="'+(r.name==='Miền Bắc'?'red':'green')+'">'+p.label+'</span> '+p.num+'</span>'
+    }).join('')
+    return '<div class="lottery-region"><div class="lottery-region-title"><span class="badge" style="background:'+r.color+'">'+r.badge+'</span> '+r.name+'</div><div class="lottery-prizes">'+ps+'</div></div>'
+  }).join('')
+  html+='<div style="text-align:center;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">KQXS '+dd+'/'+mm+'/'+yy+' — Dữ liệu mô phỏng</div>'
+  document.getElementById('lottery-body').innerHTML=html
 }
 // ===== PRAYERS =====
 var prayersDB=[{id:'mungone',title:'Khấn Mùng Một & Ngày Rằm',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.<br>Con kính lạy Hoàng thiên Hậu Thổ chư vị Tôn thần.<br>Con kính lạy ngài Bản cảnh Thành hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo quân cùng chư vị Thần linh.<br>Con kính lạy Tổ Tiên, Hiển khảo, Hiển Tỷ, hương linh nội ngoại tông tộc nội tộc dâng hiến kính lễ.<br><br>Hôm nay là ngày Mùng Một (hoặc ngày Rằm) năm Bính Ngọ.<br>Chúng con thành tâm chuẩn bị lễ hoa, trà quả dâng lên ban thờ tiên tổ tiên cốt phù độ trì.<br>Cầu xin chư vị thần linh nâng đỡ bảo hộ gia đình bình an, tai qua nạn khỏi, bệnh tật tiêu trừ, gia đạo ấm êm.<br>Hương linh tổ tiên rộng lòng bao dung cho lỗi lầm con cháu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giatien',title:'Khấn Tổ Tiên ngày Giỗ',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy chư vị Thần linh Thổ công thổ địa lai lâm chứng giám dâng hiến.<br>Kính lạy vong linh Tổ tiên dòng họ nội ngoại tôn kính.<br><br>Hôm nay gia đình chúng con sửa soạn mâm cơm tươm tất kính dâng ngày giỗ tôn kính của... vong linh tôn kính.<br>Cầu mong vong linh sớm siêu sinh cực lạc, hưởng nhang khói thành kính của con cháu lâu đời.<br>Phù trì cho toàn thể gia quyến sức khỏe, thịnh vượng bền lâu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giao-thua',title:'Khấn Giao Thừa',category:'Tết Cổ Truyền',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy cựu niên quan đương niên hành khiển thần quân tôn kính.<br>Kính lạy tân niên quan đại vương tối cao.<br><br>Phút giây thiêng liêng giao thừa đất trời chuyển hóa, chúng con thành tâm dâng hương trà quả lễ vật tạ ơn trời đất phật thánh thần tiên độ trì suốt một năm bình an ấm áp đã qua.<br>Mong cầu năm mới gia hộ bình an, dồi dào khí lực, muôn sự hanh thông.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lạy).'}]
@@ -815,7 +858,7 @@ function switchTab(tabId){
   if(isWebViewMode){var ov=document.getElementById('ui-package-overlay');if(ov){var show=tabId==='more';ov.style.display=show?'block':'none';if(show)refreshUiOverlayData()}}
   tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
-  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays('cuoihoi')}else if(tabId==='prayers'){renderPrayersList()}
+  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()  }else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
   playBell()
 }
 // ===== UI PACKAGE DEMO =====
