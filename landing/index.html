@@ -213,6 +213,8 @@ body{
 .dark .cal-card,.dark .info-card,.dark .activity-card,.dark .clash-card,.dark .term-card,.dark .events-card,.dark .prayer-item,.dark .good-day-item,.dark .lottery-card{background:#1F2937;border-color:#374151}
 .dark .lottery-prize{background:#374151;border-color:#4B5563;color:#F9FAFB}
 .dark .lottery-prize-special{background:#78350F;border-color:#B45309;color:#FDE68A}
+.dark .news-article{background:#1F2937;border-color:#374151}
+.dark .news-article-title{color:#F9FAFB}
 .dark .cal-top-bar{background:#991B1B}
 .dark .cal-weekday{color:#34D399}
 .dark .cal-day{color:#FCA5A5}
@@ -252,6 +254,15 @@ body{
 .alert-text{font-size:15px;color:#1F2937;font-weight:700;line-height:1.5}
 .alert-btn{width:100%;padding:12px;background:#064E3B;color:#fff;font-weight:900;font-size:15px;border:none;border-radius:10px;cursor:pointer}
 .alert-btn:active{transform:scale(0.96)}
+/* News items */
+.news-article{background:#fff;border-radius:10px;border:2px solid #D1D5DB;overflow:hidden;width:100%;padding:12px 14px;display:flex;gap:10px;cursor:pointer;transition:border-color 0.15s}
+.news-article:active{transform:scale(0.98)}
+.news-article-thumb{width:72px;height:72px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px}
+.news-article-info{flex:1;min-width:0}
+.news-article-title{font-size:clamp(13px,3.8vw,15px);font-weight:900;color:#1F2937;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.news-article-source{font-size:clamp(9px,2.5vw,10px);font-weight:700;color:#9CA3AF;margin-top:4px;display:flex;gap:6px;align-items:center}
+.news-article-cat{color:#fff;font-weight:800;padding:1px 6px;border-radius:4px;font-size:clamp(8px,2.2vw,9px)}
+.news-article-link{color:#064E3B;font-weight:700}
 /* News box */
 .news-box{background:#fff;border-radius:12px;border:2px solid #064E3B;overflow:hidden;width:100%}
 .news-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:2px solid #E5E7EB}
@@ -487,6 +498,15 @@ body{
       </div>
     </section>
 
+    <!-- TAB NEWS -->
+    <section id="tab-news" class="tab-section hidden">
+      <div class="welcome-banner" style="background:#991B1B"><p>📰 Tin tức nổi bật trong ngày</p><span>📰</span></div>
+      <div id="news-list" style="display:flex;flex-direction:column;gap:8px">
+        <div style="text-align:center;padding:24px;color:#9CA3AF;font-weight:700;font-size:14px">Đang tải tin tức...</div>
+      </div>
+      <div style="text-align:center;font-size:clamp(9px,2.5vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">Nguồn: VnExpress, Tuổi Trẻ, Thanh Niên — Dữ liệu mô phỏng</div>
+    </section>
+
     <!-- TAB GOOD DAYS -->
     <section id="tab-good-days" class="tab-section hidden">
       <div class="welcome-banner"><p>🌸 Chọn việc trọng đại để tìm ngày tốt</p><span>🌸</span></div>
@@ -582,6 +602,10 @@ body{
     <button onclick="switchTab('good-days')" id="nav-good-days" class="nav-item">
       <span class="nav-icon nav-icon-inactive">🌸</span>
       <span class="nav-label" style="color:#78716C">Ngày tốt</span>
+    </button>
+    <button onclick="switchTab('news')" id="nav-news" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">📰</span>
+      <span class="nav-label" style="color:#78716C">Tin tức</span>
     </button>
     <button onclick="switchTab('prayers')" id="nav-prayers" class="nav-item">
       <span class="nav-icon nav-icon-inactive">📖</span>
@@ -835,6 +859,27 @@ function renderLottery(){
   html+='<div style="text-align:center;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">KQXS '+dd+'/'+mm+'/'+yy+' — Dữ liệu mô phỏng</div>'
   document.getElementById('lottery-body').innerHTML=html
 }
+// ===== NEWS =====
+function renderNews(){
+  var d=new Date(),cats=[{name:'Kinh tế',color:'#064E3B',icon:'💰'},{name:'Chính trị',color:'#991B1B',icon:'🏛️'},{name:'Thể thao',color:'#2563EB',icon:'⚽'}]
+  var articles=[]
+  for(var i=0;i<6;i++){
+    var c=cats[i%3],a={cat:c.name,color:c.color,icon:c.icon,title:'',source:'',link:'#'}
+    if(c.name==='Kinh tế'){var ts=['Giá xăng dầu hôm nay: Xăng RON 95 giảm xuống còn 23.500 đồng/lít','Chứng khoán VN-Index vượt mốc 1.300 điểm, thanh khoản cao','Ngân hàng Nhà nước điều chỉnh lãi suất điều hành từ tháng sau','Đề án đường sắt cao tốc Bắc-Nam trình Quốc hội','Xuất khẩu gạo Việt Nam đạt kỷ lục 5 tỷ USD','Giá vàng trong nước đi ngang, quanh mốc 85 triệu đồng/lượng']
+      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Thanh Niên','VietnamNet','CafeF','Đầu Tư'][i%6]
+    }else if(c.name==='Chính trị'){var ts=['Quốc hội thông qua Luật Đất đai sửa đổi với nhiều điểm mới','Thủ tướng chỉ đạo đẩy nhanh tiến độ các dự án trọng điểm','Hội nghị Trung ương bàn về phát triển kinh tế xã hội','Việt Nam đảm nhận vai trò Ủy viên không thường trực HĐBA Liên Hợp Quốc','Cải cách hành chính: giảm 30% thủ tục giấy tờ','Tăng cường hợp tác Việt Nam - Hoa Kỳ trong lĩnh vực công nghệ']
+      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Báo Chính Phủ','VietnamPlus','Nhân Dân','Dân Trí'][i%6]
+    }else{var ts=['Đội tuyển Việt Nam thắng đậm 3-0 trước Indonesia tại AFF Cup','VFF bổ nhiệm huấn luyện viên mới cho đội tuyển quốc gia','VĐV Nguyễn Thị Ánh Viên giành HCV SEA Games','U23 Việt Nam vào bán kết giải U23 châu Á','Lịch thi đấu vòng loại World Cup 2026 của đội tuyển Việt Nam','Giải bóng đá V-League mùa giải mới khai mạc với nhiều bất ngờ']
+      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Bóng Đá','Thể Thao 247','Tổng cục TDTT','Sài Gòn Giải Phóng'][i%6]
+    }
+    articles.push(a)
+  }
+  var html=articles.map(function(a){
+    var cs=['#D1FAE5','#FEE2E2','#DBEAFE']
+    return '<div class="news-article" onclick="showElderAlert(\''+a.title.replace(/'/g,"\\'")+'\nNguồn: '+a.source+'\n(Liên kết đọc sẽ mở trong ứng dụng thật)\')"><div class="news-article-thumb" style="background:'+cs[articles.indexOf(a)%3]+'">'+a.icon+'</div><div class="news-article-info"><div class="news-article-title">'+a.title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+a.color+'">'+a.cat+'</span><span>'+a.source+'</span><span style="color:#064E3B;font-weight:700">🔗 Đọc tiếp</span></div></div></div>'
+  }).join('')
+  document.getElementById('news-list').innerHTML=html
+}
 // ===== PRAYERS =====
 var prayersDB=[{id:'mungone',title:'Khấn Mùng Một & Ngày Rằm',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.<br>Con kính lạy Hoàng thiên Hậu Thổ chư vị Tôn thần.<br>Con kính lạy ngài Bản cảnh Thành hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo quân cùng chư vị Thần linh.<br>Con kính lạy Tổ Tiên, Hiển khảo, Hiển Tỷ, hương linh nội ngoại tông tộc nội tộc dâng hiến kính lễ.<br><br>Hôm nay là ngày Mùng Một (hoặc ngày Rằm) năm Bính Ngọ.<br>Chúng con thành tâm chuẩn bị lễ hoa, trà quả dâng lên ban thờ tiên tổ tiên cốt phù độ trì.<br>Cầu xin chư vị thần linh nâng đỡ bảo hộ gia đình bình an, tai qua nạn khỏi, bệnh tật tiêu trừ, gia đạo ấm êm.<br>Hương linh tổ tiên rộng lòng bao dung cho lỗi lầm con cháu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giatien',title:'Khấn Tổ Tiên ngày Giỗ',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy chư vị Thần linh Thổ công thổ địa lai lâm chứng giám dâng hiến.<br>Kính lạy vong linh Tổ tiên dòng họ nội ngoại tôn kính.<br><br>Hôm nay gia đình chúng con sửa soạn mâm cơm tươm tất kính dâng ngày giỗ tôn kính của... vong linh tôn kính.<br>Cầu mong vong linh sớm siêu sinh cực lạc, hưởng nhang khói thành kính của con cháu lâu đời.<br>Phù trì cho toàn thể gia quyến sức khỏe, thịnh vượng bền lâu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giao-thua',title:'Khấn Giao Thừa',category:'Tết Cổ Truyền',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy cựu niên quan đương niên hành khiển thần quân tôn kính.<br>Kính lạy tân niên quan đại vương tối cao.<br><br>Phút giây thiêng liêng giao thừa đất trời chuyển hóa, chúng con thành tâm dâng hương trà quả lễ vật tạ ơn trời đất phật thánh thần tiên độ trì suốt một năm bình an ấm áp đã qua.<br>Mong cầu năm mới gia hộ bình an, dồi dào khí lực, muôn sự hanh thông.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lạy).'}]
 var prayerSearchKey=''
@@ -853,12 +898,13 @@ function toggleAutoScroll(){var btn=document.getElementById('autoscroll-btn'),bo
 function stopAutoScroll(){var btn=document.getElementById('autoscroll-btn');if(btn){btn.innerText='BẬT';btn.style.background='#064E3B'}isAutoScrolling=false;clearInterval(scrollTimer)}
 // ===== TAB SWITCHING =====
 function switchTab(tabId){
-  currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
+  currentTab=tabId;var tabs=['home','month','good-days','news','prayers','more']
   // WebView overlay handling
   if(isWebViewMode){var ov=document.getElementById('ui-package-overlay');if(ov){var show=tabId==='more';ov.style.display=show?'block':'none';if(show)refreshUiOverlayData()}}
   tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
-  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()  }else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
+  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()  }else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()
+  }else if(tabId==='news'){renderNews()}else if(tabId==='prayers'){renderPrayersList()}
   playBell()
 }
 // ===== UI PACKAGE DEMO =====
