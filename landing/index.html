@@ -86,11 +86,9 @@ body{
 .info-card{background:#fff;border-radius:12px;overflow:hidden;width:100%;min-width:0}
 .info-card-good{border:2px solid #064E3B}
 .info-card-bad{border:2px solid #991B1B}
-.info-card-lunar{border:2px solid #B45309}
 .info-header{text-align:center;padding:6px 8px;color:#fff;font-size:clamp(10px,3vw,12px);font-weight:900;letter-spacing:0.5px}
 .info-header-good{background:#064E3B}
 .info-header-bad{background:#991B1B}
-.info-header-lunar{background:#B45309}
 .info-body{padding:8px;width:100%}
 .hour-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;width:100%}
 .hour-chip{display:flex;flex-direction:column;align-items:center;padding:4px 2px;border-radius:6px;text-align:center;min-width:0}
@@ -100,13 +98,6 @@ body{
 .hour-name{font-size:clamp(9px,2.6vw,11px);font-weight:900;line-height:1.3}
 .hour-name-good{color:#064E3B}
 .hour-name-bad{color:#991B1B}
-/* Lunar mini card */
-.lunar-mini-body{display:flex;flex-direction:column;gap:6px;padding:8px}
-.lunar-mini-row{display:flex;justify-content:space-around;text-align:center}
-.lunar-mini-item{}
-.lunar-mini-label{color:#78716C;font-size:clamp(9px,2.6vw,11px);font-weight:800}
-.lunar-mini-value{color:#1F2937;font-size:clamp(12px,3.5vw,14px);font-weight:700}
-.lunar-mini-animal{color:#B45309;font-size:clamp(10px,3vw,12px);font-weight:700}
 /* Bottom nav */
 .bottom-nav{
   position:fixed;
@@ -221,7 +212,7 @@ body{
 .dark .canchi-label{color:#D1D5DB}
 .dark .canchi-value{color:#F9FAFB}
 .dark .canchi-animal{color:#34D399}
-.dark .info-card-good,.dark .info-card-bad,.dark .info-card-lunar{background:#1F2937}
+.dark .info-card-good,.dark .info-card-bad{background:#1F2937}
 .dark .bottom-nav{background:#1F2937;border-color:#374151}
 .dark .nav-label{color:#D1D5DB}
 .dark .nav-icon-inactive{color:#9CA3AF}
@@ -371,30 +362,6 @@ body{
               <div class="hour-chip hour-chip-good"><span class="hour-time">11h-13h</span><span class="hour-name hour-name-good">Giờ Ngọ</span></div>
               <div class="hour-chip hour-chip-good"><span class="hour-time">15h-17h</span><span class="hour-name hour-name-good">Giờ Thân</span></div>
               <div class="hour-chip hour-chip-good"><span class="hour-time">17h-19h</span><span class="hour-name hour-name-good">Giờ Dậu</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Lunar mini card -->
-        <div class="info-card info-card-lunar" id="lunar-mini-card" style="display:none">
-          <div class="info-header info-header-lunar">🌙 LỊCH ÂM CHI TIẾT</div>
-          <div class="lunar-mini-body">
-            <div class="lunar-mini-row">
-              <div class="lunar-mini-item">
-                <div class="lunar-mini-label">Âm lịch</div>
-                <div class="lunar-mini-value" id="lunar-mini-date">1</div>
-                <div class="lunar-mini-animal" id="lunar-mini-month">Tháng 1</div>
-              </div>
-              <div class="lunar-mini-item">
-                <div class="lunar-mini-label">Ngày</div>
-                <div class="lunar-mini-value" id="lunar-mini-day-chi">Giáp Tý</div>
-                <div class="lunar-mini-animal" id="lunar-mini-day-animal">(Chuột)</div>
-              </div>
-              <div class="lunar-mini-item">
-                <div class="lunar-mini-label">Tháng</div>
-                <div class="lunar-mini-value" id="lunar-mini-month-chi">Bính Dần</div>
-                <div class="lunar-mini-animal" id="lunar-mini-month-animal">(Hổ)</div>
-              </div>
             </div>
           </div>
         </div>
@@ -782,16 +749,6 @@ function renderDayView(){
   document.getElementById('lunar-year-chi').innerHTML=data.lunar.yearChi.split(' ')[0]+' '+data.lunar.yearChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.yearAnimal+')</span>'
   document.getElementById('lunar-month-chi').innerHTML=data.lunar.monthChi.split(' ')[0]+' '+data.lunar.monthChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.monthAnimal+')</span>'
   document.getElementById('lunar-day-chi').innerHTML=data.lunar.dayChi.split(' ')[0]+' '+data.lunar.dayChi.split(' ')[1]+'<br><span class="canchi-animal">('+data.lunar.dayAnimal+')</span>'
-  // Lunar mini card
-  var lmc=document.getElementById('lunar-mini-card')
-  if(data.lunar.day){lmc.style.display='block'
-    document.getElementById('lunar-mini-date').innerText=data.lunar.day
-    document.getElementById('lunar-mini-month').innerText='Tháng '+(data.lunar.month||'')
-    document.getElementById('lunar-mini-day-chi').innerText=data.lunar.dayChi
-    document.getElementById('lunar-mini-day-animal').innerText='('+data.lunar.dayAnimal+')'
-    document.getElementById('lunar-mini-month-chi').innerText=data.lunar.monthChi
-    document.getElementById('lunar-mini-month-animal').innerText='('+data.lunar.monthAnimal+')'
-  }else{lmc.style.display='none'}
   // Hours
   var gl=document.getElementById('good-hours');gl.innerHTML=data.goodHours.map(function(h){return'<div class="hour-chip hour-chip-good"><span class="hour-time">'+h.t+'</span><span class="hour-name hour-name-good">Giờ '+h.l+'</span></div>'}).join('')
   var bl=document.getElementById('bad-hours');bl.innerHTML=data.badHours.map(function(h){return'<div class="hour-chip hour-chip-bad"><span class="hour-time">'+h.t+'</span><span class="hour-name hour-name-bad">Giờ '+h.l+'</span></div>'}).join('')
