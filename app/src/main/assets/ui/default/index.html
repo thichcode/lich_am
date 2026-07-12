@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Lịch Âm</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,viewport-fit=cover">
+<title>Lịch Âm Cao Niên</title>
 <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
@@ -12,131 +12,307 @@
   <p>Đang tải...</p>
 </div>
 <div id="app-content" style="display:none">
-  <div id="nav-row" class="nav-row">
-    <button class="nav-btn nav-btn-green" onclick="nativeApp.changeDate(-1)">◀<br><span class="nav-label">Hôm qua</span></button>
-    <button class="nav-btn nav-btn-gold" onclick="nativeApp.changeDate(0)">HÔM NAY<br><span class="nav-small" id="nav-year">Năm 2026</span></button>
-    <button class="nav-btn nav-btn-green" onclick="nativeApp.changeDate(1)">▶<br><span class="nav-label">Hôm sau</span></button>
-  </div>
-
-  <div id="calendar-card" class="card card-border-green">
-    <div class="card-top-bar card-top-bar-red"></div>
-    <div class="card-body">
-      <div class="cal-header">
-        <div class="cal-weekday" id="cal-weekday">CHỦ NHẬT</div>
-        <div class="cal-day" id="cal-day">1</div>
-        <div class="cal-monthyear" id="cal-monthyear">Tháng 1 2026</div>
+<div class="app-shell">
+  <main class="main-content" id="elder-main-content">
+    <!-- TAB HOME -->
+    <section id="tab-home" class="tab-section">
+      <div class="nav-row">
+        <button onclick="navigateDay(-1)" class="nav-btn nav-btn-green">
+          <span style="font-size:clamp(16px,4.5vw,20px);font-weight:900">◀</span>
+          <span style="font-size:clamp(9px,2.5vw,10px);font-weight:900">Hôm qua</span>
+        </button>
+        <button onclick="resetToSampleDate()" class="nav-btn nav-btn-gold">
+          <span style="font-size:clamp(11px,3vw,14px);font-weight:900">HÔM NAY</span>
+          <span id="label-current-year" style="font-size:clamp(8px,2.2vw,9px);font-weight:700;opacity:0.8">Năm 2026</span>
+        </button>
+        <button onclick="navigateDay(1)" class="nav-btn nav-btn-green">
+          <span style="font-size:clamp(16px,4.5vw,20px);font-weight:900">▶</span>
+          <span style="font-size:clamp(9px,2.5vw,10px);font-weight:900">Hôm sau</span>
+        </button>
       </div>
-      <div class="quote-box" id="quote-box">
-        <span class="quote-mark quote-mark-left">"</span>
-        <span class="quote-mark quote-mark-right">"</span>
-        <p class="quote-text" id="quote-text">Có công mài sắt, có ngày nên kim.</p>
-      </div>
-      <div id="lunar-section">
-        <div class="current-hour" id="current-hour">Hiện tại: Giờ Tý</div>
-        <div class="lunar-day-row">
-          <span class="moon-icon">🌙</span>
-          <span class="lunar-day-num" id="lunar-day">1</span>
-          <span class="lunar-month" id="lunar-month">THÁNG GIÊNG</span>
-        </div>
-        <div class="canchi-row" id="canchi-row">
-          <div class="canchi-col">
-            <div class="canchi-label">NĂM</div>
-            <div class="canchi-value" id="cc-year">Giáp Thìn</div>
-            <div class="canchi-animal" id="cc-year-animal">(Rồng)</div>
+      <div class="cal-card">
+        <div class="cal-top-bar"></div>
+        <div class="cal-body">
+          <div class="cal-header">
+            <div class="cal-weekday" id="solar-weekday">THỨ NĂM</div>
+            <div class="cal-day" id="solar-day">9</div>
+            <div class="cal-monthyear" id="solar-month-year">Tháng 7<br>2026</div>
           </div>
-          <div class="canchi-col">
-            <div class="canchi-label">THÁNG</div>
-            <div class="canchi-value" id="cc-month">Giáp Dần</div>
-            <div class="canchi-animal" id="cc-month-animal">(Hổ)</div>
+          <div class="quote-box">
+            <span class="quote-mark quote-mark-left">"</span>
+            <span class="quote-mark quote-mark-right">"</span>
+            <p class="quote-text" id="daily-quote">Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao</p>
           </div>
-          <div class="canchi-col">
-            <div class="canchi-label">NGÀY</div>
-            <div class="canchi-value" id="cc-day">Giáp Tý</div>
-            <div class="canchi-animal" id="cc-day-animal">(Chuột)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="hours-row" class="hours-row" style="display:none">
-    <div class="hours-col" id="good-hours-col">
-      <div class="hours-header hours-header-good">✅ GIỜ HOÀNG ĐẠO</div>
-      <div class="hours-grid" id="good-hours-grid"></div>
-    </div>
-    <div class="hours-col" id="bad-hours-col">
-      <div class="hours-header hours-header-bad">❌ GIỜ HẮC ĐẠO</div>
-      <div class="hours-grid" id="bad-hours-grid"></div>
-    </div>
-  </div>
-
-  <div id="activities-card" class="card card-border-green" style="display:none">
-    <div class="card-body" style="position:relative;overflow:hidden">
-      <div class="bamboo-bg">🎋</div>
-      <div id="activities-content">
-        <div class="activity-row" id="good-activities">
-          <div class="activity-icon activity-icon-good">✅</div>
-          <div class="activity-text">
-            <div class="activity-title activity-title-good">VIỆC NÊN LÀM</div>
-            <div class="activity-desc" id="good-activities-text"></div>
-          </div>
-        </div>
-        <div class="activity-divider"></div>
-        <div class="activity-row" id="bad-activities">
-          <div class="activity-icon activity-icon-bad">❌</div>
-          <div class="activity-text">
-            <div class="activity-title activity-title-bad">VIỆC TRÁNH (KỴ)</div>
-            <div class="activity-desc" id="bad-activities-text"></div>
+          <div class="lunar-section" id="lunar-section">
+            <div class="lunar-hour" id="current-hour-label">Hiện tại: Giờ Tý</div>
+            <div class="lunar-main">
+              <span class="lunar-moon">🌙</span>
+              <span class="lunar-day-num" id="lunar-day-large">1</span>
+              <span class="lunar-month-text" id="lunar-month">THÁNG GIÊNG</span>
+            </div>
+            <div class="canchi-grid">
+              <div class="canchi-cell">
+                <div class="canchi-label">NĂM</div>
+                <div class="canchi-value" id="lunar-year-chi">Bính Ngọ<br><span class="canchi-animal">(Ngựa)</span></div>
+              </div>
+              <div class="canchi-cell">
+                <div class="canchi-label">THÁNG</div>
+                <div class="canchi-value" id="lunar-month-chi">Giáp Ngọ<br><span class="canchi-animal">(Ngựa)</span></div>
+              </div>
+              <div class="canchi-cell">
+                <div class="canchi-label">NGÀY</div>
+                <div class="canchi-value" id="lunar-day-chi">Giáp Thân<br><span class="canchi-animal">(Khỉ)</span></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div id="clash-card" class="card card-border-gold" style="display:none">
-    <div class="card-body">
-      <div class="clash-row">
-        <div class="clash-col">
-          <div class="clash-label">⚡ TUỔI XUNG KHẮC</div>
-          <div class="clash-value clash-value-red" id="clash-ages"></div>
+      <div class="info-stack">
+        <div class="info-card info-card-good">
+          <div class="info-header info-header-good">✅ GIỜ HOÀNG ĐẠO</div>
+          <div class="info-body">
+            <div class="hour-grid" id="good-hours">
+              <div class="hour-chip hour-chip-good"><span class="hour-time">23h-01h</span><span class="hour-name hour-name-good">Giờ Tý</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">01h-03h</span><span class="hour-name hour-name-good">Giờ Sửu</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">03h-05h</span><span class="hour-name hour-name-good">Giờ Dần</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">11h-13h</span><span class="hour-name hour-name-good">Giờ Ngọ</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">15h-17h</span><span class="hour-name hour-name-good">Giờ Thân</span></div>
+              <div class="hour-chip hour-chip-good"><span class="hour-time">17h-19h</span><span class="hour-name hour-name-good">Giờ Dậu</span></div>
+            </div>
+          </div>
         </div>
-        <div class="clash-col">
-          <div class="clash-label">🧭 HƯỚNG TỐT</div>
-          <div class="clash-value clash-value-green" id="direction-hy-than"></div>
-          <div class="clash-value clash-value-green" id="direction-tai-than"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="term-card" class="card card-border-outline" style="display:none">
-    <div class="card-body">
-      <div class="term-row">
-        <div class="term-col" id="term-current">
-          <div class="term-title">🌿 TIẾT KHÍ</div>
-          <div class="term-name"></div>
-          <div class="term-date"></div>
-        </div>
-        <div class="term-divider"></div>
-        <div class="term-col" id="term-next">
-          <div class="term-title">🌿 TIẾT KHÍ TIẾP THEO</div>
-          <div class="term-name"></div>
-          <div class="term-date"></div>
+        <div class="info-card info-card-bad">
+          <div class="info-header info-header-bad">❌ GIỜ HẮC ĐẠO</div>
+          <div class="info-body">
+            <div class="hour-grid" id="bad-hours">
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">05h-07h</span><span class="hour-name hour-name-bad">Giờ Mão</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">07h-09h</span><span class="hour-name hour-name-bad">Giờ Thìn</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">09h-11h</span><span class="hour-name hour-name-bad">Giờ Tỵ</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">13h-15h</span><span class="hour-name hour-name-bad">Giờ Mùi</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">19h-21h</span><span class="hour-name hour-name-bad">Giờ Tuất</span></div>
+              <div class="hour-chip hour-chip-bad"><span class="hour-time">21h-23h</span><span class="hour-name hour-name-bad">Giờ Hợi</span></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div id="events-card" class="card card-border-outline" style="display:none">
-    <div class="card-body">
-      <div class="events-row">
-        <span class="events-icon">📅</span>
-        <div class="events-content">
-          <div class="events-title">SỰ KIỆN - NGÀY LỄ</div>
-          <div id="events-list"></div>
+      <div class="activity-card" id="activities-card">
+        <div class="activity-body">
+          <div class="activity-bamboo">🎋</div>
+          <div class="activity-row">
+            <span class="activity-icon" style="color:#064E3B">✅</span>
+            <div class="activity-content">
+              <div class="activity-title activity-title-good">VIỆC NÊN LÀM</div>
+              <p class="activity-desc" id="should-do">Cúng tế, làm từ thiện, dọn dẹp ban thờ</p>
+            </div>
+          </div>
+          <div style="border-top:2px solid #F3F4F6"></div>
+          <div class="activity-row">
+            <span class="activity-icon" style="color:#991B1B">❌</span>
+            <div class="activity-content">
+              <div class="activity-title activity-title-bad">VIỆC TRÁNH (KỴ)</div>
+              <p class="activity-desc" id="should-avoid">Xuất hành đi xa, khởi công, cưới hỏi</p>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="clash-card" id="clash-card">
+        <div class="clash-body">
+          <div class="clash-col">
+            <div class="clash-label">⚡ TUỔI XUNG KHẮC</div>
+            <div class="clash-value clash-value-red" id="clash-ages">Mậu Tý, Nhâm Tý, Canh Dần</div>
+          </div>
+          <div class="divider"></div>
+          <div class="clash-col">
+            <div class="clash-label">🧭 HƯỚNG TỐT</div>
+            <div class="clash-value clash-value-green" id="direction-hy-than">Hỷ Thần: Đông Bắc</div>
+            <div class="clash-value clash-value-green" id="direction-tai-than">Tài Thần: Đông Nam</div>
+          </div>
+        </div>
+      </div>
+      <div class="term-card" id="term-card">
+        <div class="term-body">
+          <div class="term-col">
+            <div class="term-label">🍀 TIẾT KHÍ</div>
+            <div class="term-name-text" id="current-solar-term">Tiểu Thử</div>
+            <div class="term-date-text" id="term-start-date">Bắt đầu: 07/07</div>
+          </div>
+          <div class="divider"></div>
+          <div class="term-col">
+            <div class="term-label">🍀 TIẾP THEO</div>
+            <div class="term-name-text" id="next-solar-term">Đại Thử</div>
+            <div class="term-date-text" id="next-term-start-date">Dự kiến: 22/07</div>
+          </div>
+        </div>
+      </div>
+      <div class="events-card" id="events-card" style="display:none">
+        <div class="events-body">
+          <span class="events-icon">📅</span>
+          <div class="events-content">
+            <div class="events-title">SỰ KIỆN - NGÀY LỄ</div>
+            <div id="events-list"></div>
+          </div>
+        </div>
+      </div>
+      <div id="dynamic-info-box"></div>
+    </section>
+    <!-- TAB MONTH -->
+    <section id="tab-month" class="tab-section hidden">
+      <div class="cal-card">
+        <div class="cal-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <button onclick="changeMonth(-1)" class="nav-btn nav-btn-green" style="flex:none;width:44px;height:44px;padding:0;font-size:18px">◀</button>
+            <h2 id="calendar-month-title" style="font-size:clamp(15px,4.2vw,18px);font-weight:900;color:#064E3B;text-align:center;flex:1">Tháng 7 - 2026</h2>
+            <button onclick="changeMonth(1)" class="nav-btn nav-btn-green" style="flex:none;width:44px;height:44px;padding:0;font-size:18px">▶</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-weight:900;font-size:clamp(10px,2.8vw,12px);color:#78716C;margin-bottom:4px">
+            <div style="color:#991B1B">CN</div><div>T2</div><div>T3</div><div>T4</div><div>T5</div><div>T6</div><div style="color:#064E3B">T7</div>
+          </div>
+          <div id="calendar-grid-days" class="month-grid"></div>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;padding-top:10px;border-top:2px solid #E5E7EB;font-size:clamp(9px,2.5vw,11px);font-weight:700;color:#78716C">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#991B1B;display:inline-block"></span> Hôm nay</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:#D1FAE5;border:2px solid #6EE7B7;display:inline-block"></span> Ngày tốt</span>
+          </div>
+        </div>
+      </div>
+      <div class="news-box" style="border-color:#991B1B">
+        <div class="news-header" style="background:#991B1B;color:#fff;border-radius:12px 12px 0 0;padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:2px solid #E5E7EB">
+          <span style="font-size:16px">📰</span>
+          <span style="font-size:clamp(11px,3.2vw,13px);font-weight:900">TIN TỨC NỔI BẬT</span>
+          <span style="margin-left:auto;font-size:clamp(8px,2.2vw,9px);font-weight:700;opacity:0.8">Kinh tế • Chính trị • Thể thao</span>
+        </div>
+        <div id="news-list" style="display:flex;flex-direction:column;padding:8px">
+          <div style="text-align:center;padding:16px;color:#9CA3AF;font-weight:700;font-size:clamp(12px,3.5vw,14px)">Đang tải tin tức...</div>
+        </div>
+        <div style="text-align:center;padding:6px;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;border-top:2px solid #E5E7EB">Nguồn: VnExpress, Tuổi Trẻ, Thanh Niên — Dữ liệu mô phỏng</div>
+      </div>
+    </section>
+    <!-- TAB GOOD DAYS -->
+    <section id="tab-good-days" class="tab-section hidden">
+      <div class="welcome-banner"><p>🌸 Chọn việc trọng đại để tìm ngày tốt</p><span>🌸</span></div>
+      <div class="filter-row">
+        <button onclick="filterGoodDays('cuoihoi')" id="btn-f-cuoihoi" class="filter-btn" style="background:#064E3B;color:#fff;border-color:#B45309">Cưới Hỏi</button>
+        <button onclick="filterGoodDays('khaitruong')" id="btn-f-khaitruong" class="filter-btn" style="background:#E5E7EB;color:#1F2937">Khai Trương</button>
+        <button onclick="filterGoodDays('dongtho')" id="btn-f-dongtho" class="filter-btn" style="background:#E5E7EB;color:#1F2937">Làm Nhà</button>
+      </div>
+      <div id="good-days-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="lottery-card" id="lottery-card">
+        <div class="lottery-header">🎰 KẾT QUẢ XỔ SỐ HÔM NAY</div>
+        <div class="lottery-body" id="lottery-body"></div>
+      </div>
+    </section>
+    <!-- TAB PRAYERS -->
+    <section id="tab-prayers" class="tab-section hidden">
+      <div style="display:flex;gap:6px;width:100%">
+        <input type="text" id="prayerSearchInput" oninput="searchPrayers(this.value)" placeholder="Gõ tìm bài khấn..." style="flex:1;padding:10px 12px;font-size:clamp(13px,3.8vw,15px);border-radius:10px;border:2px solid #D1D5DB;font-weight:700;background:#fff;outline:none;min-width:0">
+        <button onclick="resetPrayerFilter()" style="padding:10px 14px;background:#78716C;color:#fff;font-weight:900;font-size:clamp(11px,3vw,13px);border:none;border-radius:10px;cursor:pointer">Xóa</button>
+      </div>
+      <div id="prayers-list-container" style="display:flex;flex-direction:column;gap:8px"></div>
+    </section>
+    <!-- TAB MORE (Settings) -->
+    <section id="tab-more" class="tab-section hidden">
+      <div class="settings-card">
+        <div class="settings-item" onclick="showElderAlert('Chào các bác! Hãy dùng tab Lịch tháng để chọn ngày. Tiếng chuông khánh thiền sẽ vang lên báo hiệu lật tờ lịch thành công.')">
+          <div class="settings-item-left"><span class="settings-item-icon">💡</span><div class="settings-item-text"><div class="settings-item-title">Hướng dẫn</div><div class="settings-item-sub">Cách dùng ứng dụng</div></div></div>
+          <span class="settings-item-arrow">▶</span>
+        </div>
+        <div class="settings-item" onclick="toggleElderContrast()">
+          <div class="settings-item-left"><span class="settings-item-icon">🌙</span><div class="settings-item-text"><div class="settings-item-title">Chế độ đọc đêm</div><div class="settings-item-sub" id="contrast-label">Giao diện tối dịu nhẹ</div></div></div>
+          <span class="settings-item-arrow"><span id="contrastIcon" style="font-size:20px">🌓</span></span>
+        </div>
+        <div class="settings-item" onclick="toggleBellEffect()">
+          <div class="settings-item-left"><span class="settings-item-icon">🔔</span><div class="settings-item-text"><div class="settings-item-title">Tiếng khánh đồng</div><div class="settings-item-sub">Âm thanh khi lật trang</div></div></div>
+          <span id="bell-toggle-indicator" style="width:44px;height:24px;background:#064E3B;border-radius:12px;padding:2px;position:relative;flex-shrink:0;transition:0.2s"><div style="width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;right:2px;transition:0.2s"></div></span>
+        </div>
+        <div class="settings-item" onclick="resetToSampleDate()">
+          <div class="settings-item-left"><span class="settings-item-icon">🔄</span><div class="settings-item-text"><div class="settings-item-title">Quay về hôm nay</div><div class="settings-item-sub">Trở về ngày hiện tại</div></div></div>
+          <span class="settings-item-arrow">▶</span>
+        </div>
+      </div>
+      <div class="settings-card" style="margin-top:0">
+        <div style="padding:12px 14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:18px">📦</span>
+            <div><div style="font-size:clamp(13px,3.8vw,14px);font-weight:900;color:#1F2937">Gói Giao Diện Web</div><div id="ui-package-version" style="font-size:clamp(10px,3vw,11px);font-weight:700;color:#9CA3AF">UI Package v1 (mặc định)</div></div>
+          </div>
+          <div class="ui-toggle-row">
+            <label class="ui-toggle"><input type="checkbox" id="webview-toggle" onchange="toggleWebViewMode(this.checked)"><span class="ui-toggle-slider"></span></label>
+            <span style="font-size:clamp(11px,3.2vw,13px);font-weight:700;color:#1F2937">Dùng giao diện WebView</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="simulateUICheck()" style="flex:1;padding:8px 2px;background:#064E3B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">🔄 Cập nhật</button>
+            <button onclick="simulateUIReload()" style="flex:1;padding:8px 2px;background:#78716C;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">🔃 Tải lại</button>
+            <button onclick="simulateUIReset()" style="flex:1;padding:8px 2px;background:#991B1B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">↩️ Mặc định</button>
+          </div>
+          <p id="ui-status-msg" style="font-size:clamp(9px,2.5vw,10px);font-weight:700;color:#9CA3AF;margin-top:4px"></p>
+        </div>
+      </div>
+      <div class="settings-card" style="margin-top:0">
+        <div style="padding:16px;text-align:center">
+          <div style="font-size:clamp(18px,5vw,22px);font-weight:900;color:#064E3B">Lịch Âm</div>
+          <div style="font-size:clamp(12px,3.5vw,14px);font-weight:700;color:#78716C;margin:4px 0 8px">Phiên bản 1.2</div>
+          <div style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#78716C">Lịch âm dương Việt Nam</div>
+          <div style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#78716C;margin-bottom:8px">Ứng dụng ngoại tuyến hoàn toàn</div>
+          <div style="height:2px;background:#E5E7EB;margin:8px 0"></div>
+          <div style="font-size:clamp(10px,2.8vw,12px);font-weight:700;color:#9CA3AF">Thuật toán: Hồ Ngọc Đức</div>
+          <div style="font-size:clamp(10px,2.8vw,12px);font-weight:700;color:#9CA3AF">© 2026 Lịch Âm</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <nav class="bottom-nav">
+    <button onclick="switchTab('home')" id="nav-home" class="nav-item">
+      <span class="nav-icon nav-icon-active">📅</span>
+      <span class="nav-label" style="color:#064E3B">Hôm nay</span>
+    </button>
+    <button onclick="switchTab('month')" id="nav-month" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">📆</span>
+      <span class="nav-label" style="color:#78716C">Lịch tháng</span>
+    </button>
+    <button onclick="switchTab('good-days')" id="nav-good-days" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">🌸</span>
+      <span class="nav-label" style="color:#78716C">Ngày tốt</span>
+    </button>
+    <button onclick="switchTab('prayers')" id="nav-prayers" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">📖</span>
+      <span class="nav-label" style="color:#78716C">Văn khấn</span>
+    </button>
+    <button onclick="switchTab('more')" id="nav-more" class="nav-item">
+      <span class="nav-icon nav-icon-inactive">⚙️</span>
+      <span class="nav-label" style="color:#78716C">Tiện ích</span>
+    </button>
+  </nav>
+</div>
+</div>
+<div id="elder-toast" class="toast">🔔 <span id="elder-toast-text">Đã cập nhật</span></div>
+<div id="elder-alert-box" class="alert-modal">
+  <div class="alert-content">
+    <div class="alert-icon">💡</div>
+    <div class="alert-title">LƯU Ý</div>
+    <p class="alert-text" id="elder-alert-text">Đây là thông báo.</p>
+    <button onclick="closeElderAlert()" class="alert-btn">ĐÃ HIỂU, ĐÓNG LẠI</button>
+  </div>
+</div>
+<div id="prayer-reader-modal" class="prayer-modal">
+  <div class="prayer-modal-content">
+    <div class="prayer-modal-header">
+      <div>
+        <div style="font-size:clamp(9px,2.5vw,11px);font-weight:900;color:#B45309;letter-spacing:1px">📖 KHẤN NGUYỆN TÂM THÀNH</div>
+        <h3 id="prayer-reader-title" class="prayer-modal-title">Bài khấn gia tiên</h3>
+      </div>
+      <button onclick="closePrayerReader()" class="prayer-modal-close">✕</button>
     </div>
+    <div class="prayer-modal-controls">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:clamp(11px,3vw,13px);font-weight:700;color:#1F2937">Tự động:</span>
+        <button id="autoscroll-btn" onclick="toggleAutoScroll()" style="padding:6px 12px;background:#064E3B;color:#fff;font-weight:900;font-size:clamp(10px,2.8vw,11px);border:none;border-radius:8px;cursor:pointer">BẬT</button>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button onclick="adjustFontSize(-2)" style="width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #D1D5DB;font-weight:900;font-size:12px;cursor:pointer">-A</button>
+        <button onclick="adjustFontSize(2)" style="width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #D1D5DB;font-weight:900;font-size:12px;cursor:pointer">+A</button>
+      </div>
+    </div>
+    <div id="prayer-text-scroll" class="prayer-modal-text"></div>
+    <div style="text-align:center;font-size:clamp(9px,2.5vw,11px);color:#9CA3AF;font-weight:700;padding-top:8px;border-top:2px solid #E5E7EB">Vừa đọc vừa thành tâm dâng hương.</div>
   </div>
 </div>
 <script src="assets/app.js"></script>
