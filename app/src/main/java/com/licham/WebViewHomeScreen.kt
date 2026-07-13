@@ -26,6 +26,7 @@ fun WebViewHomeScreen() {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.allowFileAccess = true
+                @Suppress("DEPRECATION")
                 settings.setAllowUniversalAccessFromFileURLs(true)
 
                 webViewClient = WebViewClient()
