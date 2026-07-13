@@ -264,7 +264,7 @@ function stopAutoScroll(){var btn=document.getElementById('autoscroll-btn');if(b
 // ===== TAB SWITCHING =====
 function switchTab(tabId){
   currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
-  tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
+  tabs.forEach(function(t){document.getElementById('tab-'+t).style.display=(t===tabId)?'block':'none'})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
   if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
   if(isBellEnabled)playBell()

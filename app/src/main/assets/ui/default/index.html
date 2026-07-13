@@ -15,7 +15,7 @@
 <div class="app-shell">
   <main class="main-content" id="elder-main-content">
     <!-- TAB HOME -->
-    <section id="tab-home" class="tab-section">
+    <section id="tab-home" style="display:block">
       <div class="nav-row">
         <button onclick="navigateDay(-1)" class="nav-btn nav-btn-green">
           <span style="font-size:clamp(16px,4.5vw,20px);font-weight:900">◀</span>
@@ -156,7 +156,7 @@
       <div id="dynamic-info-box"></div>
     </section>
     <!-- TAB MONTH -->
-    <section id="tab-month" class="tab-section hidden">
+    <section id="tab-month" style="display:none">
       <div class="cal-card">
         <div class="cal-body">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
@@ -187,7 +187,7 @@
       </div>
     </section>
     <!-- TAB GOOD DAYS -->
-    <section id="tab-good-days" class="tab-section hidden">
+    <section id="tab-good-days" style="display:none">
       <div class="welcome-banner"><p>🌸 Chọn việc trọng đại để tìm ngày tốt</p><span>🌸</span></div>
       <div class="filter-row">
         <button onclick="filterGoodDays('cuoihoi')" id="btn-f-cuoihoi" class="filter-btn" style="background:#064E3B;color:#fff;border-color:#B45309">Cưới Hỏi</button>
@@ -201,7 +201,7 @@
       </div>
     </section>
     <!-- TAB PRAYERS -->
-    <section id="tab-prayers" class="tab-section hidden">
+    <section id="tab-prayers" style="display:none">
       <div style="display:flex;gap:6px;width:100%">
         <input type="text" id="prayerSearchInput" oninput="searchPrayers(this.value)" placeholder="Gõ tìm bài khấn..." style="flex:1;padding:10px 12px;font-size:clamp(13px,3.8vw,15px);border-radius:10px;border:2px solid #D1D5DB;font-weight:700;background:#fff;outline:none;min-width:0">
         <button onclick="resetPrayerFilter()" style="padding:10px 14px;background:#78716C;color:#fff;font-weight:900;font-size:clamp(11px,3vw,13px);border:none;border-radius:10px;cursor:pointer">Xóa</button>
@@ -209,7 +209,7 @@
       <div id="prayers-list-container" style="display:flex;flex-direction:column;gap:8px"></div>
     </section>
     <!-- TAB MORE (Settings) -->
-    <section id="tab-more" class="tab-section hidden">
+    <section id="tab-more" style="display:none">
       <div class="settings-card">
         <div class="settings-item" onclick="showElderAlert('Chào các bác! Hãy dùng tab Lịch tháng để chọn ngày. Tiếng chuông khánh thiền sẽ vang lên báo hiệu lật tờ lịch thành công.')">
           <div class="settings-item-left"><span class="settings-item-icon">💡</span><div class="settings-item-text"><div class="settings-item-title">Hướng dẫn</div><div class="settings-item-sub">Cách dùng ứng dụng</div></div></div>
