@@ -35,9 +35,7 @@ fun HomeScreen() {
     val today = remember { LocalDate.now() }
 
     if (useWebView.value) {
-        WebViewHomeScreen(useCompose = false) {
-            useWebView.value = false
-        }
+        WebViewHomeScreen()
     } else {
         Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
             Box(modifier = Modifier.weight(1f)) {

@@ -266,7 +266,6 @@ function stopAutoScroll(){var btn=document.getElementById('autoscroll-btn');if(b
 // ===== TAB SWITCHING =====
 function switchTab(tabId){
   currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
-  if(isWebViewMode){var ov=document.getElementById('ui-package-overlay');if(ov){var show=tabId==='more';ov.style.display=show?'block':'none';if(show)refreshUiOverlayData()}}
   tabs.forEach(function(t){var el=document.getElementById('tab-'+t);if(t===tabId){el.classList.remove('hidden');el.classList.add('tab-section')}else{el.classList.add('hidden');el.classList.remove('tab-section')}})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
   if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
@@ -274,28 +273,7 @@ function switchTab(tabId){
 }
 function showElderAlert(msg){document.getElementById('elder-alert-text').innerText=msg;document.getElementById('elder-alert-box').classList.add('open');if(isBellEnabled)playBell()}
 function closeElderAlert(){document.getElementById('elder-alert-box').classList.remove('open')}
-// ===== UI PACKAGE DEMO =====
-var isWebViewMode=false
-function refreshUiOverlayData(){}
-function toggleWebViewMode(enabled){
-  isWebViewMode=enabled;var mc=document.getElementById('elder-main-content'),sections=mc.querySelectorAll('.tab-section'),ov=document.getElementById('ui-package-overlay')
-  if(enabled){
-    sections.forEach(function(t){t.style.display='none'})
-    if(!ov){
-      ov=document.createElement('div');ov.id='ui-package-overlay'
-      ov.innerHTML='<div class="info-stack"><div class="cal-card"><div class="cal-top-bar"></div><div class="cal-body"><div class="cal-header"><div class="cal-weekday" id="ui-weekday">THỨ NĂM</div><div class="cal-day" id="ui-day">9</div><div class="cal-monthyear" id="ui-monthyear">Tháng 7<br>2026</div></div><div class="quote-box"><span class="quote-mark quote-mark-left">"</span><span class="quote-mark quote-mark-right">"</span><p class="quote-text" id="ui-quote">Đang tải...</p></div><div class="lunar-section"><div class="lunar-hour" id="ui-hour">Hiện tại: Giờ Tý</div><div class="lunar-main"><span class="lunar-moon">🌙</span><span class="lunar-day-num" id="ui-lunar-day">1</span><span class="lunar-month-text" id="ui-lunar-month">THÁNG GIÊNG</span></div><div class="canchi-grid"><div class="canchi-cell"><div class="canchi-label">NĂM</div><div class="canchi-value" id="ui-cc-year">Giáp Thìn<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Rồng)</span></div></div><div class="canchi-cell"><div class="canchi-label">THÁNG</div><div class="canchi-value" id="ui-cc-month">Giáp Dần<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Hổ)</span></div></div><div class="canchi-cell"><div class="canchi-label">NGÀY</div><div class="canchi-value" id="ui-cc-day">Giáp Tý<br><span style="color:#064E3B;font-size:clamp(10px,3vw,12px);font-weight:700">(Chuột)</span></div></div></div></div></div></div><div class="info-card info-card-good"><div class="info-header info-header-good">✅ GIỜ HOÀNG ĐẠO</div><div class="info-body"><div class="hour-grid" id="ui-good-hours"></div></div></div><div class="info-card info-card-bad"><div class="info-header info-header-bad">❌ GIỜ HẮC ĐẠO</div><div class="info-body"><div class="hour-grid" id="ui-bad-hours"></div></div></div></div>'
-      mc.appendChild(ov)
-    }else{ov.style.display='block'}
-    refreshUiOverlayData();showElderToast('Đã chuyển sang giao diện WebView')
-  }else{
-    sections.forEach(function(t){t.style.removeProperty('display')})
-    if(ov)ov.style.display='none'
-    showElderToast('Đã về giao diện Compose')
-  }
-}
-function simulateUICheck(){document.getElementById('ui-status-msg').innerText='⏳ Đang kiểm tra...';setTimeout(function(){document.getElementById('ui-status-msg').innerText='✅ UI Package đã là bản mới nhất (v1).'},1500)}
-function simulateUIReload(){document.getElementById('ui-status-msg').innerText='🔄 Đã tải lại.';if(isWebViewMode)toggleWebViewMode(true)}
-function simulateUIReset(){document.getElementById('ui-package-version').innerText='UI Package v1 (mặc định)';document.getElementById('ui-status-msg').innerText='↩️ Đã đặt lại UI mặc định.';if(isWebViewMode){toggleWebViewMode(false);document.getElementById('webview-toggle').checked=false}showElderToast('Đã về UI package mặc định')}
+
 // ===== BRIDGE INTEGRATION =====
 function updateLunarData(jsonStr){
   try{
