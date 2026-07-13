@@ -1,5 +1,3 @@
-(function(){
-'use strict';
 // ===== LUNAR CALCULATION ENGINE =====
 function INT(x){return Math.floor(x)}
 function jdFromDate(dd,mm,yy){
@@ -297,4 +295,3 @@ window.onload=function(){
     document.getElementById('app-content').style.display='block'
   },200)
 }
-})();
