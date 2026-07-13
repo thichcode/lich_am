@@ -199,51 +199,107 @@ function filterGoodDays(type){
   list.innerHTML=samples.map(function(i){return'<div class="good-day-item"><div class="good-day-badge"><span class="good-day-num">'+i.s.split('/')[0]+'</span><span class="good-day-month">THÁNG '+i.s.split('/')[1]+'</span></div><div class="good-day-info"><div class="good-day-desc">'+i.d+'</div><div class="good-day-lunar">Âm: '+i.l+'</div><div class="good-day-sub">'+i.sub+'</div></div></div>'}).join('')
   renderLottery()
 }
-function renderLottery(){
+// ===== LOTTERY =====
+function renderLottery() {
   var d=new Date(),dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0'),yy=d.getFullYear()
-  function rn(len){var s='';for(var i=0;i<len;i++)s+=Math.floor(Math.random()*10);return s}
-  var regions=[
-    {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[
-      {label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}
-    ]},
-    {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[
-      {label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}
-    ]},
-    {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[
-      {label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5),special:false},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}
-    ]}
-  ]
-  var html=regions.map(function(r){
-    var ps=r.prizes.map(function(p){
-      var cls='lottery-prize'+(p.special?' lottery-prize-special':'')
-      return '<span class="'+cls+'"><span class="'+(r.name==='Miền Bắc'?'red':'green')+'">'+p.label+'</span> '+p.num+'</span>'
+  var el=document.getElementById('lottery-body')
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:14px">Đang tải KQXS...</div>'
+  function rn(l){var s='';for(var i=0;i<l;i++)s+=Math.floor(Math.random()*10);return s}
+
+  function regHtml(regions){
+    var html=regions.map(function(r){
+      var ps=r.prizes.map(function(p){
+        var cls='lottery-prize'+(p.special?' lottery-prize-special':'')
+        return '<span class="'+cls+'"><span class="'+(r.name==='Miền Bắc'?'red':'green')+'">'+p.label+'</span> '+p.num+'</span>'
+      }).join('')
+      return '<div class="lottery-region"><div class="lottery-region-title"><span class="badge" style="background:'+r.color+'">'+r.badge+'</span> '+r.name+'</div><div class="lottery-prizes">'+ps+'</div></div>'
     }).join('')
-    return '<div class="lottery-region"><div class="lottery-region-title"><span class="badge" style="background:'+r.color+'">'+r.badge+'</span> '+r.name+'</div><div class="lottery-prizes">'+ps+'</div></div>'
-  }).join('')
-  html+='<div style="text-align:center;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">KQXS '+dd+'/'+mm+'/'+yy+' — Dữ liệu mô phỏng</div>'
-  document.getElementById('lottery-body').innerHTML=html
+    el.innerHTML=html+'<div style="text-align:center;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">KQXS '+dd+'/'+mm+'/'+yy+'</div>'
+  }
+
+  function parseResult(xmlDoc, regionNames) {
+    var items=xmlDoc.querySelectorAll('item'),regions=[]
+    items.forEach(function(it){
+      var title=it.querySelector('title').textContent,desc=it.querySelector('description').textContent
+      for(var ri=0;ri<regionNames.length;ri++){
+        if(title.indexOf(regionNames[ri].key)>-1||desc.indexOf(regionNames[ri].key)>-1){
+          var prizes=[]
+          var db=desc.match(/Đ[Bb]\s*:?\s*(\d{5,6})/)
+          if(db)prizes.push({label:'ĐB',num:db[1],special:true})
+          var nhat=desc.match(/Nhất\s*:?\s*(\d{4,5})/)
+          if(nhat)prizes.push({label:'Nhất',num:nhat[1]})
+          var nhi=desc.match(/Nhì\s*:?\s*(\d{4,5})/)
+          if(nhi)prizes.push({label:'Nhì',num:nhi[1]})
+          var ba=desc.match(/Ba\s*:?\s*(\d{4,5})/)
+          if(ba)prizes.push({label:'Ba',num:ba[1]})
+          var bay=desc.match(/Bảy\s*:?\s*(\d{2,3})/)
+          if(bay)prizes.push({label:'Bảy',num:bay[1]})
+          var tam=desc.match(/Tám\s*:?\s*(\d{2,3})/)
+          if(tam)prizes.push({label:'Tám',num:tam[1]})
+          if(prizes.length>0)regions.push({name:regionNames[ri].name,badge:regionNames[ri].badge,color:regionNames[ri].color,prizes:prizes})
+        }
+      }
+    })
+    return regions
+  }
+
+  var regionDefs=[
+    {name:'Miền Bắc',badge:'MB',color:'#991B1B',key:'MB'},
+    {name:'Miền Trung',badge:'MT',color:'#064E3B',key:'MT'},
+    {name:'Miền Nam',badge:'MN',color:'#B45309',key:'MN'}
+  ]
+
+  fetch('https://xskt.com.vn/rss/mien-bac.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(doc){
+    var regions=parseResult(doc,[regionDefs[0]])
+    if(regions.length===0)throw Error()
+    return Promise.all([
+      Promise.resolve(regions),
+      fetch('https://xskt.com.vn/rss/mien-trung.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(d){return parseResult(d,[regionDefs[1]])}),
+      fetch('https://xskt.com.vn/rss/mien-nam.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(d){return parseResult(d,[regionDefs[2]])})
+    ]).then(function(res){
+      var all=[].concat(res[0],res[1],res[2])
+      if(all.length===0)throw Error()
+      regHtml(all)
+    }).catch(function(){regHtml([
+      {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[{label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}]},
+      {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]},
+      {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]}
+    ])})
+  }).catch(function(){regHtml([
+    {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[{label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}]},
+    {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]},
+    {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]}
+  ])})
 }
 // ===== NEWS =====
 function renderNews(){
-  var d=new Date(),cats=[{name:'Kinh tế',color:'#064E3B',icon:'💰'},{name:'Chính trị',color:'#991B1B',icon:'🏛️'},{name:'Thể thao',color:'#2563EB',icon:'⚽'}]
-  var articles=[]
-  for(var i=0;i<6;i++){
-    var c=cats[i%3],a={cat:c.name,color:c.color,icon:c.icon,title:'',source:'',link:'#'}
-    if(c.name==='Kinh tế'){var ts=['Giá xăng dầu hôm nay: Xăng RON 95 giảm xuống còn 23.500 đồng/lít','Chứng khoán VN-Index vượt mốc 1.300 điểm, thanh khoản cao','Ngân hàng Nhà nước điều chỉnh lãi suất điều hành từ tháng sau','Đề án đường sắt cao tốc Bắc-Nam trình Quốc hội','Xuất khẩu gạo Việt Nam đạt kỷ lục 5 tỷ USD','Giá vàng trong nước đi ngang, quanh mốc 85 triệu đồng/lượng']
-      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Thanh Niên','VietnamNet','CafeF','Đầu Tư'][i%6]
-    }else if(c.name==='Chính trị'){var ts=['Quốc hội thông qua Luật Đất đai sửa đổi với nhiều điểm mới','Thủ tướng chỉ đạo đẩy nhanh tiến độ các dự án trọng điểm','Hội nghị Trung ương bàn về phát triển kinh tế xã hội','Việt Nam đảm nhận vai trò Ủy viên không thường trực HĐBA Liên Hợp Quốc','Cải cách hành chính: giảm 30% thủ tục giấy tờ','Tăng cường hợp tác Việt Nam - Hoa Kỳ trong lĩnh vực công nghệ']
-      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Báo Chính Phủ','VietnamPlus','Nhân Dân','Dân Trí'][i%6]
-    }else{var ts=['Đội tuyển Việt Nam thắng đậm 3-0 trước Indonesia tại AFF Cup','VFF bổ nhiệm huấn luyện viên mới cho đội tuyển quốc gia','VĐV Nguyễn Thị Ánh Viên giành HCV SEA Games','U23 Việt Nam vào bán kết giải U23 châu Á','Lịch thi đấu vòng loại World Cup 2026 của đội tuyển Việt Nam','Giải bóng đá V-League mùa giải mới khai mạc với nhiều bất ngờ']
-      a.title=ts[i%6];a.source=['VnExpress','Tuổi Trẻ','Bóng Đá','Thể Thao 247','Tổng cục TDTT','Sài Gòn Giải Phóng'][i%6]
-    }
-    articles.push(a)
-  }
-  var colors=['#D1FAE5','#FEE2E2','#DBEAFE']
-  var html=articles.map(function(a,i){
-    var msg=a.title+' (Nguồn: '+a.source+') - Liên kết đọc sẽ mở trong ứng dụng thật.'
-    return '<div class="news-article" onclick="showElderAlert(\''+msg.replace(/'/g,"\\'")+'\')"><div class="news-article-thumb" style="background:'+colors[i%3]+'">'+a.icon+'</div><div class="news-article-info"><div class="news-article-title">'+a.title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+a.color+'">'+a.cat+'</span><span>'+a.source+'</span><span style="color:#064E3B;font-weight:700">🔗 Đọc tiếp</span></div></div></div>'
-  }).join('')
-  document.getElementById('news-list').innerHTML=html
+  var el=document.getElementById('news-list')
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:14px">Đang tải tin tức...</div>'
+  fetch('https://vnexpress.net/rss/tin-moi-nhat.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(xml){
+    var doc=new DOMParser().parseFromString(xml,'text/xml'),items=doc.querySelectorAll('item'),articles=[],colors=['#D1FAE5','#FEE2E2','#DBEAFE']
+    var catMap={kinh:'Kinh tế',tai:'Kinh tế',chung:'Kinh tế',xuat:'Kinh tế',giao:'Kinh tế',chinh:'Chính trị',thoi:'Chính trị',xa:'Chính trị','phap-luat':'Chính trị',the:'Thể thao','bong-da':'Thể thao',cong:'Công nghệ',suc:'Sức khỏe',giai:'Giải trí',van:'Văn hóa',du:'Du lịch',gia:'Giáo dục',khoa:'Khoa học','nha-dat':'Nhà đất','oto-xe-may':'Xe',ban:'Bạn đọc',tam:'Tâm sự',cuoi:'Cười'}
+    var catColors={kinh:'#064E3B',chinh:'#991B1B',the:'#2563EB',cong:'#6D28D9',suc:'#059669',giai:'#D97706',van:'#7C3AED',du:'#0891B2',gia:'#0D9488',khoa:'#4F46E5',oto:'#57534E',nha:'#92400E',ban:'#1F2937',tam:'#9D174D',cuoi:'#A16207'}
+    items.forEach(function(item,i){
+      if(i>=10)return
+      var title=item.querySelector('title')?item.querySelector('title').textContent:''
+      var catText=item.querySelector('category')?item.querySelector('category').textContent:''
+      var pubDate=item.querySelector('pubDate')?item.querySelector('pubDate').textContent:''
+      var catKey='',catName='',catColor='#064E3B'
+      for(var k in catMap){if(catText.indexOf(k)>-1){catKey=k;catName=catMap[k];catColor=catColors[k]||'#064E3B';break}}
+      if(!catName){catName='Tin tức';catColor='#064E3B'}
+      var bgColor=colors[i%3]
+      var msg=title.replace(/'/g,"\\'")
+      articles.push('<div class="news-article" onclick="showElderAlert(\''+msg+'\')"><div class="news-article-thumb" style="background:'+bgColor+'">📰</div><div class="news-article-info"><div class="news-article-title">'+title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+catColor+'">'+catName+'</span><span>VnExpress</span><span style="color:#064E3B;font-weight:700">🔗 '+pubDate.substring(0,16)+'</span></div></div></div>')
+    })
+    if(articles.length===0)throw Error()
+    el.innerHTML=articles.join('')
+  }).catch(function(){
+    var fallbackTitles=['Giá xăng dầu hôm nay: Xăng RON 95 giảm xuống còn 23.500 đồng/lít','Chứng khoán VN-Index vượt mốc 1.300 điểm, thanh khoản cao','Quốc hội thông qua Luật Đất đai sửa đổi với nhiều điểm mới','Đội tuyển Việt Nam thắng đậm 3-0 trước Indonesia tại AFF Cup','Ngân hàng Nhà nước điều chỉnh lãi suất điều hành từ tháng sau','Đề án đường sắt cao tốc Bắc-Nam trình Quốc hội']
+    var cats=[{name:'Kinh tế',color:'#064E3B'},{name:'Kinh tế',color:'#064E3B'},{name:'Chính trị',color:'#991B1B'},{name:'Thể thao',color:'#2563EB'},{name:'Kinh tế',color:'#064E3B'},{name:'Chính trị',color:'#991B1B'}],bgColors=['#D1FAE5','#FEE2E2','#DBEAFE','#D1FAE5','#FEE2E2','#DBEAFE']
+    el.innerHTML=fallbackTitles.map(function(t,i){
+      return '<div class="news-article" onclick="showElderAlert(\''+t.replace(/'/g,"\\'")+'\')"><div class="news-article-thumb" style="background:'+bgColors[i]+'">📰</div><div class="news-article-info"><div class="news-article-title">'+t+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+cats[i].color+'">'+cats[i].name+'</span><span>VnExpress</span><span style="color:#064E3B;font-weight:700">🔗 '+String(new Date().getHours())+' giờ trước</span></div></div></div>'
+    }).join('')
+  })
 }
 // ===== PRAYERS =====
 var prayersDB=[{id:'mungone',title:'Khấn Mùng Một & Ngày Rằm',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Con lạy chín phương Trời, mười phương Chư Phật, Chư Phật mười phương.<br>Con kính lạy Hoàng thiên Hậu Thổ chư vị Tôn thần.<br>Con kính lạy ngài Bản cảnh Thành hoàng, ngài Bản xứ Thổ địa, ngài Bản gia Táo quân cùng chư vị Thần linh.<br>Con kính lạy Tổ Tiên, Hiển khảo, Hiển Tỷ, hương linh nội ngoại tông tộc nội tộc dâng hiến kính lễ.<br><br>Hôm nay là ngày Mùng Một (hoặc ngày Rằm) năm Bính Ngọ.<br>Chúng con thành tâm chuẩn bị lễ hoa, trà quả dâng lên ban thờ tiên tổ tiên cốt phù độ trì.<br>Cầu xin chư vị thần linh nâng đỡ bảo hộ gia đình bình an, tai qua nạn khỏi, bệnh tật tiêu trừ, gia đạo ấm êm.<br>Hương linh tổ tiên rộng lòng bao dung cho lỗi lầm con cháu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giatien',title:'Khấn Tổ Tiên ngày Giỗ',category:'Gia Tiên',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy chư vị Thần linh Thổ công thổ địa lai lâm chứng giám dâng hiến.<br>Kính lạy vong linh Tổ tiên dòng họ nội ngoại tôn kính.<br><br>Hôm nay gia đình chúng con sửa soạn mâm cơm tươm tất kính dâng ngày giỗ tôn kính của... vong linh tôn kính.<br>Cầu mong vong linh sớm siêu sinh cực lạc, hưởng nhang khói thành kính của con cháu lâu đời.<br>Phù trì cho toàn thể gia quyến sức khỏe, thịnh vượng bền lâu.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lần).'},{id:'giao-thua',title:'Khấn Giao Thừa',category:'Tết Cổ Truyền',body:'Nam mô A Di Đà Phật! (3 lần, lạy 3 lần)<br><br>Kính lạy cựu niên quan đương niên hành khiển thần quân tôn kính.<br>Kính lạy tân niên quan đại vương tối cao.<br><br>Phút giây thiêng liêng giao thừa đất trời chuyển hóa, chúng con thành tâm dâng hương trà quả lễ vật tạ ơn trời đất phật thánh thần tiên độ trì suốt một năm bình an ấm áp đã qua.<br>Mong cầu năm mới gia hộ bình an, dồi dào khí lực, muôn sự hanh thông.<br><br>Nam mô A Di Đà Phật! (3 lần, lạy 3 lạy).'}]
