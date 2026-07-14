@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -423,28 +424,37 @@ private fun downloadAndInstall(context: Context, apkUrl: String, onError: () -> 
         val downloadId = downloadManager.enqueue(request)
         Toast.makeText(context, "Đang tải xuống: $fileName", Toast.LENGTH_LONG).show()
 
-        // Register receiver to detect install failure
-        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-        context.registerReceiver(object : BroadcastReceiver() {
+        // The system DownloadManager sends this broadcast after completion.
+        val receiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context, intent: Intent) {
                 val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                if (id == downloadId) {
-                    ctx.unregisterReceiver(this)
-                    try {
-                        val query = DownloadManager.Query().setFilterById(downloadId)
-                        val cursor = downloadManager.query(query)
+                if (id != downloadId) return
+                ctx.unregisterReceiver(this)
+                try {
+                    val query = DownloadManager.Query().setFilterById(downloadId)
+                    downloadManager.query(query).use { cursor ->
                         if (cursor.moveToFirst()) {
-                            val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                            val status = cursor.getInt(
+                                cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS)
+                            )
                             if (status != DownloadManager.STATUS_SUCCESSFUL) {
                                 onError()
                             }
+                        } else {
+                            onError()
                         }
-                    } catch (_: Exception) {
-                        onError()
                     }
+                } catch (_: Exception) {
+                    onError()
                 }
             }
-        }, filter)
+        }
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+            ContextCompat.RECEIVER_EXPORTED
+        )
     } catch (e: Exception) {
         Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_LONG).show()
         onError()

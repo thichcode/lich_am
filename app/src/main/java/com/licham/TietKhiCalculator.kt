@@ -40,10 +40,12 @@ object TietKhiCalculator {
         val T = (jd - 2451545.0) / 36525.0
         val L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T
         val M = degToRad(357.52911 + 35999.05029 * T - 0.0001537 * T * T)
-        val C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * sin(M)
-            + (0.019993 - 0.000101 * T) * sin(2.0 * M)
-            + 0.000289 * sin(3.0 * M)
-        val lambda = L0 + C
+        val correction = (
+            (1.914602 - 0.004817 * T - 0.000014 * T * T) * sin(M) +
+                (0.019993 - 0.000101 * T) * sin(2.0 * M) +
+                0.000289 * sin(3.0 * M)
+            )
+        val lambda = L0 + correction
         return ((lambda % 360.0) + 360.0) % 360.0
     }
 

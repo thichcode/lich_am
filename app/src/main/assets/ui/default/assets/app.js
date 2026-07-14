@@ -1,129 +1,70 @@
-// ===== LUNAR CALCULATION ENGINE =====
-function INT(x){return Math.floor(x)}
-function jdFromDate(dd,mm,yy){
-  var a=INT((14-mm)/12),y=yy+4800-a,m=mm+12*a-3,jd=dd+INT((153*m+2)/5)+365*y+INT(y/4)-INT(y/100)+INT(y/400)-32045
-  if(jd<2299161)jd=dd+INT((153*m+2)/5)+365*y+INT(y/4)-32083
-  return jd
+'use strict'
+var CANS=LichAmCore.CANS
+var CHIS=LichAmCore.CHIS
+var ANIMALS=LichAmCore.ANIMALS
+var jdFromDate=LichAmCore.jdFromDate
+var convertSolar2Lunar=LichAmCore.convertSolar2Lunar
+var getYearCanChi=LichAmCore.getYearCanChi
+var getMonthCanChi=LichAmCore.getMonthCanChi
+var getDayCanChi=LichAmCore.getDayCanChi
+var getHoursForDay=LichAmCore.getHoursForDay
+function appendTextElement(parent,tag,className,text){
+  var element=document.createElement(tag)
+  element.className=className
+  element.textContent=String(text==null?'':text)
+  parent.appendChild(element)
+  return element
 }
-function jdToDate(jd){
-  var a,b,c,d,e,m,day,month,year
-  if(jd>2299160){a=jd+32044;b=INT((4*a+3)/146097);c=a-INT((b*146097)/4)}else{b=0;c=jd+32082}
-  d=INT((4*c+3)/1461);e=c-INT((1461*d)/4);m=INT((5*e+2)/153)
-  day=e-INT((153*m+2)/5)+1;month=m+3-12*INT(m/10);year=b*100+d-4800+INT(m/10)
-  return[day,month,year]
+function padNumber(value){return value<10?'0'+value:String(value)}
+function localDateString(date){return date.getFullYear()+'-'+padNumber(date.getMonth()+1)+'-'+padNumber(date.getDate())}
+function parseLocalDate(value){
+  var parts=String(value||'').split('-')
+  if(parts.length!==3)return new Date()
+  var date=new Date(Number(parts[0]),Number(parts[1])-1,Number(parts[2]))
+  return isNaN(date.getTime())?new Date():date
 }
-function getNewMoonDay(k,timeZone){
-  var T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180
-  var Jd1=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3
-  Jd1+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr)
-  var M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3
-  var Mpr=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3
-  var F=21.2964+390.67050646*k-0.0016528*T2-0.00000236*T3
-  var C1=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M)
-  C1-=0.4068*Math.sin(Mpr*dr)+0.0161*Math.sin(dr*2*Mpr)
-  C1-=0.0004*Math.sin(dr*3*Mpr)+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mpr))
-  C1-=0.0074*Math.sin(dr*(M-Mpr))+0.0004*Math.sin(dr*(2*F+M))
-  C1-=0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mpr))
-  C1+=0.0010*Math.sin(dr*(2*F-Mpr))+0.0005*Math.sin(dr*(2*Mpr+M))
-  var deltat=T<-11?0.001+0.000839*T+0.0002261*T2-0.00000845*T3-0.000000081*T*T3:-0.000278+0.000265*T+0.000262*T2
-  return INT(Jd1+C1-deltat+0.5+timeZone/24)
-}
-function getSunLongitude(jdn,timeZone){
-  var T=(jdn-2451545.5-timeZone/24)/36525,T2=T*T,dr=Math.PI/180
-  var M=357.52910+35999.05030*T-0.0001559*T2-0.00000048*T*T2
-  var L0=280.46645+36000.76983*T+0.0003032*T2
-  var DL=(1.91460-0.004817*T-0.000014*T2)*Math.sin(dr*M)+(0.019993-0.000101*T)*Math.sin(dr*2*M)+0.000290*Math.sin(dr*3*M)
-  var L=(L0+DL)*dr;L-=Math.PI*2*INT(L/(Math.PI*2))
-  if(L<0)L+=Math.PI*2
-  return INT(L/Math.PI*6)
-}
-function getLunarMonth11(yy,timeZone){
-  var off=jdFromDate(31,12,yy)-2415021,k=INT(off/29.530588853),nm=getNewMoonDay(k,timeZone)
-  if(getSunLongitude(nm,timeZone)>=9)nm=getNewMoonDay(k-1,timeZone)
-  return nm
-}
-function getLeapMonthOffset(a11,timeZone){
-  var k=INT((a11-2415021.076998695)/29.530588853+0.5),last=0,i=1,arc=getSunLongitude(getNewMoonDay(k+i,timeZone),timeZone)
-  do{last=arc;i++;arc=getSunLongitude(getNewMoonDay(k+i,timeZone),timeZone)}while(arc!=last&&i<14)
-  return i-1
-}
-function convertSolar2Lunar(dd,mm,yy,timeZone){
-  var dayNumber=jdFromDate(dd,mm,yy),k=INT((dayNumber-2415021.076998695)/29.530588853),monthStart=getNewMoonDay(k+1,timeZone)
-  if(monthStart>dayNumber)monthStart=getNewMoonDay(k,timeZone)
-  var a11=getLunarMonth11(yy,timeZone),b11=a11,lunarYear
-  if(a11>=monthStart){lunarYear=yy;a11=getLunarMonth11(yy-1,timeZone)}else{lunarYear=yy+1;b11=getLunarMonth11(yy+1,timeZone)}
-  var lunarDay=dayNumber-monthStart+1,diff=INT((monthStart-a11)/29),lunarLeap=0,lunarMonth=diff+11
-  if(b11-a11>365){var leapMonthDiff=getLeapMonthOffset(a11,timeZone);if(diff>=leapMonthDiff){lunarMonth=diff+10;if(diff==leapMonthDiff)lunarLeap=1}}
-  if(lunarMonth>12)lunarMonth-=12
-  if(lunarMonth>=11&&diff<4)lunarYear-=1
-  return[lunarDay,lunarMonth,lunarYear,lunarLeap]
-}
-var CANS=['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý']
-var CHIS=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi']
-var ANIMALS=['Chuột','Trâu','Hổ','Mèo','Rồng','Rắn','Ngựa','Dê','Khỉ','Gà','Chó','Lợn']
-function getYearCanChi(lunarYear){
-  var ci=(lunarYear+6)%10,zi=(lunarYear+8)%12
-  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
-}
-function getMonthCanChi(lunarYear,lunarMonth){
-  var yci=(lunarYear+6)%10,ci=(yci*2+lunarMonth+1)%10,zi=(lunarMonth+1)%12
-  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
-}
-function getDayCanChi(jd){
-  var ci=(jd+9)%10,zi=(jd+1)%12
-  return{text:CANS[ci]+' '+CHIS[zi],animal:ANIMALS[zi]}
-}
-function getHoursForDay(chiIdx){
-  var good=[]
-  if(chiIdx===0||chiIdx===6)good=[0,1,3,6,8,9]
-  else if(chiIdx===1||chiIdx===7)good=[2,3,5,8,10,11]
-  else if(chiIdx===2||chiIdx===8)good=[0,1,4,5,7,10]
-  else if(chiIdx===3||chiIdx===9)good=[0,2,3,6,7,9]
-  else if(chiIdx===4||chiIdx===10)good=[2,4,5,8,9,11]
-  else if(chiIdx===5||chiIdx===11)good=[1,4,6,7,10,11]
-  var allH=[{t:'23h-01h',l:'Tý'},{t:'01h-03h',l:'Sửu'},{t:'03h-05h',l:'Dần'},{t:'05h-07h',l:'Mão'},{t:'07h-09h',l:'Thìn'},{t:'09h-11h',l:'Tỵ'},{t:'11h-13h',l:'Ngọ'},{t:'13h-15h',l:'Mùi'},{t:'15h-17h',l:'Thân'},{t:'17h-19h',l:'Dậu'},{t:'19h-21h',l:'Tuất'},{t:'21h-23h',l:'Hợi'}]
-  var gh=[],bh=[]
-  for(var i=0;i<12;i++){if(good.includes(i))gh.push(allH[i]);else bh.push(allH[i])}
-  return{goodHours:gh,badHours:bh}
-}
-function getSolarTerm(day,month){
-  var terms=[{n:'Tiểu Hàn',m:1,d:5},{n:'Đại Hàn',m:1,d:20},{n:'Lập Xuân',m:2,d:4},{n:'Vũ Thủy',m:2,d:19},{n:'Kinh Trập',m:3,d:5},{n:'Xuân Phân',m:3,d:20},{n:'Thanh Minh',m:4,d:4},{n:'Cốc Vũ',m:4,d:20},{n:'Lập Hạ',m:5,d:5},{n:'Tiểu Mãn',m:5,d:21},{n:'Mang Chủng',m:6,d:5},{n:'Hạ Chí',m:6,d:21},{n:'Tiểu Thử',m:7,d:7},{n:'Đại Thử',m:7,d:22},{n:'Lập Thu',m:8,d:7},{n:'Xử Thử',m:8,d:23},{n:'Bạch Lộ',m:9,d:7},{n:'Thu Phân',m:9,d:23},{n:'Hàn Lộ',m:10,d:8},{n:'Sương Giáng',m:10,d:23},{n:'Lập Đông',m:11,d:7},{n:'Tiểu Tuyết',m:11,d:22},{n:'Đại Tuyết',m:12,d:7},{n:'Đông Chí',m:12,d:21}]
-  var ci=-1;for(var i=0;i<terms.length;i++){if(month>terms[i].m||(month===terms[i].m&&day>=terms[i].d))ci=i}
-  if(ci===-1)ci=terms.length-1
-  var ni=(ci+1)%terms.length
-  return{current:terms[ci].n,currentStart:String(terms[ci].d).padStart(2,'0')+'/'+String(terms[ci].m).padStart(2,'0'),next:terms[ni].n,nextStart:String(terms[ni].d).padStart(2,'0')+'/'+String(terms[ni].m).padStart(2,'0')}
+function rssProxyUrl(remoteUrl){return 'https://appassets.androidplatform.net/rss-proxy?url='+encodeURIComponent(remoteUrl)}
+function renderOnlineState(container,state,message,retry){
+  container.innerHTML=''
+  var box=document.createElement('div');box.className='online-state online-state-'+state
+  appendTextElement(box,'div','online-state-message',message)
+  if(retry){
+    var button=document.createElement('button');button.type='button';button.className='online-retry';button.textContent='Thử lại'
+    button.addEventListener('click',retry);box.appendChild(button)
+  }
+  container.appendChild(box)
 }
 function getElderDayData(dateStr){
-  var d=new Date(dateStr);if(isNaN(d.getTime()))d=new Date()
+  var d=parseLocalDate(dateStr)
   var day=d.getDate(),month=d.getMonth()+1,year=d.getFullYear()
   var wd=['CHỦ NHẬT','THỨ HAI','THỨ BA','THỨ TƯ','THỨ NĂM','THỨ SÁU','THỨ BẢY']
   var ld=convertSolar2Lunar(day,month,year,7)
   var ly=ld[0],lm=ld[1],lyr=ld[2],ll=ld[3],yc=getYearCanChi(lyr),mc=getMonthCanChi(lyr,lm),jd=jdFromDate(day,month,year),dc=getDayCanChi(jd)
-  var isGood=(jd%2===0),quotes=['Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao.','Kính lão đắc thọ, trọng già già để tuổi cho.','Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ cho dây mà trồng.','Con người có tổ có tông, như cây có cội như sông có nguồn.','Lá rụng về cội, nước chảy về nguồn.','Gieo hành vi gặt thói quen, gieo thói quen gặt tính cách.']
+  var assessment=LichAmCore.assessSolarDate({day:day,month:month,year:year}),quotes=['Một cây làm chẳng nên non ba cây chụm lại nên hòn núi cao.','Kính lão đắc thọ, trọng già già để tuổi cho.','Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ cho dây mà trồng.','Con người có tổ có tông, như cây có cội như sông có nguồn.','Lá rụng về cội, nước chảy về nguồn.','Gieo hành vi gặt thói quen, gieo thói quen gặt tính cách.']
   var qi=(day+month)%quotes.length,dci=(jd+1)%12,hrs=getHoursForDay(dci)
   var cm={'Chuột':'Mậu Ngọ, Nhâm Ngọ, Canh Tý','Trâu':'Kỷ Mùi, Quý Mùi, Tân Sửu','Hổ':'Canh Thân, Giáp Thân, Mậu Dần','Mèo':'Tân Dậu, Ất Dậu, Kỷ Mão','Rồng':'Nhâm Tuất, Bính Tuất, Giáp Thìn','Rắn':'Quý Hợi, Đinh Hợi, Ất Tỵ','Ngựa':'Nhâm Tý, Bính Tý, Giáp Ngọ','Dê':'Quý Sửu, Đinh Sửu, Ất Mùi','Khỉ':'Mậu Dần, Bính Dần, Canh Thần','Gà':'Kỷ Mão, Đinh Mão, Tân Dậu','Chó':'Canh Thìn, Bính Thìn, Mậu Tuất','Hợi':'Tân Tỵ, Đinh Tỵ, Kỷ Hợi'}
-  var ca=cm[dc.animal]||'Xung khắc các tuổi Thân, Dần',term=getSolarTerm(day,month)
-  return{solar:{day:day,month:'Tháng '+month,year:year,weekday:wd[d.getDay()]},lunar:{day:ly,month:'Tháng '+(lm<10?'0':'')+lm+(ll?' (Nhuận)':''),yearChi:yc.text,monthChi:mc.text,dayChi:dc.text,yearAnimal:yc.animal,monthAnimal:mc.animal,dayAnimal:dc.animal},isGoodDay:isGood,starText:isGood?'Ngày Hoàng Đạo':'Ngày Hắc Đạo',quote:quotes[qi],goodHours:hrs.goodHours,badHours:hrs.badHours,shouldDo:isGood?'Cúng tế, làm từ thiện, dọn dẹp ban thờ':'Chăm sóc sức khỏe, nghỉ ngơi tĩnh dưỡng, uống trà thiền',shouldAvoid:isGood?'Mâu thuẫn cãi cọ, xuất hành đi quá xa':'Khai trương lớn, mua bán tài sản trọng đại, cưới hỏi',clashAges:ca,solarTerm:term.current,termStart:term.currentStart+'/'+year,nextTerm:term.next,nextTermStart:term.nextStart+'/'+year}
+  var ca=cm[dc.animal]||'Xung khắc các tuổi Thân, Dần',term=LichAmCore.getSolarTerm(day,month,year)
+  return{solar:{day:day,month:'Tháng '+month,year:year,weekday:wd[d.getDay()]},lunar:{day:ly,month:'Tháng '+(lm<10?'0':'')+lm+(ll?' (Nhuận)':''),yearChi:yc.text,monthChi:mc.text,dayChi:dc.text,yearAnimal:yc.animal,monthAnimal:mc.animal,dayAnimal:dc.animal},isGoodDay:assessment.isGood,starText:assessment.label,quote:quotes[qi],goodHours:hrs.goodHours,badHours:hrs.badHours,shouldDo:assessment.shouldDo,shouldAvoid:assessment.shouldAvoid,clashAges:ca,solarTerm:term.current,termStart:term.currentStart+'/'+term.currentYear,nextTerm:term.next,nextTermStart:term.nextStart+'/'+term.nextYear}
 }
 // ===== STATE =====
-var initDate=new Date(),currentDate=initDate.getFullYear()+'-'+String(initDate.getMonth()+1).padStart(2,'0')+'-'+String(initDate.getDate()).padStart(2,'0'),currentTab='home',currentMonthView=initDate.getMonth()+1,currentYearView=initDate.getFullYear(),isBellEnabled=false,isHighContrast=false,isAutoScrolling=false,scrollTimer=null,currentPrayerFontSize=18
+var initDate=new Date(),lastKnownToday=localDateString(initDate),currentDate=lastKnownToday,currentTab='home',currentMonthView=initDate.getMonth()+1,currentYearView=initDate.getFullYear(),currentGoodDayCategory='cuoihoi',isBellEnabled=false,isHighContrast=false,isAutoScrolling=false,scrollTimer=null,timeRefreshTimer=null,currentPrayerFontSize=18
 // ===== TOAST =====
 function showElderToast(text){var t=document.getElementById('elder-toast'),tt=document.getElementById('elder-toast-text');if(!t||!tt)return;tt.innerText=text;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
 // ===== CONTRAST =====
 function toggleElderContrast(){isHighContrast=!isHighContrast;var ic=document.getElementById('contrastIcon'),lb=document.getElementById('contrast-label');if(isHighContrast){document.body.classList.add('dark');ic.innerText='☀️';lb.innerText='Giao diện tối đang bật';showElderToast('Đã bật giao diện dịu mắt')}else{document.body.classList.remove('dark');ic.innerText='🌓';lb.innerText='Giao diện tối dịu nhẹ';showElderToast('Đã về giao diện ấm áp')}}
 // ===== NAVIGATION =====
 function navigateDay(offset){
-  var d=new Date(currentDate);d.setDate(d.getDate()+offset)
-  currentDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+  var d=parseLocalDate(currentDate);d.setDate(d.getDate()+offset)
+  currentDate=localDateString(d)
   currentMonthView=d.getMonth()+1;currentYearView=d.getFullYear()
   if(isBellEnabled)playBell()
   renderDayView()
   if(typeof nativeApp!=='undefined'&&nativeApp.changeDate)nativeApp.changeDate(offset)
-  showElderToast('Đã chuyển tới ngày '+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'))
+  showElderToast('Đã chuyển tới ngày '+padNumber(d.getDate())+'/'+padNumber(d.getMonth()+1))
 }
 function resetToSampleDate(){
   var t=new Date()
-  currentDate=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')
+  currentDate=localDateString(t);lastKnownToday=currentDate
   currentMonthView=t.getMonth()+1;currentYearView=t.getFullYear()
   if(isBellEnabled)playBell()
   renderDayView();switchTab('home')
@@ -148,7 +89,7 @@ function renderDayView(){
   document.getElementById('solar-day').innerText=data.solar.day
   document.getElementById('label-current-year').innerText='Năm '+data.solar.year
   document.getElementById('daily-quote').innerText=data.quote
-  var now=new Date(),h=now.getHours(),hci=Math.floor(h/2)%12
+  var hci=LichAmCore.getHourChiIndex(new Date().getHours())
   document.getElementById('current-hour-label').innerText='Hiện tại: Giờ '+CHIS[hci]
   document.getElementById('lunar-day-large').innerText=data.lunar.day
   document.getElementById('lunar-month').innerText=data.lunar.month.toUpperCase()
@@ -178,9 +119,9 @@ function renderMonthView(){
   var fd=new Date(currentYearView,currentMonthView-1,1),so=(fd.getDay()+7)%7,td=new Date(currentYearView,currentMonthView,0).getDate()
   var grid=document.getElementById('calendar-grid-days');grid.innerHTML=''
   for(var i=0;i<so;i++)grid.innerHTML+='<div></div>'
-  var today=new Date(),act=new Date(currentDate)
+  var today=new Date(),act=parseLocalDate(currentDate)
   for(var d=1;d<=td;d++){
-    var ds=currentYearView+'-'+String(currentMonthView).padStart(2,'0')+'-'+String(d).padStart(2,'0'),dd=getElderDayData(ds)
+    var ds=currentYearView+'-'+padNumber(currentMonthView)+'-'+padNumber(d),dd=getElderDayData(ds)
     var sel=act.getDate()===d&&act.getMonth()+1===currentMonthView&&act.getFullYear()===currentYearView
     var isT=today.getDate()===d&&today.getMonth()+1===currentMonthView&&today.getFullYear()===currentYearView
     var bg='background:#F3F4F6;color:#1F2937'
@@ -192,113 +133,115 @@ function renderMonthView(){
 }
 // ===== GOOD DAYS =====
 function filterGoodDays(type){
+  currentGoodDayCategory=type
   var cats=['cuoihoi','khaitruong','dongtho']
   cats.forEach(function(c){var b=document.getElementById('btn-f-'+c);if(c===type)b.style.cssText='flex:1;padding:10px 4px;border-radius:10px;font-size:clamp(11px,3vw,13px);font-weight:900;text-align:center;border:2px solid #B45309;background:#064E3B;color:#fff;cursor:pointer';else b.style.cssText='flex:1;padding:10px 4px;border-radius:10px;font-size:clamp(11px,3vw,13px);font-weight:900;text-align:center;border:2px solid transparent;background:#E5E7EB;color:#1F2937;cursor:pointer'})
-  var list=document.getElementById('good-days-list')
-  var samples=[{s:'15/07/2026',l:'01/06 âm',d:'Ngày Tân Tỵ - Cực Kỳ Đại Cát',sub:'Mưu cầu hạnh phúc gia đạo viên mãn'},{s:'22/07/2026',l:'08/06 âm',d:'Ngày Mậu Tý - Ngày Hoàng Đạo',sub:'Tốt động thổ, sửa sang mồ mả'},{s:'27/07/2026',l:'13/06 âm',d:'Ngày Quý Tỵ - Lộc Tài',sub:'Hợp khai trương, rước may mắn'}]
-  list.innerHTML=samples.map(function(i){return'<div class="good-day-item"><div class="good-day-badge"><span class="good-day-num">'+i.s.split('/')[0]+'</span><span class="good-day-month">THÁNG '+i.s.split('/')[1]+'</span></div><div class="good-day-info"><div class="good-day-desc">'+i.d+'</div><div class="good-day-lunar">Âm: '+i.l+'</div><div class="good-day-sub">'+i.sub+'</div></div></div>'}).join('')
-  renderLottery()
+  var now=new Date(),startDay=currentMonthView===now.getMonth()+1&&currentYearView===now.getFullYear()?now.getDate():1
+  var list=document.getElementById('good-days-list'),results=LichAmCore.findGoodDays(currentMonthView,currentYearView,type,3,startDay)
+  list.innerHTML=''
+  results.forEach(function(item){
+    var row=document.createElement('div');row.className='good-day-item'
+    var badge=document.createElement('div');badge.className='good-day-badge'
+    appendTextElement(badge,'span','good-day-num',item.date.day)
+    appendTextElement(badge,'span','good-day-month','THÁNG '+item.date.month)
+    var info=document.createElement('div');info.className='good-day-info'
+    appendTextElement(info,'div','good-day-desc',item.assessment.dayCanChi.text+' - '+item.assessment.categoryLabel)
+    appendTextElement(info,'div','good-day-lunar','Âm: '+item.assessment.lunar[0]+'/'+item.assessment.lunar[1])
+    appendTextElement(info,'div','good-day-sub',item.assessment.shouldDo)
+    row.appendChild(badge);row.appendChild(info);list.appendChild(row)
+  })
 }
 // ===== LOTTERY =====
 function renderLottery() {
-  var d=new Date(),dd=String(d.getDate()).padStart(2,'0'),mm=String(d.getMonth()+1).padStart(2,'0'),yy=d.getFullYear()
   var el=document.getElementById('lottery-body')
-  el.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:14px">Đang tải KQXS...</div>'
-  function rn(l){var s='';for(var i=0;i<l;i++)s+=Math.floor(Math.random()*10);return s}
+  renderOnlineState(el,'loading','Đang tải kết quả xổ số...')
 
-  function regHtml(regions){
-    var html=regions.map(function(r){
-      var ps=r.prizes.map(function(p){
-        var cls='lottery-prize'+(p.special?' lottery-prize-special':'')
-        return '<span class="'+cls+'"><span class="'+(r.name==='Miền Bắc'?'red':'green')+'">'+p.label+'</span> '+p.num+'</span>'
-      }).join('')
-      return '<div class="lottery-region"><div class="lottery-region-title"><span class="badge" style="background:'+r.color+'">'+r.badge+'</span> '+r.name+'</div><div class="lottery-prizes">'+ps+'</div></div>'
-    }).join('')
-    el.innerHTML=html+'<div style="text-align:center;font-size:clamp(8px,2.2vw,10px);color:#9CA3AF;font-weight:700;margin-top:4px">KQXS '+dd+'/'+mm+'/'+yy+'</div>'
+  function renderRegions(regions){
+    el.innerHTML=''
+    regions.forEach(function(region){
+      var regionElement=document.createElement('div');regionElement.className='lottery-region'
+      var title=document.createElement('div');title.className='lottery-region-title'
+      var badge=document.createElement('span');badge.className='badge';badge.style.background=region.color;badge.textContent=region.badge
+      title.appendChild(badge);title.appendChild(document.createTextNode(' '+region.name+' - '+region.dateLabel));regionElement.appendChild(title)
+      var prizes=document.createElement('div');prizes.className='lottery-prizes'
+      region.prizes.forEach(function(prize){
+        var prizeElement=document.createElement('span');prizeElement.className='lottery-prize'+(prize.special?' lottery-prize-special':'')
+        var label=document.createElement('span');label.className=region.name==='Miền Bắc'?'red':'green';label.textContent=prize.label
+        prizeElement.appendChild(label);prizeElement.appendChild(document.createTextNode(' '+prize.num));prizes.appendChild(prizeElement)
+      })
+      regionElement.appendChild(prizes);el.appendChild(regionElement)
+    })
+    appendTextElement(el,'div','lottery-date','Ngày quay được ghi riêng theo từng khu vực')
   }
 
-  function parseResult(xmlDoc, regionNames) {
-    var items=xmlDoc.querySelectorAll('item'),regions=[]
-    items.forEach(function(it){
-      var title=it.querySelector('title').textContent,desc=it.querySelector('description').textContent
-      for(var ri=0;ri<regionNames.length;ri++){
-        if(title.indexOf(regionNames[ri].key)>-1||desc.indexOf(regionNames[ri].key)>-1){
-          var prizes=[]
-          var db=desc.match(/Đ[Bb]\s*:?\s*(\d{5,6})/)
-          if(db)prizes.push({label:'ĐB',num:db[1],special:true})
-          var nhat=desc.match(/Nhất\s*:?\s*(\d{4,5})/)
-          if(nhat)prizes.push({label:'Nhất',num:nhat[1]})
-          var nhi=desc.match(/Nhì\s*:?\s*(\d{4,5})/)
-          if(nhi)prizes.push({label:'Nhì',num:nhi[1]})
-          var ba=desc.match(/Ba\s*:?\s*(\d{4,5})/)
-          if(ba)prizes.push({label:'Ba',num:ba[1]})
-          var bay=desc.match(/Bảy\s*:?\s*(\d{2,3})/)
-          if(bay)prizes.push({label:'Bảy',num:bay[1]})
-          var tam=desc.match(/Tám\s*:?\s*(\d{2,3})/)
-          if(tam)prizes.push({label:'Tám',num:tam[1]})
-          if(prizes.length>0)regions.push({name:regionNames[ri].name,badge:regionNames[ri].badge,color:regionNames[ri].color,prizes:prizes})
-        }
-      }
+  function parseFeed(xmlDoc,definition){
+    var item=xmlDoc.querySelector('item')
+    if(!item)throw Error('Lottery feed is empty')
+    var title=item.querySelector('title'),description=item.querySelector('description'),link=item.querySelector('link')
+    if(!title||!description||!link)throw Error('Lottery feed item is incomplete')
+    var parsed=LichAmOnlineData.parseLotteryItem({
+      title:title.textContent,
+      description:description.textContent,
+      link:link.textContent,
+      regionName:definition.name,
+      badge:definition.badge,
+      color:definition.color
     })
-    return regions
+    if(!parsed.dateLabel||parsed.regions.length===0)throw Error('Lottery feed item is invalid')
+    return parsed
   }
 
   var regionDefs=[
-    {name:'Miền Bắc',badge:'MB',color:'#991B1B',key:'MB'},
-    {name:'Miền Trung',badge:'MT',color:'#064E3B',key:'MT'},
-    {name:'Miền Nam',badge:'MN',color:'#B45309',key:'MN'}
+    {name:'Miền Bắc',badge:'MB',color:'#991B1B',url:'https://xskt.com.vn/rss-feed/mien-bac-xsmb.rss'},
+    {name:'Miền Trung',badge:'MT',color:'#064E3B',url:'https://xskt.com.vn/rss-feed/mien-trung-xsmt.rss'},
+    {name:'Miền Nam',badge:'MN',color:'#B45309',url:'https://xskt.com.vn/rss-feed/mien-nam-xsmn.rss'}
   ]
 
-  fetch('https://xskt.com.vn/rss/mien-bac.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(doc){
-    var regions=parseResult(doc,[regionDefs[0]])
-    if(regions.length===0)throw Error()
-    return Promise.all([
-      Promise.resolve(regions),
-      fetch('https://xskt.com.vn/rss/mien-trung.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(d){return parseResult(d,[regionDefs[1]])}),
-      fetch('https://xskt.com.vn/rss/mien-nam.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(x){return new DOMParser().parseFromString(x,'text/xml')}).then(function(d){return parseResult(d,[regionDefs[2]])})
-    ]).then(function(res){
-      var all=[].concat(res[0],res[1],res[2])
-      if(all.length===0)throw Error()
-      regHtml(all)
-    }).catch(function(){regHtml([
-      {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[{label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}]},
-      {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]},
-      {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]}
-    ])})
-  }).catch(function(){regHtml([
-    {name:'Miền Bắc',badge:'MB',color:'#991B1B',prizes:[{label:'ĐB',num:rn(5),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Ba',num:rn(5)},{label:'Bảy',num:rn(3)}]},
-    {name:'Miền Trung',badge:'MT',color:'#064E3B',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]},
-    {name:'Miền Nam',badge:'MN',color:'#B45309',prizes:[{label:'ĐB',num:rn(6),special:true},{label:'Nhất',num:rn(5)},{label:'Nhì',num:rn(5)},{label:'Tám',num:rn(2)}]}
-  ])})
+  Promise.all(regionDefs.map(function(definition){
+    return fetch(rssProxyUrl(definition.url))
+      .then(function(response){if(!response.ok)throw Error();return response.text()})
+      .then(function(xml){return parseFeed(new DOMParser().parseFromString(xml,'text/xml'),definition)})
+  })).then(function(results){
+    var regions=[]
+    results.forEach(function(result){regions=regions.concat(result.regions)})
+    renderRegions(regions)
+  }).catch(function(){
+    renderOnlineState(el,'error','Không tải được kết quả xổ số. Vui lòng kiểm tra mạng và thử lại.',renderLottery)
+  })
 }
 // ===== NEWS =====
 function renderNews(){
   var el=document.getElementById('news-list')
-  el.innerHTML='<div style="text-align:center;padding:20px;color:#9CA3AF;font-size:14px">Đang tải tin tức...</div>'
-  fetch('https://vnexpress.net/rss/tin-moi-nhat.rss').then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(xml){
+  renderOnlineState(el,'loading','Đang tải tin tức...')
+  fetch(rssProxyUrl('https://vnexpress.net/rss/tin-moi-nhat.rss')).then(function(r){if(!r.ok)throw Error();return r.text()}).then(function(xml){
     var doc=new DOMParser().parseFromString(xml,'text/xml'),items=doc.querySelectorAll('item'),articles=[],colors=['#D1FAE5','#FEE2E2','#DBEAFE']
     var catMap={kinh:'Kinh tế',tai:'Kinh tế',chung:'Kinh tế',xuat:'Kinh tế',giao:'Kinh tế',chinh:'Chính trị',thoi:'Chính trị',xa:'Chính trị','phap-luat':'Chính trị',the:'Thể thao','bong-da':'Thể thao',cong:'Công nghệ',suc:'Sức khỏe',giai:'Giải trí',van:'Văn hóa',du:'Du lịch',gia:'Giáo dục',khoa:'Khoa học','nha-dat':'Nhà đất','oto-xe-may':'Xe',ban:'Bạn đọc',tam:'Tâm sự',cuoi:'Cười'}
     var catColors={kinh:'#064E3B',chinh:'#991B1B',the:'#2563EB',cong:'#6D28D9',suc:'#059669',giai:'#D97706',van:'#7C3AED',du:'#0891B2',gia:'#0D9488',khoa:'#4F46E5',oto:'#57534E',nha:'#92400E',ban:'#1F2937',tam:'#9D174D',cuoi:'#A16207'}
-    items.forEach(function(item,i){
-      if(i>=10)return
+    for(var i=0;i<items.length&&i<10;i++){
+      var item=items[i]
       var title=item.querySelector('title')?item.querySelector('title').textContent:''
       var catText=item.querySelector('category')?item.querySelector('category').textContent:''
       var pubDate=item.querySelector('pubDate')?item.querySelector('pubDate').textContent:''
-      var catKey='',catName='',catColor='#064E3B'
-      for(var k in catMap){if(catText.indexOf(k)>-1){catKey=k;catName=catMap[k];catColor=catColors[k]||'#064E3B';break}}
+      var catName='',catColor='#064E3B'
+      for(var k in catMap){if(catText.indexOf(k)>-1){catName=catMap[k];catColor=catColors[k]||'#064E3B';break}}
       if(!catName){catName='Tin tức';catColor='#064E3B'}
-      var bgColor=colors[i%3]
-      var msg=title.replace(/'/g,"\\'")
-      articles.push('<div class="news-article" onclick="showElderAlert(\''+msg+'\')"><div class="news-article-thumb" style="background:'+bgColor+'">📰</div><div class="news-article-info"><div class="news-article-title">'+title+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+catColor+'">'+catName+'</span><span>VnExpress</span><span style="color:#064E3B;font-weight:700">🔗 '+pubDate.substring(0,16)+'</span></div></div></div>')
-    })
+      articles.push({title:title,category:catName,color:catColor,published:pubDate.substring(0,16),background:colors[i%3]})
+    }
     if(articles.length===0)throw Error()
-    el.innerHTML=articles.join('')
+    el.innerHTML=''
+    articles.forEach(function(article){
+      var row=document.createElement('div');row.className='news-article'
+      row.addEventListener('click',function(){showElderAlert(article.title)})
+      var thumb=document.createElement('div');thumb.className='news-article-thumb';thumb.style.background=article.background;thumb.textContent='📰'
+      var info=document.createElement('div');info.className='news-article-info'
+      var titleElement=document.createElement('div');titleElement.className='news-article-title';titleElement.textContent=article.title
+      var source=document.createElement('div');source.className='news-article-source'
+      var category=document.createElement('span');category.className='news-article-cat';category.style.background=article.color;category.textContent=article.category
+      source.appendChild(category);appendTextElement(source,'span','','VnExpress');appendTextElement(source,'span','news-article-date','🔗 '+article.published)
+      info.appendChild(titleElement);info.appendChild(source);row.appendChild(thumb);row.appendChild(info);el.appendChild(row)
+    })
   }).catch(function(){
-    var fallbackTitles=['Giá xăng dầu hôm nay: Xăng RON 95 giảm xuống còn 23.500 đồng/lít','Chứng khoán VN-Index vượt mốc 1.300 điểm, thanh khoản cao','Quốc hội thông qua Luật Đất đai sửa đổi với nhiều điểm mới','Đội tuyển Việt Nam thắng đậm 3-0 trước Indonesia tại AFF Cup','Ngân hàng Nhà nước điều chỉnh lãi suất điều hành từ tháng sau','Đề án đường sắt cao tốc Bắc-Nam trình Quốc hội']
-    var cats=[{name:'Kinh tế',color:'#064E3B'},{name:'Kinh tế',color:'#064E3B'},{name:'Chính trị',color:'#991B1B'},{name:'Thể thao',color:'#2563EB'},{name:'Kinh tế',color:'#064E3B'},{name:'Chính trị',color:'#991B1B'}],bgColors=['#D1FAE5','#FEE2E2','#DBEAFE','#D1FAE5','#FEE2E2','#DBEAFE']
-    el.innerHTML=fallbackTitles.map(function(t,i){
-      return '<div class="news-article" onclick="showElderAlert(\''+t.replace(/'/g,"\\'")+'\')"><div class="news-article-thumb" style="background:'+bgColors[i]+'">📰</div><div class="news-article-info"><div class="news-article-title">'+t+'</div><div class="news-article-source"><span class="news-article-cat" style="background:'+cats[i].color+'">'+cats[i].name+'</span><span>VnExpress</span><span style="color:#064E3B;font-weight:700">🔗 '+String(new Date().getHours())+' giờ trước</span></div></div></div>'
-    }).join('')
+    renderOnlineState(el,'error','Không tải được tin tức. Vui lòng kiểm tra mạng và thử lại.',renderNews)
   })
 }
 // ===== PRAYERS =====
@@ -322,7 +265,7 @@ function switchTab(tabId){
   currentTab=tabId;var tabs=['home','month','good-days','prayers','more']
   tabs.forEach(function(t){document.getElementById('tab-'+t).style.display=(t===tabId)?'block':'none'})
   tabs.forEach(function(t){var btn=document.getElementById('nav-'+t),icon=btn.querySelector('.nav-icon'),label=btn.querySelector('.nav-label');if(t===tabId){icon.className='nav-icon nav-icon-active';label.style.color='#064E3B'}else{icon.className='nav-icon nav-icon-inactive';label.style.color='#78716C'}})
-  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays('cuoihoi');renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
+  if(tabId==='home'){renderDayView()}else if(tabId==='month'){renderMonthView()}else if(tabId==='good-days'){filterGoodDays(currentGoodDayCategory);renderLottery()}else if(tabId==='prayers'){renderPrayersList()}
   if(isBellEnabled)playBell()
 }
 function showElderAlert(msg){document.getElementById('elder-alert-text').innerText=msg;document.getElementById('elder-alert-box').classList.add('open');if(isBellEnabled)playBell()}
@@ -334,7 +277,7 @@ function updateLunarData(jsonStr){
     var data=JSON.parse(jsonStr)
     if(data&&data.year&&data.day){
       var m=data.monthYear?parseInt(data.monthYear.replace('Tháng ','')):(new Date().getMonth()+1)
-      currentDate=data.year+'-'+String(m).padStart(2,'0')+'-'+String(data.day).padStart(2,'0')
+      currentDate=data.year+'-'+padNumber(m)+'-'+padNumber(data.day)
       currentMonthView=m;currentYearView=data.year
     }
   }catch(e){}
@@ -342,10 +285,32 @@ function updateLunarData(jsonStr){
   document.getElementById('app-content').style.display='block'
   renderDayView()
 }
+function refreshForClockChange(){
+  var now=new Date(),today=localDateString(now),previousParts=lastKnownToday.split('-')
+  var followedToday=currentDate===lastKnownToday
+  var followedCurrentMonth=currentMonthView===parseInt(previousParts[1],10)&&currentYearView===parseInt(previousParts[0],10)
+  lastKnownToday=today
+  if(followedToday)currentDate=today
+  if(followedToday&&followedCurrentMonth){currentMonthView=now.getMonth()+1;currentYearView=now.getFullYear()}
+  if(currentTab==='home')renderDayView()
+  else if(currentTab==='month')renderMonthView()
+  else if(currentTab==='good-days'){
+    filterGoodDays(currentGoodDayCategory)
+    renderLottery()
+  }
+}
+function scheduleClockRefresh(){
+  clearTimeout(timeRefreshTimer)
+  var now=new Date(),nextHour=new Date(now.getTime())
+  nextHour.setHours(now.getHours()+1,0,1,0)
+  timeRefreshTimer=setTimeout(function(){refreshForClockChange();scheduleClockRefresh()},Math.max(1000,nextHour.getTime()-now.getTime()))
+}
+window.onNativeResume=function(){refreshForClockChange();scheduleClockRefresh()}
 // ===== INIT =====
 window.onload=function(){
   renderDayView()
   renderPrayersList()
+  scheduleClockRefresh()
   setTimeout(function(){
     document.getElementById('app-loading').style.display='none'
     document.getElementById('app-content').style.display='block'

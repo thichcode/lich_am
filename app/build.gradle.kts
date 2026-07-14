@@ -85,6 +85,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.webkit:webkit:1.12.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")

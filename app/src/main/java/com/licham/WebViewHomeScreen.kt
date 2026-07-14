@@ -3,7 +3,6 @@ package com.licham
 import android.annotation.SuppressLint
 import android.webkit.WebChromeClient
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -12,12 +11,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebViewHomeScreen() {
     var wv by remember { mutableStateOf<WebView?>(null) }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -25,19 +28,42 @@ fun WebViewHomeScreen() {
             WebView(ctx).apply {
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
-                settings.allowFileAccess = true
+                settings.allowFileAccess = false
+                settings.allowContentAccess = false
                 @Suppress("DEPRECATION")
-                settings.setAllowUniversalAccessFromFileURLs(true)
+                settings.setAllowUniversalAccessFromFileURLs(false)
+                @Suppress("DEPRECATION")
+                settings.setAllowFileAccessFromFileURLs(false)
 
-                webViewClient = WebViewClient()
+                webViewClient = AppWebViewClient(ctx)
                 webChromeClient = WebChromeClient()
 
-                loadUrl("file:///android_asset/ui/default/index.html")
+                loadUrl("https://appassets.androidplatform.net/assets/ui/default/index.html")
                 wv = this
             }
         },
         update = { }
     )
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    wv?.onResume()
+                    wv?.evaluateJavascript(
+                        "window.onNativeResume && window.onNativeResume()",
+                        null
+                    )
+                }
+                Lifecycle.Event.ON_PAUSE -> wv?.onPause()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
