@@ -192,11 +192,15 @@ body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sa
 .news-article-source{font-size:clamp(9px,2.5vw,10px);font-weight:700;color:#9CA3AF;margin-top:4px;display:flex;gap:6px;align-items:center}
 .news-article-cat{color:#fff;font-weight:800;padding:1px 6px;border-radius:4px;font-size:clamp(8px,2.2vw,9px)}
 .news-article-date{color:#064E3B;font-weight:700}
+.news-link{display:inline-block;margin-top:4px;font-size:clamp(9px,2.5vw,10px);font-weight:900;color:#B45309;cursor:pointer;text-decoration:underline}
+.news-link:active{color:#92400E}
 .dark .cal-card,.dark .info-card,.dark .activity-card,.dark .clash-card,.dark .term-card,.dark .events-card,.dark .prayer-item,.dark .good-day-item,.dark .lottery-card{background:#1F2937;border-color:#374151}
 .dark .lottery-prize{background:#374151;border-color:#4B5563;color:#F9FAFB}
 .dark .lottery-prize-special{background:#78350F;border-color:#B45309;color:#FDE68A}
 .dark .news-article{background:#1F2937;border-color:#374151}
 .dark .news-article-title{color:#F9FAFB}
+.dark .news-link{color:#FCD34D}
+.dark .news-link:active{color:#FDE68A}
 .dark .cal-top-bar{background:#991B1B}
 .dark .cal-weekday,.dark .cal-monthyear{color:#34D399}
 .dark .cal-day{color:#FCA5A5}

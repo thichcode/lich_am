@@ -37,6 +37,7 @@ fun WebViewHomeScreen() {
 
                 webViewClient = AppWebViewClient(ctx)
                 webChromeClient = WebChromeClient()
+                addJavascriptInterface(NativeBridge(ctx), "nativeApp")
 
                 loadUrl("https://appassets.androidplatform.net/assets/ui/default/index.html")
                 wv = this

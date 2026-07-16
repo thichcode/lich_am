@@ -197,16 +197,22 @@ function renderLottery() {
     {name:'Miền Nam',badge:'MN',color:'#B45309',url:'https://xskt.com.vn/rss-feed/mien-nam-xsmn.rss'}
   ]
 
-  Promise.all(regionDefs.map(function(definition){
-    return fetch(rssProxyUrl(definition.url))
+  var allRegions=[],pendingCount=regionDefs.length,isError=false
+  regionDefs.forEach(function(definition){
+    fetch(rssProxyUrl(definition.url))
       .then(function(response){if(!response.ok)throw Error();return response.text()})
       .then(function(xml){return parseFeed(new DOMParser().parseFromString(xml,'text/xml'),definition)})
-  })).then(function(results){
-    var regions=[]
-    results.forEach(function(result){regions=regions.concat(result.regions)})
-    renderRegions(regions)
-  }).catch(function(){
-    renderOnlineState(el,'error','Không tải được kết quả xổ số. Vui lòng kiểm tra mạng và thử lại.',renderLottery)
+      .then(function(result){
+        allRegions=allRegions.concat(result.regions);pendingCount--
+        if(pendingCount===0&&!isError){isError=true;renderRegions(allRegions)}
+      })
+      .catch(function(){
+        pendingCount--
+        if(pendingCount===0&&!isError){isError=true
+          if(allRegions.length>0)renderRegions(allRegions)
+          else renderOnlineState(el,'error','Không tải được kết quả xổ số. Vui lòng kiểm tra mạng và thử lại.',renderLottery)
+        }
+      })
   })
 }
 // ===== NEWS =====
@@ -220,25 +226,36 @@ function renderNews(){
     for(var i=0;i<items.length&&i<10;i++){
       var item=items[i]
       var title=item.querySelector('title')?item.querySelector('title').textContent:''
+      var link=item.querySelector('link')?item.querySelector('link').textContent:''
       var catText=item.querySelector('category')?item.querySelector('category').textContent:''
       var pubDate=item.querySelector('pubDate')?item.querySelector('pubDate').textContent:''
       var catName='',catColor='#064E3B'
       for(var k in catMap){if(catText.indexOf(k)>-1){catName=catMap[k];catColor=catColors[k]||'#064E3B';break}}
       if(!catName){catName='Tin tức';catColor='#064E3B'}
-      articles.push({title:title,category:catName,color:catColor,published:pubDate.substring(0,16),background:colors[i%3]})
+      articles.push({title:title,link:link,category:catName,color:catColor,published:pubDate.substring(0,16),background:colors[i%3]})
     }
     if(articles.length===0)throw Error()
     el.innerHTML=''
     articles.forEach(function(article){
       var row=document.createElement('div');row.className='news-article'
-      row.addEventListener('click',function(){showElderAlert(article.title)})
       var thumb=document.createElement('div');thumb.className='news-article-thumb';thumb.style.background=article.background;thumb.textContent='📰'
       var info=document.createElement('div');info.className='news-article-info'
       var titleElement=document.createElement('div');titleElement.className='news-article-title';titleElement.textContent=article.title
       var source=document.createElement('div');source.className='news-article-source'
       var category=document.createElement('span');category.className='news-article-cat';category.style.background=article.color;category.textContent=article.category
       source.appendChild(category);appendTextElement(source,'span','','VnExpress');appendTextElement(source,'span','news-article-date','🔗 '+article.published)
-      info.appendChild(titleElement);info.appendChild(source);row.appendChild(thumb);row.appendChild(info);el.appendChild(row)
+      info.appendChild(titleElement);info.appendChild(source)
+      if(article.link){
+        var linkBtn=document.createElement('span');linkBtn.className='news-link';linkBtn.textContent='Xem thêm →'
+        linkBtn.addEventListener('click',function(e){
+          e.stopPropagation()
+          if(typeof nativeApp!=='undefined'&&nativeApp.openUrl)nativeApp.openUrl(article.link)
+          else showElderAlert(article.title)
+        })
+        info.appendChild(linkBtn)
+      }
+      row.addEventListener('click',function(){showElderAlert(article.title)})
+      row.appendChild(thumb);row.appendChild(info);el.appendChild(row)
     })
   }).catch(function(){
     renderOnlineState(el,'error','Không tải được tin tức. Vui lòng kiểm tra mạng và thử lại.',renderNews)
