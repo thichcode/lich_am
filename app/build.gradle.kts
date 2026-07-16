@@ -70,6 +70,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    applicationVariants.configureEach {
+        outputs.configureEach {
+            (this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl)?.outputFileName =
+                "${rootProject.name}-${versionName}-${name}.apk"
+        }
+    }
 }
 
 dependencies {
