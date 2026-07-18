@@ -13,7 +13,7 @@ val LocalThemeMode = staticCompositionLocalOf { mutableStateOf(ThemeMode.SYSTEM)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = android.graphics.Color.rgb(8, 115, 12)
+        window.statusBarColor = android.graphics.Color.parseColor("#064E3B")
         window.navigationBarColor = android.graphics.Color.WHITE
 
         setContent {

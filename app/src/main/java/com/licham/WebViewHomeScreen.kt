@@ -34,6 +34,8 @@ fun WebViewHomeScreen() {
                 settings.setAllowUniversalAccessFromFileURLs(false)
                 @Suppress("DEPRECATION")
                 settings.setAllowFileAccessFromFileURLs(false)
+                settings.setSupportMultipleWindows(false)
+                settings.setJavaScriptCanOpenWindowsAutomatically(false)
 
                 webViewClient = AppWebViewClient(ctx)
                 webChromeClient = WebChromeClient()

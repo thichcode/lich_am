@@ -2,6 +2,6 @@
 <resources>
     <style name="Theme.LichAm" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/primary</item>
-        <item name="android:navigationBarColor">@color/primary</item>
+        <item name="android:navigationBarColor">#FFFFFFFF</item>
     </style>
 </resources>
