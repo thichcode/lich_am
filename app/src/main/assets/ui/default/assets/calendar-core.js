@@ -54,7 +54,10 @@
     var deltat = T < -11
       ? 0.001 + 0.000839 * T + 0.0002261 * T2 - 0.00000845 * T3 - 0.000000081 * T * T3
       : -0.000278 + 0.000265 * T + 0.000262 * T2;
-    return INT(Jd1 + C1 - deltat + 0.5 + timeZone / 24);
+    var raw = Jd1 + C1 - deltat + 0.5 + timeZone / 24;
+    var floored = INT(raw);
+    if (raw - floored > 0.99) return floored + 1;
+    return floored;
   }
 
   function getSunLongitude(jdn, timeZone) {
